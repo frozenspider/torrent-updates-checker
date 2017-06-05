@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="robots" content="noarchive">
+<meta charset="UTF-8">
+<meta name="description" content="Торрент трекер в TAS-IX. Фильмы, сериалы, игры, музыка mp3 и lossless, программы, книги, мультфильмы и аниме.">
+
+<title>Пространство / Экспансия / The Expanse / Сезон: 1 / Серии: 1-4 из 10 (Роберт Либерман, Терри МакДонаф) [2015-2016, Фантастика, детектив, WEB-DLRip] (MVO : LostFilm) :: TAS-IX.NET</title>
+<link rel="stylesheet" href="https://tas-ix.net:443/templates/default/css/main.css?v=20150903">
+<link rel="stylesheet" href="https://tas-ix.net:443/templates/default/css/main.css?v=20150903">
+<link rel="icon" href="https://tas-ix.net:443/favicon.ico" type="image/x-icon">
+
+<link rel="search" type="application/opensearchdescription+xml" href="https://tas-ix.net:443/opensearch.xml" title="Поиск TAS-IX.NET">
+
+<script type="text/javascript" src="https://tas-ix.net:443/misc/js/jquery.pack.js"></script>
+<script type="text/javascript" src="https://tas-ix.net:443/misc/js/main.js"></script>
+
+<script src="https://tas-ix.net:443/misc/js/bbcode.js?v=20150903"></script>
+<script>
+	window.BB = {};
+	window.encURL = encodeURIComponent;
+</script>
+<script>
+var bb_url = 'https://tas-ix.net:443/';
+var bbl    = { "code": "Код", "wrote": "писал(а)", "quote": "Цитата", "quoted_post": "Перейти к цитируемому сообщению", "loading": "Загружается…", "spoiler_head": "Скрытый текст", "spoiler_close": "Свернуть", "links_are": "Ссылки запрещены", "scr_rules": "Прочтите правила размещения скриншотов!", "play_on": "Начать проигрывание на текущей странице" };
+
+var postImg_MaxWidth = screen.width - 202;
+var postImgAligned_MaxWidth = Math.round(screen.width/3);
+var attachImg_MaxWidth = screen.width - 280;
+var ExternalLinks_InNewWindow = '1';
+var hidePostImg = false;
+</script>
+
+<script>
+var BB_ROOT      = "./";
+var cookieDomain = ".tas-ix.net";
+var cookiePath   = "/";
+var cookiePrefix = "bb_";
+var cookieSecure = 1;
+var LOGGED_IN    = 1;
+var IWP          = 'HEIGHT=510,WIDTH=780,resizable=yes';
+var IWP_US       = 'HEIGHT=250,WIDTH=400,resizable=yes';
+var IWP_SM       = 'HEIGHT=420,WIDTH=470,resizable=yes,scrollbars=yes';
+
+var user = {
+	opt_js: {},
+
+	set: function (opt, val, days, reload) {
+		this.opt_js[opt] = val;
+		setCookie('opt_js', $.toJSON(this.opt_js), days);
+		if (reload) {
+			window.location.reload();
+		}
+	}
+};
+
+$(document).ready(function(){
+	$("div.jumpbox").html('\
+		<span id="jumpbox-container"> \
+		<select id="jumpbox"> \
+			<option id="jumpbox-title" value="-1">&nbsp;&raquo;&raquo; Выберите форум для перехода &nbsp;</option> \
+		</select> \
+		</span> \
+		<input id="jumpbox-submit" type="button" class="lite" value="Перейти" /> \
+	');
+	$('#jumpbox-container').one('click', function(){
+		$('#jumpbox-title').html('&nbsp;&nbsp; Загружается… ... &nbsp;');
+		var jumpbox_src = './ajax/html/' + (1 ? 'jumpbox_user.html' : 'jumpbox_guest.html');
+		$(this).load(jumpbox_src);
+		$('#jumpbox-submit').click(function(){ window.location.href='./viewforum.php?f='+$('#jumpbox').val(); });
+	});
+});
+
+var ajax = new Ajax('https://tas-ix.net:443/ajax.php', 'POST', 'json');
+
+function getElText (e)
+{
+	var t = '';
+	if (e.textContent !== undefined) { t = e.textContent; } else if (e.innerText !== undefined) { t = e.innerText; } else { t = jQuery(e).text(); }
+	return t;
+}
+function escHTML (txt)
+{
+	return txt.replace(/</g, '&lt;');
+}
+
+function cfm (txt)
+{
+	return window.confirm(txt);
+}
+function post2url (url, params) {
+	params = params || {};
+	var f = document.createElement('form');
+	f.setAttribute('method', 'post');
+	f.setAttribute('action', url);
+	params['form_token'] = '';
+	for (var k in params) {
+		var h = document.createElement('input');
+		h.setAttribute('type', 'hidden');
+		h.setAttribute('name', k);
+		h.setAttribute('value', params[k]);
+		f.appendChild(h);
+	}
+	document.body.appendChild(f);
+	f.submit();
+	return false;
+}
+</script>
+
+<!--[if gte IE 7]><style type="text/css">
+input[type="checkbox"] { margin-bottom: -1px; }
+</style><![endif]-->
+
+<!--[if IE]><style type="text/css">
+.post-hr { margin: 2px auto; }
+.fieldsets div > p { margin-bottom: 0; }
+</style><![endif]-->
+
+<style type="text/css">
+	.menu-sub, #ajax-loading, #ajax-error, var.ajax-params, .sp-title, .q-post { display: none; }
+</style>
+
+<script type="text/javascript" src="https://tas-ix.net:443/misc/js/jquery.scrollUp.js"></script>
+<style>
+#scrollUp {
+    background-image: url("img/top.png");
+    bottom: 20px;
+    right: 20px;
+    width: 38px;
+    height: 38px;
+}
+</style>
+
+<script>
+$(function () {
+    $.scrollUp();
+});
+</script>
+
+<style>
+body {
+  /* min-height: 2000px; */
+  padding-top: 25px;
+  background: #FFFFFF;
+}
+.navbar-fixed-top,
+.navbar-fixed-bottom {
+  position: fixed;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+} 
+.navbar-fixed-top {
+  top: 0;
+  border-width: 0 0 1px;
+}
+</style>
+
+<script type="text/javascript">(function(){var f=false,b=document,c=b.documentElement,e=window;function g(){var a="";a+="rt="+(new Date).getTime()%1E7*100+Math.round(Math.random()*99);a+=b.referrer?"&r="+escape(b.referrer):"";return a}function h(){var a=b.getElementsByTagName("head")[0];if(a)return a;for(a=c.firstChild;a&&a.nodeName.toLowerCase()=="#text";)a=a.nextSibling;if(a&&a.nodeName.toLowerCase()!="#text")return a;a=b.createElement("head");c.appendChild(a);return a}function i(){var a=b.createElement("script");a.setAttribute("type","text/javascript");a.setAttribute("src","http"+("https:"==e.location.protocol?"s":"")+"://s.luxadv.com/t/lb195879_3.js?"+g());typeof a!="undefined"&&h().appendChild(a)}function d(){if(!f){f=true;i()}};if(b.addEventListener)b.addEventListener("DOMContentLoaded",d,false);else if(b.attachEvent){c.doScroll&&e==e.top&&function(){try{c.doScroll("left")}catch(a){setTimeout(arguments.callee,0);return}d()}();b.attachEvent("onreadystatechange",function(){b.readyState==="complete"&&d()})}else e.onload=d})();</script>
+</head>
+
+<body>
+
+
+<div id="ajax-loading"></div><div id="ajax-error"></div>
+<div id="preload" style="position: absolute; overflow: hidden; top: 0; left: 0; height: 1px; width: 1px;"></div>
+
+<div id="body_container">
+
+<!--******************-->
+<!--======-->
+
+<!--page_container-->
+<div id="page_container">
+<a name="top"></a>
+
+<!--page_header-->
+<div id="page_header">
+
+<div id="old-browser-warn" style="background: #FFF227; padding: 8px 0 10px; text-align: center; font-size: 14px; display: none; ">
+	<b>Вы используете устаревший браузер. Сайт может отображаться некорректно.</b>
+</div>
+<script>
+if ( (typeof(window.opera) != "undefined" && window.opera.version() < 12) || (window.attachEvent && !window.addEventListener) /* IE < 9 */ ) {
+	document.getElementById('old-browser-warn').style.display = '';
+}
+</script>
+
+<!--main_nav-->
+<div class="navbar-fixed-top" id="main-nav"  style="height: 17px;">
+	<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<td class="nowrap">
+			<a href="./index.php"><b>Главная</b></a><span style="color:#CDCDCD;">|</span>
+			<a href="tracker.php"><b>Трекер</b></a><span style="color:#CDCDCD;">|</span>
+			<a href="http://img.tas-ix.net" target="_blank"><b>Галерея</b></a><span style="color:#CDCDCD;">|</span>
+			<a href="search.php"><b>Поиск</b></a><span style="color:#CDCDCD;">|</span>
+			<a href="viewtopic.php?t=2"><b style="color: #993300;">Правила</b></a><span style="color:#CDCDCD;">|</span>
+			<a href="group.php"><b>Группы</b></a><span style="color:#CDCDCD;">|</span>
+			<a href="viewforum.php?f=3"><b>ЧаВО</b></a><span style="color:#CDCDCD;">|</span>
+			<a href="/chat.php"><b>CHAT</b></a><span style="color:#CDCDCD;">|</span>	
+					</td>
+		<td class="nowrap" align="right">
+						
+												<a href="privmsg.php?folder=inbox"><b>Личные сообщения: новых нет</b></a>
+									</td>
+	</tr>
+	</table>
+</div>
+<!--/main_nav-->
+
+<!--logo-->
+<div id="logo">
+	<!--<h1>TAS-IX.NET</h1>
+	<h6></h6> -->
+	<a href="./index.php"><img src="images/logo/logo.png" alt="TAS-IX.NET" /></a>
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- tas-ix-verh-728 -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3885888264376534"
+     data-ad-slot="3143788084"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+<!--/logo-->
+
+<script>
+ajax.index_data = function(tz) {
+	ajax.exec({
+		action  : 'index_data',
+		mode    : 'change_tz',
+		tz      : tz
+	});
+};
+ajax.callback.index_data = function(data) {};
+$(document).ready(function() {
+	x = new Date();
+	tz = -x.getTimezoneOffset()/60;
+	if (tz != 5.00)
+	{
+		ajax.index_data(tz);
+	}
+});
+</script>
+
+<!--logout-->
+<div class="topmenu">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+	<td width="40%">
+		Рады видеть вас,&nbsp;<b class="med"><a href="https://tas-ix.net:443/profile.php?mode=viewprofile&amp;u=93752"><span title="Пользователь" class="colorUser">Frozen_Spider</span></a></b>&nbsp;[ <a href="./login.php?logout=1" onclick="return confirm('Вы уверены, что хотите выйти?');">Выход</a> ]
+	</td>
+	<td style="padding: 3px;">
+		<div>
+			<form id="quick-search" action="" method="post" onsubmit="$(this).attr('action', $('#search-action').val()); if($('#search-action option:selected').attr('class') == 'hash') $('#search-text').attr('name', 'hash');">
+				<input type="hidden" name="max" value="1" />
+				<input type="hidden" name="to" value="1" />
+				<input id="search-text" type="text" name="nm" placeholder="поиск…" required />
+				<select id="search-action">
+					<option value="tracker.php#results" selected="selected"> по трекеру </option>
+					<option value="search.php"> по форуму </option>
+					<option value="tracker.php" class="hash"> по info_hash </option>
+									</select>
+				<input type="submit" class="med" value="Поиск" style="width: 55px;" />
+			</form>
+		</div>
+	</td>
+	<td width="50%" class="tRight">
+				<a href="report.php?mode=report">Сообщить о нарушении</a> &#0183;
+				<a href="profile.php?mode=editprofile"><b>Настройки</b></a> &#0183;
+		<a href="profile.php?mode=viewprofile&amp;u=93752">Профиль</a> <a href="#dls-menu" class="menu-root menu-alt1">&#9660;</a>
+	</td>
+</tr>
+</table>
+</div>
+<!--/logout-->
+
+<div class="menu-sub" id="dls-menu">
+	<div class="menu-a bold nowrap">
+		<a class="med" href="tracker.php?rid=93752#results">Текущие раздачи</a>
+		<a class="med" href="search.php?dlu=93752&dlc=1">Прошлые закачки</a>
+		<a class="med" href="search.php?dlu=93752&dlw=1">Будущие закачки</a>
+		<a class="med" href="profile.php?mode=watch">Отслеживаемые темы</a>
+	</div>
+</div>
+
+</div>
+<!--/page_header-->
+
+<!--menus-->
+
+
+<!--/menus-->
+
+<!--page_content-->
+<div id="page_content">
+<table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+<tr>
+<!--main_content-->
+<td id="main_content">
+	<div id="main_content_wrap">
+		<div id="latest_news">
+			<table cellspacing="0" cellpadding="0" width="100%">
+				<tr>
+					
+									</tr>
+			</table>
+		</div>
+
+
+<!--=======================-->
+<!--***********************-->
+
+
+<!-- page_header.tpl END -->
+<!-- module_xx.tpl START --><style type="text/css">
+.container{overflow:hidden;}
+.box{white-space:nowrap;font-size: 11px; color: #006699}
+.box div{display:inline-block;solid black;cursor: pointer;padding: 0 5px;}
+</style>
+
+
+<link rel="stylesheet" href="/misc/css/like.css">
+<script>	
+likes_state = new Array();
+more_state = new Array();
+function like( id, active )
+{
+	if( likes_state[id] == undefined ) likes_state[id] = active;
+	if( likes_state[id] )
+	{
+		$.ajax({
+			url:"/like.php", 
+			data: { dislike : id },
+			success:function(data){
+				likes_state[id] = false;
+				$( '#lb_' + id ).html( 'Мне нравится' );
+				$('#usrs_' +id).children(":first-child").remove();
+				if ( $( '#usrs_' + id ).html() == "" ) $( '#like_container' + id ).html( '' ); 
+			}
+		});
+	}
+	else if( !likes_state[id] )
+	{		
+		$.ajax({
+			url:"/like.php", 
+			data: { like : id },
+			success:function(data){
+				likes_state[id] = true;
+				$( '#lb_' + id ).html( 'Больше не нравится' );
+				if ( $( '#usrs_' + id ).length )  $( '#usrs_' + id ).html( '<div style="float:left; padding-right: 3px"><a href="./profile.php?mode=viewprofile&amp;u=">Вам</a>, </div>' + $( '#usrs_' + id ).html() )
+				else $( '#like_container' + id ).html( '<div class="like_container"><div style="float:left; padding-right: 3px" id="usrs_' + id + '"><div><a href="./profile.php?mode=viewprofile&amp;u=">Вам</a> </div></div><div style="float:left"> нравится это</div></div>' );		
+			}
+		});
+	}
+}		
+</script>
+
+
+
+<div class="spacer_6"></div>
+
+<h1 class="maintitle">
+	<a class="tt-text" href="viewtopic.php?t=110962">Пространство<wbr> / Экспансия / The Expanse / Сезон: 1 / Серии: 1-4 из 10 (Роберт Либерман, Терри МакДонаф) [2015-2016, Фантастика, детектив, WEB-DLRip] (MVO : LostFilm)</a>
+</h1>
+
+
+<table cellpadding="0" class="w100">
+<tr>
+	<td valign="bottom">
+		<a href="posting.php?mode=reply&amp;t=110962"><img src="./templates/default/images/lang/ru/reply.gif" alt="Ответить на тему" /></a>
+	</td>
+	<td class="nav w100" style="padding-left: 8px;">
+		<a href="./index.php">Главная</a>&nbsp;<em>&raquo;</em>
+		<a href="index.php?c=11">Сериалы</a>
+		<em>&raquo;</em>&nbsp;<a href="viewforum.php?f=7">Зарубежные сериалы</a>		<em>&raquo;</em>&nbsp;<a href="viewforum.php?f=511">Сезон 2015-2016</a>
+	</td>
+</tr>
+</table>
+
+<table class="forumline dl_list">
+
+<col class="row1">
+<col class="row1">
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$('table.tablesorter').tablesorter({
+		sortList: [[4,1]]
+	});
+});
+</script>
+
+<tr>
+	<td colspan="2" class="catTitle"><a href="viewtopic.php?t=110962&amp;dl=names&amp;spmode=full">
+		Статистика раздачи	</a></td>
+</tr>
+
+
+
+<tr>
+	<td colspan="2" class="borderless bCenter pad_8">
+			Размер:&nbsp; <b>2.1&nbsp;GB</b>&nbsp; &nbsp;|&nbsp; &nbsp;
+			Зарегистрирован:&nbsp; <b>8 дней</b>&nbsp; &nbsp;|&nbsp; &nbsp;
+			Скачан:&nbsp; <b>6 раз</b>
+	</td>
+</tr>
+
+
+			<tr>
+			<td colspan="2" class="row2 pad_2">
+				
+								<div class="mrg_4 pad_4">
+															<span class="seed">Сидов:&nbsp; <b>13</b> &nbsp;[&nbsp; 0 KB/s &nbsp;]</span> &nbsp;
+															
+										<a href="viewtopic.php?t=110962&amp;spmode=full#seeders" class="gen">Подробная статистика пиров</a>
+									</div>
+							</td>
+		</tr>
+
+	
+<tr>
+	<td colspan="2" class="row3 pad_4">
+	&nbsp;
+		<form method="POST" action="dl_list.php?t=110962">
+		<input type="hidden" name="sid" value="AKNPpsnsmhZ7UIDB9n1u" />
+		<input type="hidden" name="f" value="511" />
+		<input type="hidden" name="t" value="110962" />
+		<input type="hidden" name="mode" value="set_dl_status" />
+			<input type="submit" name="dl_set_will" value="Буду качать" class="liteoption" />&nbsp;				<input type="submit" name="dl_set_complete" value="Скачал" class="liteoption" />&nbsp;		<input type="submit" name="dl_set_cancel" value="Отмена" class="liteoption" />	</form>
+			&nbsp;
+	</td>
+</tr>
+
+</table>
+<div class="spacer_6"></div>
+
+<table class="w100 border bw_TRL" cellpadding="0" cellspacing="0">
+<tr>
+	<td class="cat pad_2">
+
+	<table cellspacing="0" cellpadding="0" class="borderless w100">
+	<tr>
+		
+		<td class="small bold nowrap tRight" width="100%">
+			&nbsp;
+						<a class="small" href="search.php?uid=93752&t=110962&dm=1">Мои сообщения</a> &nbsp;<span style="color:#CDCDCD;">|</span>&nbsp;
+			<a class="menu-root" href="#topic-options">Опции показа</a>
+					</td>
+
+		<td class="nowrap" style="padding: 0 4px 2px 4px;">
+			<form action="search.php?t=110962&amp;dm=1&amp;s=1" method="post">
+				<input id="search-text" type="text" name="nm" class="hint" style="width: 150px;" placeholder="Искать в теме…" required />
+				<input type="submit" class="bold" value="&raquo;" style="width: 30px;" />
+			</form>
+		</td>
+	</tr>
+	</table>
+
+	</td>
+</tr>
+</table>
+
+<div class="menu-sub" id="topic-options">
+	<table cellspacing="1" cellpadding="4">
+	<tr>
+		<th>Опции показа</th>
+	</tr>
+	<tr>
+		<td>
+			<fieldset id="show-only">
+			<legend>Не показывать</legend>
+			<div class="med pad_4">
+				<label>
+					<input type="checkbox" 						onclick="user.set('h_av', this.checked ? 1 : 0);"
+					/>Аватары				</label>
+				<label>
+					<input type="checkbox" 						onclick="user.set('h_rnk_i', this.checked ? 1 : 0);"
+					/>Картинки званий				</label>
+				<label>
+					<input type="checkbox" 						onclick="user.set('h_post_i', this.checked ? 1 : 0);"
+					/>Картинки в сообщениях				</label>
+				<label>
+					<input type="checkbox" 						onclick="user.set('h_smile', this.checked ? 1 : 0);"
+					/>Смайлики				</label>
+				<label>
+					<input type="checkbox" 						onclick="user.set('h_sig', this.checked ? 1 : 0);"
+					/>Подписи				</label>
+			</div>
+			</fieldset>
+			<div class="spacer_4"></div>
+			<fieldset id="spoiler-opt">
+			<legend>Показывать</legend>
+			<div class="med pad_4">
+			<p>
+				<label>
+					<input type="checkbox" 						onclick="user.set('sp_op', this.checked ? 1 : 0);"
+					/>Спойлер открытым				</label>
+				<label>
+				<input type="checkbox" 					onclick="user.set('i_aft_l', this.checked ? 1 : 0);"
+				/>Загружаемые картинки			</label>
+			</p>
+			</div>
+			</fieldset>
+		</td>
+	</tr>
+	<tr>
+		<td class="cat tCenter pad_4"><input type="button" value="Отправить" style="width: 100px;" onclick="window.location.reload();" /></td>
+	</tr>
+	</table>
+</div><!--/topic-options-->
+
+<table class="topic" id="topic_main" cellpadding="0" cellspacing="0">
+
+
+<tbody id="post_960566" class="row1">
+<tr>
+	<td class="poster_info td1"><a name="960566"></a>
+					<p class="nick" title="Вставить имя или выделенный кусок сообщения." onclick="bbcode.onclickPoster('saidali', 960566);">
+			<a href="#" onclick="return false;"><span title="Модератор Сериалов" class="colorMod">saidali</span></a> 		</p>
+		
+				<p class="rank_img"><img src="images/ranks/sermod.png" alt="" title="" border="0" /></p>		<div align="center"><p class="avatar"><img src="./images/avatars/6/64/34264.jpg" alt="34264"   /></p></div>				<p class="joined" title="Рег.: 25-Янв-2012"> Рег.: 25-Янв-2012</p>		<p class="posts"><em>Сообщений:</em>&nbsp;1414</p>		<p class="posts"><em>Симпатии:</em>&nbsp;377</p>		
+			
+<div style="width: 110px;"></div>
+	
+	</td>
+	<td class="message td2" rowspan="3">
+
+		<div class="post_body">
+			<div class="post_wrap">
+				<span id="pe_960566"></span>
+				<span id="pp_960566"><span style="font-size: 24px; line-height: normal;">Пространство | Экспансия / The Expanse</span><span class="post-br"><br /></span><var class="postImg postImgAligned img-right" title="http://img.tas-ix.net/images/2015/11/30/0215de903ee0704098c416705a6a53b7.png">&#10;</var><span class="post-b">Год выпуска</span>: 2015<br />
+<span class="post-b">Страна</span>: США<br />
+<span class="post-b">Жанр</span>: Фантастика, детектив<br />
+<span class="post-b">Продолжительность</span>: ~ 00:43:00<span class="post-br"><br /></span><span class="post-b">Перевод</span>: Профессиональный многоголосый закадровый Доп. инфо о переводе LostFilm<br />
+<span class="post-b">Русские субтитры</span>: нет<br />
+<span class="post-b">Режиссёр</span>: Роберт Либерман, Терри МакДонаф<span class="post-br"><br /></span><span class="post-b">В ролях</span>: Шоре Агдашлу, Кэс Анвар, Уэс Чэтэм, Томас Джейн, Стивен Стрейт, Илайс Туфексис, Джейн Моффат, Сара Митич, Майкл Мюррей, Джо Делфин.<span class="post-br"><br /></span><span class="post-b">Описание</span>: Через двести лет от дня сегодняшнего некий сыщик, привыкший всё доводить до конца при любых обстоятельствах, в рамках расследования дела об исчезновении молодой женщины оказывается на борту звездолета, капитан которого решает помочь детективу в его непростом деле. Величайший заговор в истории человечества гарантируется, как и его непременное раскрытие.<span class="post-br"><br /></span><span class="post-b">Качество</span>: WEB-DLRip<br />
+<span class="post-b">Формат</span>: AVI<br />
+<span class="post-b">Видео кодек</span>: XviD<br />
+<span class="post-b">Аудио кодек</span>: MP3<br />
+<span class="post-b">Видео</span>: 720x400 (16:9), 23,976 fps, ~1500 kbps<br />
+<span class="post-b">Аудио</span>: 48 kHz, 2 ch, 128 kbps, CBR - Rus
+<div class="sp-wrap">
+<div class="sp-body" title="Скриншоты">
+<h3 class="sp-title">Скриншоты</h3>
+<var class="postImg" title="http://img.tas-ix.net/images/2015/11/30/4e5613ac83da280f823e6b8ad7529eb2.jpg">&#10;</var><br />
+<var class="postImg" title="http://img.tas-ix.net/images/2015/11/30/cf2e642abf69d93ca359cee060af0287.jpg">&#10;</var><br />
+<var class="postImg" title="http://img.tas-ix.net/images/2015/11/30/3667b665dfe26a7850ecde52d8120c19.jpg">&#10;</var></div>
+</div></span>
+								<div align="center">
+				<div id="pg_960566" class="box" style="width: 50%;">
+					<h4>Релиз подготовлен <a href="group.php?g=68">RG Serials</a></h4>
+					<div id="pg_info_960566"><br>
+						<a href="group.php?g=68"><img src="./images/avatars/19980/68/99900068.png" alt="99900068"   /></a>						<h4><a href="tracker.php?srg=68">Найти все релизы группы</a></h4>
+						<hr /><div id="rg_sig"><a href="https://tas-ix.net/viewtopic.php?t=89389" class="postLink">Стол заказов для RG Serials</a> | <a href="https://tas-ix.net/viewtopic.php?t=87501" class="postLink">Набор в релиз группу RG Serials</a></div>					</div>
+				</div>
+				</div>
+								<div id="pc_960566" style="display: none;">
+					<div id="mc_class_960566" class="alert alert-" style="width: 92%;">
+						<h4 class="alert-heading"></h4><hr />
+						<div id="mc_comment_960566"></div>
+					</div>
+				</div>
+				<div class="clear"></div>
+<div class="spacer_8"></div>
+
+
+
+
+
+
+<!--<div align="center">reclama</div>-->
+
+<table class="attach bordered med">
+	<tr class="row3">
+		<th colspan="3" class="seedmed">[tas-ix.net].t110962.torrent</th>
+	</tr>
+		<tr class="row1">
+		<td width="15%">Торрент:</td>
+		<td width="70%">
+			Зарегистрирован			[ <span title="8 дней">2016-01-02 12:18</span> ]
+			&#0183; F3FB6CB96D1B02A0B020A2EF258EE6B238A87825		</td>
+		<td width="15%" rowspan="4" class="tCenter pad_6">
+						<a href="dl.php?id=88826" class="seedmed">
+			<p><img src="./images/icon_dn.gif" alt="Скачать .torrent" border="0" /></p><p><b>Скачать</b></p></a>
+						<p class="small">11&nbsp;KB</p>
+			<p style="padding-top: 6px;"><input id="tor-filelist-btn" type="button" class="lite" value="Список файлов" /></p>
+		</td>
+	</tr>
+	<tr class="row1">
+		<td>Статус:</td>
+		<td>
+			<span id="tor-88826-status"><span class="tor-icon tor-dup">T</span> <b>временная</b>
+						</span>
+					</td>
+	</tr>
+	<tr class="row1">
+		<td>Скачан:</td>
+		<td><span title="Скачано: 234 раз">6 раз</span></td>
+	</tr>
+	<tr class="row1">
+		<td>Размер:</td>
+		<td>2.1&nbsp;GB</td>
+	</tr>
+		<tr class="row3 tCenter">
+		<td colspan="3">
+		<script type="text/javascript">
+		ajax.callback.change_torrent = function(data) {
+			if (data.title) alert(data.title);
+			if (data.url) document.location.href = data.url;
+		};
+		</script>
+				&nbsp;
+				</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+function humn_size (size) {
+	var i = 0;
+	var units = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+	while ((size/1024) >= 1) {
+		size = size/1024;
+		i++;
+	}
+	size = new String(size);
+	if (size.indexOf('.') != -1) {
+		size = size.substring(0, size.indexOf('.') + 3);
+	}
+	return size + ' ' + units[i];
+}
+
+ajax.tor_filelist_loaded = false;
+$('#tor-filelist-btn').click(function(){
+	if (ajax.tor_filelist_loaded) {
+		$('#tor-fl-wrap').toggle();
+		return false;
+	}
+	$('#tor-fl-wrap').show();
+
+	ajax.exec({action: 'view_torrent', attach_id: 88826 });
+	ajax.callback.view_torrent = function(data) {
+		$('#tor-filelist').html(data.html);
+		$('#tor-filelist > ul.tree-root').treeview({
+			control: "#tor-fl-treecontrol"
+		});
+		$('#tor-filelist li.collapsable').each(function(){
+			var $li = $(this);
+			var dir_size = 0;
+			$('i', $li).each(function(){ dir_size += parseInt(this.innerHTML) });
+			$('span.b:first', $li).append(' &middot; <s>' + humn_size(dir_size) + '</s>');
+		});
+		$('#tor-filelist i').each(function(){
+			var size_bytes = this.innerHTML;
+			this.innerHTML = '('+ size_bytes +')';
+			$(this).prepend('<s>'+ humn_size(size_bytes) +'</s> ');
+		});
+		ajax.tor_filelist_loaded = true;
+	};
+	$('#tor-fl-treecontrol a').click(function(){ this.blur(); });
+	return false;
+});
+</script>
+
+<style type="text/css">
+#tor-fl-wrap {
+	margin: 12px auto 0; width: 95%;
+}
+#fl-tbl-wrap { margin: 2px 14px 16px 14px; }
+#tor-filelist {
+	margin: 0 2px; padding: 8px 6px;
+	max-height: 284px; overflow: auto;
+}
+#tor-filelist i { color: #7A7A7A; padding-left: 4px; }
+#tor-filelist s { color: #0000FF; text-decoration: none; }
+#tor-filelist .b > s { color: #800000; }
+#tor-filelist .b { font-weight: bold; padding-left: 20px; background: transparent url('images/folder.gif') no-repeat 3px 50%;}
+#tor-filelist ul li span { padding-left: 20px; background: transparent url('images/page.gif') no-repeat 3px 50%;}
+#tor-filelist .tor-root-dir { font-size: 13px; font-weight: bold; line-height: 12px; padding-left: 4px; }
+#tor-fl-treecontrol { padding: 2px 0 4px; }
+#tor-fl-treecontrol a { padding: 0 8px; font-size: 11px; text-decoration: none; }
+#tor-fl-bgn { width: 200px; height: 300px; margin-right: 6px; border: 1px solid #B5BEC4;}
+</style>
+
+<div id="tor-fl-wrap" class="border bw_TRBL row2 hidden">
+<div id="fl-tbl-wrap">
+	<table class="w100 borderless" cellspacing="0" cellpadding="0">
+	<tr>
+		<td>
+			<div id="tor-fl-treecontrol">
+				<a href="#">Свернуть директории</a>&middot;
+				<a href="#">Развернуть</a>&middot;
+				<a href="#">Переключить</a>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="vTop" style="width: 100%;"><div id="tor-filelist" class="border bw_TRBL med row1"><span class="loading-1">Загружается…</span></div></td>
+	</tr>
+	</table>
+</div>
+</div>
+
+<div class="spacer_12"></div>
+
+
+			</div><!--/post_wrap-->
+
+			<div class="last_edited"><br /><br />Последний раз редактировалось: saidali (2016-01-02 12:18), всего редактировалось 2 раз(а)</div>		</div><!--/post_body-->
+
+		<div class="post_head">
+			<p style="float: left; padding: 4px 0 3px;">
+				<img src="./templates/default/images/icon_minipost.gif" class="icon1" alt="Создавать темы" />				30-Ноя-2015 01:29				&nbsp; <a class="txtb" href="report.php?mode=reportpost&amp;id=960566">Пожаловаться</a>&nbsp;			</p>
+
+			
+	
+			
+		<div class="floatR">
+		<div class="container">
+			<div class="box">
+				<a class="small" href="./viewtopic.php?p=960566#960566" title="Линк на это сообщение">#1</a>
+								<div onclick="like(960566, true); " id="lb_960566" >Больше не нравится</div>
+					
+								
+				<a class="txtb" href="./posting.php?mode=quote&amp;p=960566">Ответить</a>&nbsp;															</div>
+						
+		</div>					
+		</div>
+			<div class="clear"></div>
+		</div>
+
+
+		<div class="post_footer">
+				<!-- post_bottom -->
+				<div style=" display: table; margin: 8px">
+					<div style="margin-top:10px; font-family: 'Trebuchet MS',Helvetica,Arial,sans-serif">
+
+						<div id="like_container960566">
+										
+								<div class="like_container">
+									<div style="float:left" id="usrs_960566"><div style="float:left; padding-right: 3px"><a href="/profile.php?mode=viewprofile&amp;u=Frozen_Spider">Вам</a>,</div><div style="float:left; padding-right: 3px"><a href="/profile.php?mode=viewprofile&amp;u=45081">Marych</a>,</div><div style="float:left; padding-right: 3px"><a href="/profile.php?mode=viewprofile&amp;u=119812">ruslan1975</a>,</div><div style="float:left; padding-right: 3px"><a href="/profile.php?mode=viewprofile&amp;u=93544">Azikazik</a>,</div><div style="float:left; padding-right: 3px"><a href="/profile.php?mode=viewprofile&amp;u=7705">sarbastrus</a></div></div>
+																			<div style="float:left; padding-right: 3px">
+											<div style="display: none; position: absolute; margin-top: 30px; margin-left: 5px" id="more960566">
+												<div class="top_arrow"></div>
+												<div class="likes_more">
+													<div class="likes_more_wrap">
+														<p class="like_list"><span style="background-image: url(/images/avatars/16/89/82789.jpg)" class="cutted_img"></span><a style="color:inherit !important;" href="/profile.php?mode=viewprofile&amp;u=82789">joker@74</a></p><p class="like_list"><span style="background-image: url(/images/avatars/gallery/noavatar.png)" class="cutted_img"></span><a style="color:inherit !important;" href="/profile.php?mode=viewprofile&amp;u=4285">bond007</a></p><p class="like_list"><span style="background-image: url(/images/avatars/22/9/112609.jpg)" class="cutted_img"></span><a style="color:inherit !important;" href="/profile.php?mode=viewprofile&amp;u=112609">Юриллoff</a></p><p class="like_list"><span style="background-image: url(/images/avatars/20/36/102236.gif)" class="cutted_img"></span><a style="color:inherit !important;" href="/profile.php?mode=viewprofile&amp;u=102236">redskat</a></p>													</div>
+												</div>
+											</div>
+											<div style="cursor:pointer; float:left" onclick=" likes_more( '960566' ); "> и еще 4</div>										</div>
+																		<div style="float:left"> нравится это </div>
+								</div>
+													</div>
+					</div>			
+				</div>
+				<!-- /post_bottom -->	
+			<div></div>
+		</div>		
+					
+		
+		
+	</td>
+</tr>
+<tr>
+	<td class="poster_btn td3">
+
+			<div style=" padding: 2px 6px 4px;" class="post_btn_2">
+			<a class="txtb" href="./profile.php?mode=viewprofile&amp;u=34264"><b>Профиль</b></a>&nbsp;			<a class="txtb" href="privmsg.php?mode=post&amp;u=34264"><b>ЛС</b></a>&nbsp;		</div>
+	
+	</td>
+</tr>
+</tbody>
+
+<tbody id="post_963029" class="row2">
+<tr>
+	<td class="poster_info td1"><a name="963029"></a>
+					<p class="nick" title="Вставить имя или выделенный кусок сообщения." onclick="bbcode.onclickPoster('saidali', 963029);">
+			<a href="#" onclick="return false;"><span title="Модератор Сериалов" class="colorMod">saidali</span></a> <sup>&reg;</sup>		</p>
+		
+				<p class="rank_img"><img src="images/ranks/sermod.png" alt="" title="" border="0" /></p>		<div align="center"><p class="avatar"><img src="./images/avatars/6/64/34264.jpg" alt="34264"   /></p></div>				<p class="joined" title="Рег.: 25-Янв-2012"> Рег.: 25-Янв-2012</p>		<p class="posts"><em>Сообщений:</em>&nbsp;1414</p>		<p class="posts"><em>Симпатии:</em>&nbsp;377</p>		
+			
+<div style="width: 110px;"></div>
+	
+	</td>
+	<td class="message td2" rowspan="3">
+
+		<div class="post_body">
+			<div class="post_wrap">
+				<span id="pe_963029"></span>
+				<span id="pp_963029"><span class="post-b">Добавлена 2 серия!</span></span>
+								<div id="pc_963029" style="display: none;">
+					<div id="mc_class_963029" class="alert alert-" style="width: 92%;">
+						<h4 class="alert-heading"></h4><hr />
+						<div id="mc_comment_963029"></div>
+					</div>
+				</div>
+				
+			</div><!--/post_wrap-->
+
+					</div><!--/post_body-->
+
+		<div class="post_head">
+			<p style="float: left; padding: 4px 0 3px;">
+				<img src="./templates/default/images/icon_minipost.gif" class="icon1" alt="Создавать темы" />				20-Дек-2015 20:19				&nbsp; <a class="txtb" href="report.php?mode=reportpost&amp;id=963029">Пожаловаться</a>&nbsp;			</p>
+
+			
+	
+			
+		<div class="floatR">
+		<div class="container">
+			<div class="box">
+				<a class="small" href="./viewtopic.php?p=963029#963029" title="Линк на это сообщение">#2</a>
+								<div onclick="like(963029, false); " id="lb_963029" >Мне нравится</div>
+					
+								
+				<a class="txtb" href="./posting.php?mode=quote&amp;p=963029">Ответить</a>&nbsp;															</div>
+						
+		</div>					
+		</div>
+			<div class="clear"></div>
+		</div>
+
+
+		<div class="post_footer">
+				<!-- post_bottom -->
+				<div style=" display: table; margin: 8px">
+					<div style="margin-top:10px; font-family: 'Trebuchet MS',Helvetica,Arial,sans-serif">
+
+						<div id="like_container963029">
+													</div>
+					</div>			
+				</div>
+				<!-- /post_bottom -->	
+			<div></div>
+		</div>		
+					
+		
+		
+	</td>
+</tr>
+<tr>
+	<td class="poster_btn td3">
+
+			<div style=" padding: 2px 6px 4px;" class="post_btn_2">
+			<a class="txtb" href="./profile.php?mode=viewprofile&amp;u=34264"><b>Профиль</b></a>&nbsp;			<a class="txtb" href="privmsg.php?mode=post&amp;u=34264"><b>ЛС</b></a>&nbsp;		</div>
+	
+	</td>
+</tr>
+</tbody>
+
+<tbody id="post_963709" class="row1">
+<tr>
+	<td class="poster_info td1"><a name="963709"></a>
+					<p class="nick" title="Вставить имя или выделенный кусок сообщения." onclick="bbcode.onclickPoster('saidali', 963709);">
+			<a href="#" onclick="return false;"><span title="Модератор Сериалов" class="colorMod">saidali</span></a> <sup>&reg;</sup>		</p>
+		
+				<p class="rank_img"><img src="images/ranks/sermod.png" alt="" title="" border="0" /></p>		<div align="center"><p class="avatar"><img src="./images/avatars/6/64/34264.jpg" alt="34264"   /></p></div>				<p class="joined" title="Рег.: 25-Янв-2012"> Рег.: 25-Янв-2012</p>		<p class="posts"><em>Сообщений:</em>&nbsp;1414</p>		<p class="posts"><em>Симпатии:</em>&nbsp;377</p>		
+			
+<div style="width: 110px;"></div>
+	
+	</td>
+	<td class="message td2" rowspan="3">
+
+		<div class="post_body">
+			<div class="post_wrap">
+				<span id="pe_963709"></span>
+				<span id="pp_963709"><span class="post-b">Добавлена 3 серия!</span></span>
+								<div id="pc_963709" style="display: none;">
+					<div id="mc_class_963709" class="alert alert-" style="width: 92%;">
+						<h4 class="alert-heading"></h4><hr />
+						<div id="mc_comment_963709"></div>
+					</div>
+				</div>
+				
+			</div><!--/post_wrap-->
+
+					</div><!--/post_body-->
+
+		<div class="post_head">
+			<p style="float: left; padding: 4px 0 3px;">
+				<img src="./templates/default/images/icon_minipost.gif" class="icon1" alt="Создавать темы" />				26-Дек-2015 14:31				&nbsp; <a class="txtb" href="report.php?mode=reportpost&amp;id=963709">Пожаловаться</a>&nbsp;			</p>
+
+			
+	
+			
+		<div class="floatR">
+		<div class="container">
+			<div class="box">
+				<a class="small" href="./viewtopic.php?p=963709#963709" title="Линк на это сообщение">#3</a>
+								<div onclick="like(963709, false); " id="lb_963709" >Мне нравится</div>
+					
+								
+				<a class="txtb" href="./posting.php?mode=quote&amp;p=963709">Ответить</a>&nbsp;															</div>
+						
+		</div>					
+		</div>
+			<div class="clear"></div>
+		</div>
+
+
+		<div class="post_footer">
+				<!-- post_bottom -->
+				<div style=" display: table; margin: 8px">
+					<div style="margin-top:10px; font-family: 'Trebuchet MS',Helvetica,Arial,sans-serif">
+
+						<div id="like_container963709">
+													</div>
+					</div>			
+				</div>
+				<!-- /post_bottom -->	
+			<div></div>
+		</div>		
+					
+		
+		
+	</td>
+</tr>
+<tr>
+	<td class="poster_btn td3">
+
+			<div style=" padding: 2px 6px 4px;" class="post_btn_2">
+			<a class="txtb" href="./profile.php?mode=viewprofile&amp;u=34264"><b>Профиль</b></a>&nbsp;			<a class="txtb" href="privmsg.php?mode=post&amp;u=34264"><b>ЛС</b></a>&nbsp;		</div>
+	
+	</td>
+</tr>
+</tbody>
+
+<tbody id="post_964614" class="row2">
+<tr>
+	<td class="poster_info td1"><a name="964614"></a>
+					<p class="nick" title="Вставить имя или выделенный кусок сообщения." onclick="bbcode.onclickPoster('saidali', 964614);">
+			<a href="#" onclick="return false;"><span title="Модератор Сериалов" class="colorMod">saidali</span></a> <sup>&reg;</sup>		</p>
+		
+				<p class="rank_img"><img src="images/ranks/sermod.png" alt="" title="" border="0" /></p>		<div align="center"><p class="avatar"><img src="./images/avatars/6/64/34264.jpg" alt="34264"   /></p></div>				<p class="joined" title="Рег.: 25-Янв-2012"> Рег.: 25-Янв-2012</p>		<p class="posts"><em>Сообщений:</em>&nbsp;1414</p>		<p class="posts"><em>Симпатии:</em>&nbsp;377</p>		
+			
+<div style="width: 110px;"></div>
+	
+	</td>
+	<td class="message td2" rowspan="3">
+
+		<div class="post_body">
+			<div class="post_wrap">
+				<span id="pe_964614"></span>
+				<span id="pp_964614"><span class="post-b">Добавлена 4 серия!</span></span>
+								<div id="pc_964614" style="display: none;">
+					<div id="mc_class_964614" class="alert alert-" style="width: 92%;">
+						<h4 class="alert-heading"></h4><hr />
+						<div id="mc_comment_964614"></div>
+					</div>
+				</div>
+				
+			</div><!--/post_wrap-->
+
+					</div><!--/post_body-->
+
+		<div class="post_head">
+			<p style="float: left; padding: 4px 0 3px;">
+				<img src="./templates/default/images/icon_minipost.gif" class="icon1" alt="Создавать темы" />				02-Янв-2016 12:18				&nbsp; <a class="txtb" href="report.php?mode=reportpost&amp;id=964614">Пожаловаться</a>&nbsp;			</p>
+
+			
+	
+			
+		<div class="floatR">
+		<div class="container">
+			<div class="box">
+				<a class="small" href="./viewtopic.php?p=964614#964614" title="Линк на это сообщение">#4</a>
+								<div onclick="like(964614, false); " id="lb_964614" >Мне нравится</div>
+					
+								
+				<a class="txtb" href="./posting.php?mode=quote&amp;p=964614">Ответить</a>&nbsp;															</div>
+						
+		</div>					
+		</div>
+			<div class="clear"></div>
+		</div>
+
+
+		<div class="post_footer">
+				<!-- post_bottom -->
+				<div style=" display: table; margin: 8px">
+					<div style="margin-top:10px; font-family: 'Trebuchet MS',Helvetica,Arial,sans-serif">
+
+						<div id="like_container964614">
+													</div>
+					</div>			
+				</div>
+				<!-- /post_bottom -->	
+			<div></div>
+		</div>		
+					
+		
+		
+	</td>
+</tr>
+<tr>
+	<td class="poster_btn td3">
+
+			<div style=" padding: 2px 6px 4px;" class="post_btn_2">
+			<a class="txtb" href="./profile.php?mode=viewprofile&amp;u=34264"><b>Профиль</b></a>&nbsp;			<a class="txtb" href="privmsg.php?mode=post&amp;u=34264"><b>ЛС</b></a>&nbsp;		</div>
+	
+	</td>
+</tr>
+</tbody>
+
+
+
+
+</table><!--/topic_main-->
+
+
+<table id="pagination" class="topic" cellpadding="0" cellspacing="0">
+<tr>
+	<td class="nav pad_6 row1">
+		<p style="float: left"></p>
+		<p style="float: right"></p>
+	</td>
+</tr>
+</table><!--/pagination-->
+
+<form action="posting.php" method="post" name="post" onsubmit="if(checkForm(this)){ dis_submit_btn(); }else{ return false; }">
+<input type="hidden" name="mode" value="reply" />
+<input type="hidden" name="t" value="110962" />
+
+<table id="topic_quick_reply" class="topic" cellpadding="0" cellspacing="0">
+<tr>
+	<th class="thHead gen"><b>Быстрый ответ</b></th>
+</tr>
+
+<tr>
+	<td class="td2 row2 tCenter">
+		<div id="view_message" class="hidden">
+			<div class="tLeft view-message"></div>
+		</div>
+		<div class="quick_reply_box bCenter">
+						
+			<div class="spacer_2"></div>
+			
+<div class="buttons mrg_4">
+	<input type="button" value="B" name="codeB" title="Жирный текст: [b]текст[/b] (Ctrl+B)" style="font-weight: bold; width: 25px;" />
+	<input type="button" value="i" name="codeI" title="Наклонный текст: [i]текст[/i] (Ctrl+I)" style="width: 25px; font-style: italic;" />
+	<input type="button" value="u" name="codeU" title="Подчеркнутый текст: [u]текст[/u] (Ctrl+U)" style="width: 25px; text-decoration: underline;" />
+	<input type="button" value="s" name="codeS" title="Зачеркнутый текст: [s]текст[/s] (Ctrl+S)" style="width: 25px; text-decoration: line-through;" />&nbsp;&nbsp;
+	<input type="button" value="Цитата" name="codeQuote" title="Цитата: [quote]текст[/quote] (Ctrl+Q)" style="width: 57px;" />
+	<input type="button" value="Img" name="codeImg" title="Вставить картинку: [img]http://image_url[/img] (Ctrl+R)" style="width: 40px;" />
+	<input type="button" value="Ссылка" name="codeUrl" title="Ссылка (Ctrl+W)" style="width: 63px; text-decoration: underline;" />&nbsp;
+	<input type="button" value="Код" name="codeCode" title="Код: [code]код[/code] (Ctrl+K)" style="width: 43px;" />
+	<input type="button" value="Список" name="codeList" title="Список: [list]текст[/list] (Ctrl+L)"  style="width: 60px;"/>
+	<input type="button" value="1." name="codeOpt" title="Нумерованный список: [list=]текст[/list] (Ctrl+O)" style="width: 30px;" />&nbsp;
+	<input type="button" value="Цит.выдел" name="quoteselected" title="Цитировать выделенный текст" onclick="bbcode.onclickQuoteSel();" />&nbsp;
+		<input type="button" value="Транслит" name="Translit" title="Перевести выделение из транслита на русский" style="width: 68px;" onclick="transliterate(document.post.message, this);" /> <a href="#" onclick="toggle_block('translit_opt'); return false"><span style="color: darkred"><b>?</b></span></a>
+	</div>
+
+	<textarea
+		class="editor mrg_4" name="message" id="message" rows="18" cols="92"
+		onfocus  = "storeCaret(this);"
+		onselect = "storeCaret(this);"
+		onclick  = "storeCaret(this);"
+		onkeyup  = "storeCaret(this);"
+	></textarea>
+
+<div id="translit_opt" class="mrg_4" style="display: none;">
+	<table cellspacing="0" class="translit_expl borderless bCenter">
+	<tr>
+		<th>А</th><td>-</td><td>a</td>
+		<th>Д</th><td>-</td><td>d</td>
+		<th>И</th><td>-</td><td>i</td>
+		<th>М</th><td>-</td><td>m</td>
+		<th>Р</th><td>-</td><td>r</td>
+		<th>Ф</th><td>-</td><td>f</td>
+		<th>Ш</th><td>-</td><td>sh</td>
+		<th>Ы</th><td>-</td><td>y</td>
+	</tr><tr>
+		<th>Б</th><td>-</td><td>b</td>
+		<th>Е</th><td>-</td><td>e</td>
+		<th>Й</th><td>-</td><td>j</td>
+		<th>Н</th><td>-</td><td>n</td>
+		<th>С</th><td>-</td><td>s</td>
+		<th>Х</th><td>-</td><td>h,x</td>
+		<th>Щ</th><td>-</td><td>sz,w</td>
+		<th>Э</th><td>-</td><td>eh</td>
+	</tr><tr>
+		<th>В</th><td>-</td><td>v</td>
+		<th>Ж</th><td>-</td><td>zh</td>
+		<th>К</th><td>-</td><td>k</td>
+		<th>О</th><td>-</td><td>o</td>
+		<th>Т</th><td>-</td><td>t</td>
+		<th>Ц</th><td>-</td><td>c</td>
+		<th>Ь</th><td>-</td><td>'</td>
+		<th>Ю</th><td>-</td><td>ju</td>
+	</tr><tr>
+		<th>Г</th><td>-</td><td>g</td>
+		<th>З</th><td>-</td><td>z</td>
+		<th>Л</th><td>-</td><td>l</td>
+		<th>П</th><td>-</td><td>p</td>
+		<th>У</th><td>-</td><td>u</td>
+		<th>Ч</th><td>-</td><td>ch</td>
+		<th>Ъ</th><td>-</td><td>#</td>
+		<th>Я</th><td>-</td><td>ja</td>
+	</tr>
+	</table>
+</div>
+
+<div class="mrg_8 tCenter">
+	<div id="post-buttons-block" style="display: none;">
+		<div class="pad_4"></div>
+		<input type="submit" name="preview" value="Предв. просмотр" id="post-preview-btn" onclick="$('#post-submit').remove();">&nbsp;&nbsp;
+		<input onclick="submitted = true;" title="Ctrl+Enter" type="submit" name="post" class="bold" value="Отправить" id="post-submit-btn">&nbsp;&nbsp;
+		<input type="button" value="Быстрый просмотр" onclick="ajax.exec({ action: 'posts', type: 'view_message', message: $('textarea#message').val()});">
+	</div>
+	<div id="post-js-warn">Для отправки сообщений необходимо включить JavaScript</div>
+</div>
+
+<script type="text/javascript">
+function dis_submit_btn ()
+{
+	$('#post-submit-btn').attr('disabled', 1);
+	//debounce('post-submit-btn', 3000);
+}
+
+function debounce (el_id, time_ms)
+{
+	var $el = $('#'+el_id);
+	if ( $el.attr('disabled') == false ) {
+		$el.attr('disabled', 1);
+		setTimeout(function(){ $el.attr('disabled', 0); }, time_ms);
+	}
+}
+
+$('#post-submit-btn').click(function(event){
+	$('#post-submit-btn').after('<input id="post-submit" type="hidden" name="post" value="1" />');
+});
+$('#post-js-warn').hide();
+$('#post-buttons-block').show();
+$('#post-submit-btn').removeAttr('disabled');
+
+// Called before form submitting.
+var submitted = false;
+
+function checkForm(form) {
+	var formErrors = false;
+	if (form.message.value.length < 2) {
+		formErrors = "Вы должны ввести текст сообщения";
+	}
+	if (formErrors) {
+		setTimeout(function() { alert(formErrors) }, 100);
+		return false;
+	}
+	return true;
+}
+</script>
+
+<script type="text/javascript">
+var bbcode = new BBCode("message");
+var ctrl = "ctrl";
+
+bbcode.addTag("codeB", "b", null, "B", ctrl);
+bbcode.addTag("codeI", "i", null, "I", ctrl);
+bbcode.addTag("codeU", "u", null, "U", ctrl);
+bbcode.addTag("codeS", "s", null, "S", ctrl);
+
+bbcode.addTag("codeQuote", "quote", null, "Q", ctrl);
+bbcode.addTag("codeImg", "img", null, "R", ctrl);
+bbcode.addTag("codeUrl", "url", "/url", "W", ctrl);
+
+bbcode.addTag("codeCode", "code", null, "K", ctrl);
+bbcode.addTag("codeList",  "list", null, "L", ctrl);
+bbcode.addTag("codeOpt", "*", "", "0", ctrl);
+</script>
+
+			<div class="spacer_2"></div>
+			
+		</div>
+
+	</td>
+</tr>
+<tr id="post_opt" class="row2">
+	<td class="td2 med tCenter pad_4">
+		<label><input type="checkbox" name="notify"   />
+		Уведомлять об ответах&nbsp;</label>
+	</td>
+</tr>
+</table><!--/topic_quick_reply-->
+
+</form>
+
+<table class="topic" cellpadding="0" cellspacing="0">
+<tr>
+	<td class="catBottom med">
+	<form method="post" action="viewtopic.php?t=110962&amp;start=0">
+		Показать сообщения: 
+<select  name="postdays" id="postdays">
+		<option selected="selected"  value="0">&nbsp;все сообщения&nbsp;</option>
+		<option value="1">&nbsp;за последний день&nbsp;</option>
+		<option value="7">&nbsp;за последние 7 дней&nbsp;</option>
+		<option value="14">&nbsp;за последние 2 недели&nbsp;</option>
+		<option value="30">&nbsp;за последний месяц&nbsp;</option>
+		<option value="90">&nbsp;за последние 3 месяца&nbsp;</option>
+		<option value="180">&nbsp;за последние 6 месяцев&nbsp;</option>
+		<option value="364">&nbsp;за последний год&nbsp;</option>
+</select>
+&nbsp;
+		
+<select  name="postorder" id="postorder">
+		<option selected="selected"  value="asc">&nbsp;Начиная со старых&nbsp;</option>
+		<option value="desc">&nbsp;Начиная с новых&nbsp;</option>
+</select>
+&nbsp;
+		<input type="submit" value="Перейти" class="lite" name="submit" />
+	</form>
+	</td>
+</tr>
+</table>
+
+<table cellpadding="0" class="w100" style="padding-top: 2px;">
+<tr>
+	<td valign="top">
+		<a href="posting.php?mode=reply&amp;t=110962"><img src="./templates/default/images/lang/ru/reply.gif" alt="Ответить на тему" /></a>
+	</td>
+	<td class="nav w100" style="padding-left: 8px;">
+		<a href="./index.php">Главная</a>&nbsp;<em>&raquo;</em>
+		<a href="index.php?c=11">Сериалы</a>
+		<em>&raquo;</em>&nbsp;<a href="viewforum.php?f=7">Зарубежные сериалы</a>		<em>&raquo;</em>&nbsp;<a href="viewforum.php?f=511">Сезон 2015-2016</a>
+	</td>
+</tr>
+</table>
+
+<table width="100%">
+<tr>
+	<td width="40%" valign="top" nowrap="nowrap"><span class="small"><a href="viewtopic.php?t=110962&amp;watch=topic&amp;start=0&amp;sid=AKNPpsnsmhZ7UIDB9n1u">Следить за ответами в теме</a></span><br />
+	<div class="small">
+		<br clear="all" />
+		<div style="float: left;">&nbsp;<a href="report.php?mode=reporttopic&amp;id=110962"><img src="./templates/default/images/topic_report.gif" alt="Сообщить о нарушении в теме" title="Сообщить о нарушении в теме" border="0" /></a>&nbsp;</div>
+
+	</div>
+	</td>
+</tr>
+</table>
+
+
+	</div><!--/main_content_wrap-->
+	</td><!--/main_content-->
+
+	
+	</tr></table>
+	</div>
+	<!--/page_content-->
+<div align="center"><div id="lx_580231"></div></div>
+	<!--page_footer-->
+	<div id="page_footer">
+
+		<div class="clear"></div>
+
+		<br /><br />
+
+		<div class="med bold tCenter">
+						<a href="misc.php?do=info&show=user_agreement" onclick="window.open(this.href, '', IWP); return false;">Пользовательское соглашение</a>
+									<span class="normal">&nbsp;|&nbsp;</span>
+			<a href="misc.php?do=info&show=copyright_holders" onclick="window.open(this.href, '', IWP); return false;">Для правообладателей</a>
+									<span class="normal">&nbsp;|&nbsp;</span>
+			<a href="misc.php?do=info&show=advert" onclick="window.open(this.href, '', IWP); return false;">Реклама на сайте</a>
+					</div>
+		<br />
+
+		
+	</div>
+
+<div align="center">
+<a href="#" class="link" rel="/go.php?url=http://www.fibernet.uz"><img src="/img/button-FN.png"></a><script>$('a.link').click(function(){window.open($(this).attr("rel"));return false;});</script>
+<script type="text/javascript"><!--
+new Image().src = "//counter.yadro.ru/hit?r"+
+escape(document.referrer)+((typeof(screen)=="undefined")?"":
+";s"+screen.width+"*"+screen.height+"*"+(screen.colorDepth?
+screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL)+
+";"+Math.random();//--></script>
+<!-- Begin of www.uz -->
+            <script lang="javascript">
+                <!--
+                top_js="1.0";top_r="id=20638&r="+escape(document.referrer)+"&pg="+
+                escape(window.location.href);
+                document.cookie="smart_top=1; path=/"; top_r+="&c="+(document.cookie?"Y":"N")
+                //-->
+            </script>
+            <script lang="javascript1.1">
+            <!--
+            top_js="1.1";top_r+="&j="+(navigator.javaEnabled()?"Y":"N")
+            //-->
+            </script>
+            
+            <script lang="javascript1.2">
+            <!--
+            top_js="1.2";top_r+="&wh="+screen.width+'x'+screen.height+"&px="+
+            (((navigator.appName.substring(0,3)=="Mic"))?
+            screen.colorDepth:screen.pixelDepth)
+            //-->
+            </script>
+            <script lang="javascript1.3">
+            <!--
+            top_js="1.3";
+            //-->
+            </script>
+            <script lang="JavaScript">
+            <!--
+            top_r+="&js="+top_js+"";
+            document.write('<img src="http://www.uz/plugins/top_rating/count/cnt.png?'+top_r+'" width=0 height=0 border=0 alt="счетчик www.uz">')
+            //-->
+            </script>
+            
+            <noscript>
+            <IMG height=0 src="http://www.uz/plugins/top_rating/count/nojs_cnt.png?id=20638" width=0 border=0 alt="счетчик www.uz">
+            </noscript>
+            <!-- End of www.uz -->
+</div>
+
+
+	<div class="copyright tCenter">
+		<b style="color:rgb(204,0,0);">!ВНИМАНИЕ!</b><br />
+		Сайт не предоставляет электронные версии произведений, а занимается лишь коллекционированием и каталогизацией ссылок, присылаемых и публикуемых на форуме нашими читателями. Если вы являетесь правообладателем какого-либо представленного материала и не желаете, чтобы ссылка на него находилась в нашем каталоге, свяжитесь с нами, и мы незамедлительно удалим ее. Файлы для обмена на трекере предоставлены пользователями сайта, и администрация не несет ответственности за их содержание. Просьба не заливать файлы, защищенные авторскими правами, а также файлы нелегального содержания!	</div>
+
+	<!--/page_footer -->
+
+	</div>
+	<!--/page_container -->
+
+
+
+	</div><!--/body_container-->
+
+	</body>
+	</html>

@@ -1,0 +1,32 @@
+package org.fs.checker.provider.impl
+
+import java.io.File
+
+import scala.io.Source
+
+import org.fs.checker.TestHelper
+import org.joda.time.Hours
+import org.junit.runner.RunWith
+import org.scalatest.FlatSpec
+import org.scalatest.junit.JUnitRunner
+
+import com.github.nscala_time.time.Imports._
+
+@RunWith(classOf[JUnitRunner])
+class AlltorMeSpec
+    extends FlatSpec
+    with TestHelper {
+
+  val instance: org.fs.checker.provider.impl.AlltorMe = new AlltorMe(null)
+
+  behavior of "alltor.me provider"
+
+  it should "parse 1-day 11-hours ago state" in {
+    val content = Source.fromFile(new File(routerFolder, "blacklist-1d11h.html"), "UTF-8").mkString
+    val parsed = instance.parseDateLastUpdated(content)
+    val now = DateTime.now
+    assert(Hours.hoursBetween(parsed, now) === Hours.hours(24 + 11))
+  }
+
+  val routerFolder: java.io.File = new File(resourcesFolder, "alltor.me")
+}

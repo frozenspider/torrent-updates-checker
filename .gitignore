@@ -1,0 +1,27 @@
+# Eclipse
+/bin
+.settings
+.classpath
+.project
+
+# sbt
+.cache-*
+target/
+src_managed/
+lib_managed/
+project/project/
+project/target/
+
+# Development
+/_build
+_assemble.*
+torrent-updates-checker-*.jar
+buildinfo.*
+
+# Application
+application.conf
+cache.conf
+urls.txt
+
+*.class
+*.log
