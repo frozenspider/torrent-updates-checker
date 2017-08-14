@@ -1,5 +1,5 @@
 name         := "torrent-updates-checker"
-version      := "0.3"
+version      := "0.3.1"
 scalaVersion := "2.11.8"
 
 sourceManaged            <<= baseDirectory { _ / "src_managed" }
@@ -15,6 +15,7 @@ lazy val root = (project in file("."))
     buildInfoPackage := "org.fs.checker"
   )
 
+resolvers += "jitpack" at "https://jitpack.io"
 
 libraryDependencies ++= Seq(
   // Logging
