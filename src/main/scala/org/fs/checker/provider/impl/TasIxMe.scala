@@ -24,7 +24,7 @@ class TasIxMe(httpClient: HttpClient) extends Provider {
   }
 
   override def fetch(url: String): String = {
-    val resp = httpClient.request(GET(url))
+    val resp = httpClient.request(GET(url).addTimeout(TasIxMe.timeoutMs))
     resp.bodyString
   }
 
@@ -43,9 +43,12 @@ class TasIxMe(httpClient: HttpClient) extends Provider {
 object TasIxMe extends ProviderCompanion[TasIxMe] {
   override val providerKey: String = "tasix"
 
+  val timeoutMs: Int = 60 * 1000
+
   override def apply(config: Config): TasIxMe = {
     val (httpClient, cookieStore) = simpleClientWithStore()
     val authReq = POST("http://tas-ix.me/login.php")
+      .addTimeout(timeoutMs)
       .addParameters(Map(
         "login_username" -> config.getString("login"),
         "login_password" -> config.getString("password"),
