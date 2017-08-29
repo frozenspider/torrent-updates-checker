@@ -4,6 +4,8 @@ import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 
+import java.net.ConnectException
+
 import org.fs.checker.provider.impl.AlltorMe
 import org.fs.checker.provider.impl.TasIxMe
 import org.joda.time.DateTime
@@ -30,7 +32,13 @@ class Providers(config: Config) extends Logging {
         case Success(p: Provider) =>
           Some(p)
         case Failure(ex) =>
-          log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName}", ex)
+          // Do not log non-informative stacktraces
+          ex match {
+            case ex: ConnectException =>
+              log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName}: ${ex.getMessage}")
+            case _ =>
+              log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName}", ex)
+          }
           None
       }
     }
