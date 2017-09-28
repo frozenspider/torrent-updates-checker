@@ -2,11 +2,9 @@ name         := "torrent-updates-checker"
 version      := "0.3.1"
 scalaVersion := "2.11.8"
 
-sourceManaged            <<= baseDirectory { _ / "src_managed" }
-sourceManaged in Compile <<= baseDirectory { _ / "src_managed" / "main" / "scala" }
-sourceManaged in Test    <<= baseDirectory { _ / "src_managed" / "test" / "scala" }
-
-filterScalaLibrary := false
+sourceManaged            := baseDirectory.value / "src_managed"
+sourceManaged in Compile := baseDirectory.value / "src_managed" / "main" / "scala"
+sourceManaged in Test    := baseDirectory.value / "src_managed" / "test" / "scala"
 
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
