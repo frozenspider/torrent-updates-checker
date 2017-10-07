@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
   "org.slf4s"                 %% "slf4s-api"        % "1.7.12",
   "ch.qos.logback"            %  "logback-classic"  % "1.1.2",
   // Other
-  "com.github.frozenspider"   %% "fs-web-utils"     % "0.5.1",
+  "com.github.frozenspider"   %% "fs-web-utils"     % "0.5.2",
   "org.apache.commons"        %  "commons-lang3"    % "3.4",
   "com.github.nscala-time"    %% "nscala-time"      % "2.16.0",
   "com.typesafe"              %  "config"           % "1.3.0",
