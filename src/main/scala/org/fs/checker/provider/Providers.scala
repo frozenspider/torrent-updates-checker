@@ -29,19 +29,15 @@ class Providers(config: Config) extends Logging {
       log.warn(s"Couldn't find a key for ${pc.getClass.getSimpleName}, skipping provider")
       None
     } else {
-      Try(pc(config.getConfig(pc.providerKey))) match {
-        case Success(p: Provider) =>
-          Some(p)
-        case Failure(ex) =>
-          // Do not log non-informative stacktraces
-          ex match {
-            case _: ConnectException | _: UnknownHostException =>
-              log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName}: ${ex.getMessage}")
-            case _ =>
-              log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName}", ex)
-          }
-          None
-      }
+      Try(
+        pc(config.getConfig(pc.providerKey))
+      ) match {
+          case Success(p: Provider) =>
+            Some(p)
+          case Failure(ex) =>
+            reportProviderInitFailure(pc, ex)
+            None
+        }
     }
   }) collect {
     case Some(p) => p
@@ -49,5 +45,13 @@ class Providers(config: Config) extends Logging {
 
   def providerFor(url: String): Option[Provider] = {
     providers.find(_.recognizeUrl(url))
+  }
+
+  private def reportProviderInitFailure(pc: ProviderCompanion[_], ex: Throwable): Unit = ex match {
+    case _: ConnectException | _: UnknownHostException =>
+      // Do not log non-informative stacktraces
+      log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName} - ${ex.getClass.getName}: ${ex.getMessage}")
+    case _ =>
+      log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName}", ex)
   }
 }
