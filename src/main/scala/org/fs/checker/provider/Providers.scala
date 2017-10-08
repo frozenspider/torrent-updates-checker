@@ -5,6 +5,7 @@ import scala.util.Success
 import scala.util.Try
 
 import java.net.ConnectException
+import java.net.UnknownHostException
 
 import org.fs.checker.provider.impl.AlltorMe
 import org.fs.checker.provider.impl.TasIxMe
@@ -34,7 +35,7 @@ class Providers(config: Config) extends Logging {
         case Failure(ex) =>
           // Do not log non-informative stacktraces
           ex match {
-            case ex: ConnectException =>
+            case _: ConnectException | _: UnknownHostException =>
               log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName}: ${ex.getMessage}")
             case _ =>
               log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName}", ex)
