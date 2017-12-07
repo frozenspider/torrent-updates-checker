@@ -2,13 +2,13 @@ package org.fs.checker
 
 import org.fs.checker.cache.CacheService
 import org.fs.checker.dao.TorrentEntry
-import org.fs.checker.dumping.PageContentDumper
+import org.fs.checker.dumping.PageContentDumperService
 import org.fs.checker.dumping.PageParsingException
+import org.fs.checker.notification.UpdateNotifierService
 import org.fs.checker.provider.Providers
 import org.slf4s.Logging
 
 import com.github.nscala_time.time.Imports._
-import com.typesafe.config.Config
 import com.typesafe.config.ConfigException
 import com.typesafe.config.ConfigValueFactory
 
@@ -16,11 +16,11 @@ import com.typesafe.config.ConfigValueFactory
  * @author FS
  */
 class UpdateChecker(
-  getProviders:  () => Providers,
-  listEntries:   () => Seq[TorrentEntry],
-  notifyUpdated: Seq[TorrentEntry] => Unit,
-  cacheService:  CacheService,
-  dumper:        PageContentDumper
+  getProviders:          () => Providers,
+  listEntries:           () => Seq[TorrentEntry],
+  updateNotifierService: UpdateNotifierService,
+  cacheService:          CacheService,
+  dumperService:         PageContentDumperService
 ) extends Logging {
 
   def checkForUpdates(): Unit = {
@@ -32,7 +32,7 @@ class UpdateChecker(
         case TorrentEntry(alias, url) => isUpdated(alias, url, providers)
       }
       if (!updatedEntries.isEmpty) {
-        notifyUpdated(updatedEntries)
+        updateNotifierService.notify(updatedEntries)
       }
       log.info(s"Check iteration complete")
     } else {
@@ -66,7 +66,7 @@ class UpdateChecker(
         } catch {
           case PageParsingException(providerName, url, content, th) =>
             log.error("$name failed to process $url, content dumped", th)
-            dumper.dump(content, providerName)
+            dumperService.dump(content, providerName)
             false
         }
       case None =>

@@ -3,7 +3,7 @@ package org.fs.checker
 import scala.collection.immutable.ListMap
 import scala.reflect.io.File
 
-import org.fs.checker.dumping.PageContentDumper
+import org.fs.checker.dumping.PageContentDumperService
 import org.fs.checker.provider.Providers
 import org.fs.checker.web.TorrentUpdatesCheckerWebUi
 import org.slf4j.bridge.SLF4JBridgeHandler
@@ -20,6 +20,8 @@ import org.fs.checker.dao.TorrentEntry
 import org.fs.checker.cache.CacheService
 import org.fs.checker.cache.CacheServiceImpl
 import org.fs.checker.dao.TorrentDaoServiceImpl
+import org.fs.checker.notification.UpdateNotifierService
+import org.fs.checker.notification.UpdateNotifierServiceImpl
 
 /**
  * @author FS
@@ -48,8 +50,8 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
 
   lazy val cacheService: CacheService = new CacheServiceImpl(cacheFile)
   lazy val daoService: TorrentDaoService = new TorrentDaoServiceImpl(aliasesFile, checkUrlRecognized, cacheService)
-
-  lazy val dumper = new PageContentDumper {
+  lazy val updateNotifierService: UpdateNotifierService = new UpdateNotifierServiceImpl
+  lazy val dumperService: PageContentDumperService = new PageContentDumperService {
     override def dump(content: String, providerName: String): Unit = {
       val nowString = DateTime.now.toString("yyyy-MM-dd_HH-mm")
       val file = getFile(providerName + "/" + nowString + ".html")
@@ -58,7 +60,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   lazy val updateChecker: UpdateChecker =
-    new UpdateChecker(getProviders, () => daoService.list, UpdateNotifier.notifyUpdated, cacheService, dumper)
+    new UpdateChecker(getProviders, () => daoService.list, updateNotifierService, cacheService, dumperService)
 
   def add(args: Seq[String]): Unit = {
     wrapServiceCallForCli {
