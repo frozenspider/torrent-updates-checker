@@ -3,30 +3,35 @@ package org.fs.checker.web
 import scala.io.Source
 
 import com.twitter.finagle.Http
+import com.twitter.finagle.ListeningServer
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.Request
 import com.twitter.finagle.http.Response
 import com.twitter.io.Buf
-import com.twitter.util.Await
 import com.twitter.util.Future
 
 import io.circe.generic.auto._
 import io.finch._
 import io.finch.circe._
 
+import org.slf4s.Logging
+
 /**
  * @author FS
  */
-class TorrentUpdatesCheckerWebUi {
+class TorrentUpdatesCheckerWebUi extends Logging {
   import TorrentUpdatesCheckerWebUi._
 
-  def start(port: Int) {
+  def start(port: Int): ListeningServer = {
+    require((1 to 65535) contains port, "Web UI server port should be between 1 and 65535")
+
     val server = Http.server
       .withLabel("torrent-updates-checker-web-ui")
       .withStreaming(enabled = true)
       .serve(s"localhost:$port", combinedSevice)
 
-    Await.ready(server)
+    log.info(s"Web UI server started at port $port")
+    server
   }
 
   //
@@ -65,6 +70,7 @@ class TorrentUpdatesCheckerWebUi {
           Ok(JsonCcList(Seq.empty))
         }
       }
+
     "entries" :: (listEndpoint :+: addEndpoint :+: removeEndpoint)
   }
 
@@ -82,15 +88,15 @@ class TorrentUpdatesCheckerWebUi {
 
   private def readResource(path: String): String = {
     val resource = Source.fromResource(path)
-    val string = resource.mkString
-    resource.close()
-    string
+    try {
+      resource.mkString
+    } finally {
+      resource.close()
+    }
   }
 }
 
-object TorrentUpdatesCheckerWebUi extends scala.App {
-  (new TorrentUpdatesCheckerWebUi).start(8100)
-
+object TorrentUpdatesCheckerWebUi {
   case class JsonCcEntry(alias: String, url: String)
 
   case class JsonCcList(entries: Seq[JsonCcEntry])

@@ -3,19 +3,25 @@ package org.fs.checker
 import scala.collection.immutable.ListMap
 import scala.reflect.io.File
 
+import org.fs.checker.dumping.PageContentDumper
 import org.fs.checker.provider.Providers
+import org.fs.checker.web.TorrentUpdatesCheckerWebUi
+import org.slf4j.bridge.SLF4JBridgeHandler
 import org.slf4s.Logging
 
 import com.github.nscala_time.time.Imports._
+import com.twitter.finagle.ListeningServer
+import com.twitter.util.Await
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
-import org.fs.checker.dumping.PageContentDumper
 
 /**
  * @author FS
  */
 object TorrentUpdatesCheckerEntry extends App with Logging {
+  SLF4JBridgeHandler.removeHandlersForRootLogger();
+  SLF4JBridgeHandler.install()
 
   val aliasesFile: File = getFile("urls.txt")
   if (!aliasesFile.exists) {
@@ -25,6 +31,15 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   /** Alias -> URL map */
   val aliasesMap: Map[String, String] = getAliasesMap()
 
+  val configFile: scala.reflect.io.File = getFile("application.conf")
+  def config: Config = {
+    if (!configFile.exists) {
+      log.error("Config file is not found")
+      scala.sys.exit(1)
+    }
+    ConfigFactory.parseFileAnySyntax(configFile.jfile)
+  }
+  lazy val webUiPort = config.getInt("webui.port")
   lazy val cacheFile: scala.reflect.io.File = getFile("cache.conf")
   lazy val cache: Config = ConfigFactory.parseFileAnySyntax(cacheFile.jfile)
   lazy val cacheWriteFormat: ConfigRenderOptions = ConfigRenderOptions.concise.setFormatted(true).setJson(false)
@@ -79,6 +94,9 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   def start(args: Seq[String]): Unit = {
+    if (webUiPort != 0) {
+      startAsyncServer()
+    }
     val runnable = new Runnable {
       override def run() {
         try {
@@ -100,6 +118,15 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     }
     val thread = new Thread(runnable, "runner")
     thread.start()
+  }
+
+  def startServer(args: Seq[String]): Unit = {
+    val server = startAsyncServer()
+    Await.ready(server)
+  }
+
+  private def startAsyncServer(): ListeningServer = {
+    (new TorrentUpdatesCheckerWebUi).start(webUiPort)
   }
 
   def iterate(args: Seq[String]): Unit = {
@@ -126,12 +153,6 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   private def getProviders(): Providers = {
-    val configFile = getFile("application.conf")
-    if (!configFile.exists) {
-      log.error("Config file is not found")
-      scala.sys.exit(1)
-    }
-    val config = ConfigFactory.parseFileAnySyntax(configFile.jfile)
     new Providers(config)
   }
 
@@ -141,6 +162,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     "remove" -> (remove, 1.range),
     "list" -> (list, 0.range),
     "start" -> (start, 0.range),
+    "startServer" -> (startServer, 0.range),
     "iterate" -> (iterate, 0.range)
   )
 
@@ -153,6 +175,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   remove <alias>
   list
   start
+  startServer
   iterate""")
   }
 

@@ -18,6 +18,7 @@ resolvers += "jitpack" at "https://jitpack.io"
 libraryDependencies ++= Seq(
   // Logging
   "org.slf4s"               %% "slf4s-api"       % "1.7.25",
+  "org.slf4j"               %  "jul-to-slf4j"    % "1.7.25",
   "ch.qos.logback"          %  "logback-classic" % "1.1.2",
   // UI
   "org.scala-lang.modules"  %% "scala-swing"     % "2.0.0",
