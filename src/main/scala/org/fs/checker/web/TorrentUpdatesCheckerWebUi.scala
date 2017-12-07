@@ -17,6 +17,8 @@ import io.finch.circe._
 import org.slf4s.Logging
 import org.fs.checker.dao.TorrentDaoService
 import org.fs.checker.dao.TorrentEntry
+import com.twitter.finagle.http.Message
+import java.nio.charset.Charset
 
 /**
  * @author FS
@@ -72,12 +74,14 @@ class TorrentUpdatesCheckerWebUi(daoService: TorrentDaoService) extends Logging 
     "entries" :: (listEndpoint :+: addEndpoint :+: removeEndpoint)
   }
 
+  private val exceptionFilter = new ExceptionInterceptingFilter
+
   // Service for different content-types
   // See https://github.com/finagle/finch/pull/794
   private val combinedSevice: Service[Request, Response] =
-    Bootstrap
-      .serve[Application.Json](entriesEndpoint)
-      .serve[Text.Html](htmlEndpoint)
+    exceptionFilter andThen Bootstrap
+      .serve[Application.Json](entriesEndpoint.withCharset(Utf8))
+      .serve[Text.Html](htmlEndpoint.withCharset(Utf8))
       .toService
 
   //
@@ -92,4 +96,6 @@ class TorrentUpdatesCheckerWebUi(daoService: TorrentDaoService) extends Logging 
       resource.close()
     }
   }
+
+  private def Utf8 = Charset.forName("UTF-8")
 }
