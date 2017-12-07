@@ -23,7 +23,7 @@ class TorrentDaoServiceImpl(
   override def add(entry: TorrentEntry): Seq[TorrentEntry] = {
     val aliasesMap = getAliasesMap()
     require(!(aliasesMap contains entry.alias), s"Alias ${entry.alias} is already beign checked")
-    require(!(aliasesMap.values.toSeq contains entry.url), s"URL ${entry.url} is already beign checked under the alias '${entry.alias}'")
+    require(!(aliasesMap.values.toSeq contains entry.url), s"URL ${entry.url} is already beign checked under the alias '${aliasesMap.find(_._2 == entry.url).get._1}'")
     require(checkUrlRecognized(entry.url), s"URL ${entry.url} is not recognized by any provider")
     val newAliasesMap = aliasesMap + (entry.alias -> entry.url)
     aliasesFile.writeAll(newAliasesMap.map { case (k, v) => s"$k $v" }.mkString("\n"))
@@ -43,14 +43,14 @@ class TorrentDaoServiceImpl(
   }
 
   /** Alias -> URL map */
-  private def getAliasesMap(): Map[String, String] = {
+  private def getAliasesMap(): ListMap[String, String] = {
     ListMap(aliasesFile.lines.map(l => {
       val parts = l.split(" ", 2)
       parts(0) -> parts(1)
     }).toSeq: _*)
   }
 
-  private def aliasesMapToString(urlsMap: Map[String, String]): String = {
-    urlsMap.keys.toSeq.sorted.mkString("'", ", ", "'")
+  private def aliasesMapToString(urlsMap: ListMap[String, String]): String = {
+    urlsMap.keys.toSeq.mkString("'", ", ", "'")
   }
 }
