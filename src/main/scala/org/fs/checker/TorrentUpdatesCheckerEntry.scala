@@ -15,6 +15,11 @@ import com.twitter.util.Await
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
+import org.fs.checker.dao.TorrentDaoService
+import org.fs.checker.dao.TorrentEntry
+import org.fs.checker.cache.CacheService
+import org.fs.checker.cache.CacheServiceImpl
+import org.fs.checker.dao.TorrentDaoServiceImpl
 
 /**
  * @author FS
@@ -28,10 +33,8 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     log.error(s"${aliasesFile.name} is not found")
     scala.sys.exit(1)
   }
-  /** Alias -> URL map */
-  val aliasesMap: Map[String, String] = getAliasesMap()
 
-  val configFile: scala.reflect.io.File = getFile("application.conf")
+  val configFile: File = getFile("application.conf")
   def config: Config = {
     if (!configFile.exists) {
       log.error("Config file is not found")
@@ -39,10 +42,12 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     }
     ConfigFactory.parseFileAnySyntax(configFile.jfile)
   }
+  lazy val cacheFile: File = getFile("cache.conf")
+
   lazy val webUiPort = config.getInt("webui.port")
-  lazy val cacheFile: scala.reflect.io.File = getFile("cache.conf")
-  lazy val cache: Config = ConfigFactory.parseFileAnySyntax(cacheFile.jfile)
-  lazy val cacheWriteFormat: ConfigRenderOptions = ConfigRenderOptions.concise.setFormatted(true).setJson(false)
+
+  lazy val cacheService: CacheService = new CacheServiceImpl(cacheFile)
+  lazy val daoService: TorrentDaoService = new TorrentDaoServiceImpl(aliasesFile, checkUrlRecognized, cacheService)
 
   lazy val dumper = new PageContentDumper {
     override def dump(content: String, providerName: String): Unit = {
@@ -53,43 +58,30 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   lazy val updateChecker: UpdateChecker =
-    new UpdateChecker(getProviders, getAliasesMap, UpdateNotifier.notifyUpdated, cache, saveCache, dumper)
+    new UpdateChecker(getProviders, () => daoService.list, UpdateNotifier.notifyUpdated, cacheService, dumper)
 
   def add(args: Seq[String]): Unit = {
-    val alias = args(0)
-    val url = args(1)
-    if (aliasesMap contains alias) {
-      log.error(s"Alias ${alias} is already beign checked")
-    } else if (aliasesMap.values.toSeq contains url) {
-      log.error(s"URL ${url} is already beign checked under the alias '$alias'")
-    } else {
-      val newAliasesMap = aliasesMap + (alias -> url)
-      aliasesFile.writeAll(newAliasesMap.map { case (k, v) => s"$k $v" }.mkString("\n"))
-      log.info(s"'$alias' added, current aliases: ${aliasesMapToString(newAliasesMap)}")
+    wrapServiceCallForCli {
+      daoService.add(new TorrentEntry(args(0), args(1)))
     }
   }
 
   def remove(args: Seq[String]): Unit = {
-    val alias = args(0)
-    if (aliasesMap contains alias) {
-      val url = aliasesMap(alias)
-      val newAliasesMap = aliasesMap - alias
-      aliasesFile.writeAll(newAliasesMap.map { case (k, v) => s"$k $v" }.mkString("\n"))
-      val cache2 = cache.withoutPath("\"" + url + "\"")
-      saveCache(cache2)
-      log.info(s"'$alias' ($url) removed from checking, current aliases: ${aliasesMapToString(newAliasesMap)}")
-    } else {
-      log.error(s"'$alias' alias is not beign checked, current aliases: ${aliasesMapToString(aliasesMap)}")
+    wrapServiceCallForCli {
+      daoService.remove(args(0))
     }
   }
 
   def list(args: Seq[String]): Unit = {
-    if (!aliasesMap.isEmpty) {
-      aliasesMap.foreach {
-        case (alias, url) => println(s"$alias $url")
+    wrapServiceCallForCli {
+      val aliasesList = daoService.list
+      if (!aliasesList.isEmpty) {
+        aliasesList.foreach {
+          case TorrentEntry(alias, url) => println(s"$alias $url")
+        }
+      } else {
+        println(s"<No aliases defined>")
       }
-    } else {
-      println(s"<No aliases defined>")
     }
   }
 
@@ -126,7 +118,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   private def startAsyncServer(): ListeningServer = {
-    (new TorrentUpdatesCheckerWebUi).start(webUiPort)
+    (new TorrentUpdatesCheckerWebUi(daoService)).start(webUiPort)
   }
 
   def iterate(args: Seq[String]): Unit = {
@@ -137,23 +129,25 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     new File(new java.io.File(s))
   }
 
-  private def saveCache(cache: Config): Unit = {
-    cacheFile.writeAll(cache.root.render(cacheWriteFormat))
-  }
-
-  private def getAliasesMap(): Map[String, String] = {
-    ListMap(aliasesFile.lines.map(l => {
-      val parts = l.split(" ", 2)
-      parts(0) -> parts(1)
-    }).toSeq: _*)
-  }
-
-  private def aliasesMapToString(urlsMap: Map[String, String]): String = {
-    urlsMap.keys.toSeq.sorted.mkString("'", ", ", "'")
-  }
-
   private def getProviders(): Providers = {
     new Providers(config)
+  }
+
+  private def checkUrlRecognized(url: String): Boolean = {
+    getProviders().providerFor(url).isDefined
+  }
+
+  private def wrapServiceCallForCli[R](code: => R): Option[R] = {
+    try {
+      Some(code)
+    } catch {
+      case ex: IllegalArgumentException =>
+        log.error(ex.getMessage)
+        None
+      case ex: Throwable =>
+        log.error("Internal error", ex)
+        None
+    }
   }
 
   // We might want to use scopt library for CLI args parsing
@@ -170,13 +164,13 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     case x :: xs if actions.keySet.contains(x) && actions(x)._2.contains(xs.size) =>
       actions(x)._1.apply(xs)
     case _ =>
-      println("""Supported actions:
-  add <alias> <url>
-  remove <alias>
-  list
-  start
-  startServer
-  iterate""")
+      println("""|Supported actions:
+      |  add <alias> <url>
+      |  remove <alias>
+      |  list
+      |  start
+      |  startServer
+      |  iterate""".stripMargin)
   }
 
   private implicit class RichInt(i: Int) {

@@ -1,40 +1,38 @@
 package org.fs.checker
 
+import org.fs.checker.cache.CacheService
+import org.fs.checker.dao.TorrentEntry
+import org.fs.checker.dumping.PageContentDumper
+import org.fs.checker.dumping.PageParsingException
 import org.fs.checker.provider.Providers
+import org.slf4s.Logging
+
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigException
-import org.slf4s.Logging
-import org.joda.time.Days
-import org.joda.time.Hours
 import com.typesafe.config.ConfigValueFactory
-import scala.reflect.io.File
-import com.typesafe.config.ConfigFactory
-import com.typesafe.config.ConfigRenderOptions
-import org.fs.checker.dumping.PageParsingException
-import org.fs.checker.dumping.PageContentDumper
 
 /**
  * @author FS
  */
-class UpdateChecker(getProviders: () => Providers,
-                    getAliasesMap: () => Map[String, String],
-                    notifyUpdated: Map[String, String] => Unit,
-                    var cache: Config,
-                    saveCache: Config => Unit,
-                    dumper: PageContentDumper)
-    extends Logging {
+class UpdateChecker(
+  getProviders:  () => Providers,
+  listEntries:   () => Seq[TorrentEntry],
+  notifyUpdated: Seq[TorrentEntry] => Unit,
+  cacheService:  CacheService,
+  dumper:        PageContentDumper
+) extends Logging {
 
   def checkForUpdates(): Unit = {
-    val aliasesMap = getAliasesMap()
-    if (!aliasesMap.isEmpty) {
+    val entries = listEntries()
+    if (!entries.isEmpty) {
       log.info(s"Check iteration started")
       val providers = getProviders()
-      val mapOfUpdatedAliases = aliasesMap.filter {
-        case (alias, url) => isUpdated(alias, url, providers)
+      val updatedEntries = entries.filter {
+        case TorrentEntry(alias, url) => isUpdated(alias, url, providers)
       }
-      if (!mapOfUpdatedAliases.isEmpty) {
-        notifyUpdated(mapOfUpdatedAliases)
+      if (!updatedEntries.isEmpty) {
+        notifyUpdated(updatedEntries)
       }
       log.info(s"Check iteration complete")
     } else {
@@ -46,6 +44,7 @@ class UpdateChecker(getProviders: () => Providers,
     providers.providerFor(url) match {
       case Some(provider) =>
         try {
+          val cache = cacheService.cache
           val dateUpdated = provider.checkDateLastUpdated(url)
           val cachePrefix = "\"" + url + "\""
           val lastCheckMsPath = s"$cachePrefix.lastCheckMs"
@@ -59,10 +58,10 @@ class UpdateChecker(getProviders: () => Providers,
               dateUpdated.plusSeconds(1)
           }
           val now = DateTime.now
-          cache = cache
+          val newCache = cache
             .withValue(lastCheckMsPath, ConfigValueFactory.fromAnyRef(now.getMillis))
             .withValue(lastUpdateMsPath, ConfigValueFactory.fromAnyRef(dateUpdated.getMillis))
-          saveCache(cache)
+          cacheService.update(newCache)
           dateUpdated >= lastCheckDate
         } catch {
           case PageParsingException(providerName, url, content, th) =>

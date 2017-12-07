@@ -15,12 +15,13 @@ import io.finch._
 import io.finch.circe._
 
 import org.slf4s.Logging
+import org.fs.checker.dao.TorrentDaoService
+import org.fs.checker.dao.TorrentEntry
 
 /**
  * @author FS
  */
-class TorrentUpdatesCheckerWebUi extends Logging {
-  import TorrentUpdatesCheckerWebUi._
+class TorrentUpdatesCheckerWebUi(daoService: TorrentDaoService) extends Logging {
 
   def start(port: Int): ListeningServer = {
     require((1 to 65535) contains port, "Web UI server port should be between 1 and 65535")
@@ -47,27 +48,24 @@ class TorrentUpdatesCheckerWebUi extends Logging {
     }
 
   private val entriesEndpoint = {
-    val listEndpoint: Endpoint[JsonCcList] =
+    val listEndpoint: Endpoint[Seq[TorrentEntry]] =
       get(/) {
         Future {
-          ???
-          Ok(JsonCcList(Seq.empty))
+          Ok(daoService.list)
         }
       }
 
-    val addEndpoint: Endpoint[JsonCcList] =
+    val addEndpoint: Endpoint[Seq[TorrentEntry]] =
       post(/ :: path[String] :: param("url")) { (alias: String, url: String) =>
         Future {
-          ???
-          Ok(JsonCcList(Seq.empty))
+          Ok(daoService.add(TorrentEntry(alias, url)))
         }
       }
 
-    val removeEndpoint: Endpoint[JsonCcList] =
+    val removeEndpoint: Endpoint[Seq[TorrentEntry]] =
       delete(/ :: path[String]) { (alias: String) =>
         Future {
-          ???
-          Ok(JsonCcList(Seq.empty))
+          Ok(daoService.remove(alias))
         }
       }
 
@@ -94,10 +92,4 @@ class TorrentUpdatesCheckerWebUi extends Logging {
       resource.close()
     }
   }
-}
-
-object TorrentUpdatesCheckerWebUi {
-  case class JsonCcEntry(alias: String, url: String)
-
-  case class JsonCcList(entries: Seq[JsonCcEntry])
 }

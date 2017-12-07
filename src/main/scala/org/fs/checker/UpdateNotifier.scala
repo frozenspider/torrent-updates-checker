@@ -5,18 +5,19 @@ import scala.concurrent.Future
 import scala.swing.Dialog
 import scala.swing.Frame
 
+import org.fs.checker.dao.TorrentEntry
 import org.slf4s.Logging
 
 /**
  * @author FS
  */
 object UpdateNotifier extends Logging {
-  def notifyUpdated(aliasesMap: Map[String, String]): Unit = {
-    aliasesMap.foreach {
-      case (alias, url) => log.warn(s"'$alias' ($url) was updated!")
+  def notifyUpdated(entries: Seq[TorrentEntry]): Unit = {
+    entries.foreach {
+      case TorrentEntry(alias, url) => log.warn(s"'$alias' ($url) was updated!")
     }
 
-    val aliasesString = aliasesMap.keys.mkString(", ")
+    val aliasesString = entries.map(_.alias).mkString(", ")
     Future {
       val title = "Torrents updated"
       // Frame is dummy constructed for the dialog to be shown on the Windows taskbar
