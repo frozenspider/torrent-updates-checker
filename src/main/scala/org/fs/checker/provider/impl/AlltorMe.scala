@@ -24,7 +24,7 @@ class AlltorMe(httpClient: HttpClient) extends Provider {
   }
 
   override def fetch(url: String): String = {
-    val resp = httpClient.request(GET(url).addTimeout(TasIxMe.timeoutMs))
+    val resp = httpClient.request(GET(url).addTimeout(AlltorMe.timeoutMs))
     resp.bodyString
   }
 
