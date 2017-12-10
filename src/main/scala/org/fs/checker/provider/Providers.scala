@@ -33,7 +33,6 @@ class Providers(config: Config) extends Logging {
         pc(config.getConfig(pc.providerKey))
       ) match {
           case Success(p: Provider) =>
-            log.debug(s"Provider '${pc.prettyName}' initialized successfully")
             Some(p)
           case Failure(ex) =>
             reportProviderInitFailure(pc, ex)
