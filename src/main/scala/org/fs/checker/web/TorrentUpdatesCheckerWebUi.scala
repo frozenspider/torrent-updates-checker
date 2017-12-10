@@ -2,6 +2,7 @@ package org.fs.checker.web
 
 import java.nio.charset.Charset
 
+import scala.annotation.tailrec
 import scala.reflect.io.File
 
 import org.fs.checker.dao.TorrentDaoService
@@ -49,9 +50,12 @@ class TorrentUpdatesCheckerWebUi(daoService: TorrentDaoService, logFile: File) e
     }
 
   private val logEndpoint: Endpoint[Buf] =
-    get("log") {
+    get("log" :: paramOptionInt("tailLines")) { (tailLinesOption: Option[Int]) =>
       val reader: Reader = Reader.fromFile(logFile.jfile)
-      Reader.readAll(reader).map(Ok)
+      Reader.readAll(reader).map(buf => {
+        val resBuf = tailLinesOption filter (_ > 0) map (getTailLines(buf, _)) getOrElse buf
+        Ok(resBuf)
+      })
     }
 
   private val entriesEndpoint = {
@@ -127,10 +131,37 @@ class TorrentUpdatesCheckerWebUi(daoService: TorrentDaoService, logFile: File) e
   private def isValidRelativePath(xs: Seq[String]): Boolean =
     // Not-so-concise, but more readable
     xs match {
-      case _ if xs contains ".."           => false
-      case _ if xs contains "."            => false
-      case _ if xs exists (_ contains ":") => false
-      case _ if xs exists (_ contains "?") => false
-      case _                               => true
+      case _ if xs contains ".."            => false
+      case _ if xs contains "."             => false
+      case _ if xs exists (_ contains ":")  => false
+      case _ if xs exists (_ contains "?")  => false
+      case _ if xs exists (_ contains "\\") => false
+      case _                                => true
     }
+
+  // Very use-case-specific, but generalization isn't needed for now
+  private def paramOptionInt(name: String): Endpoint[Option[Int]] = {
+    paramOption(name) map (_ map (_.toInt))
+  }
+
+  private def getTailLines(buf: Buf, linesNumber: Int): Buf = {
+    // I wonder why Buf has no standard collection methods
+    val lineBreak: Byte = "\n".charAt(0).toByte
+    @tailrec
+    def scanRecurse(idx: Int, remCount: Int): Buf =
+      if (idx < 0) {
+        buf
+      } else if (remCount == 0) {
+        val startIdx = math.min(idx + 2, buf.length - 1)
+        buf.slice(startIdx, buf.length)
+      } else {
+        buf.get(idx) match {
+          case `lineBreak` =>
+            scanRecurse(idx - 1, remCount - 1)
+          case _ =>
+            scanRecurse(idx - 1, remCount)
+        }
+      }
+    scanRecurse(buf.length - 1, linesNumber)
+  }
 }
