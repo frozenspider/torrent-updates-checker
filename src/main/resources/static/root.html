@@ -1,0 +1,27 @@
+<html>
+
+<head>
+<title>Torrent Updates Checker</title>
+<link rel="stylesheet" href="static/root.css">
+<script language="javascript" src="static/root.js">
+</script>
+</head>
+
+<body>
+<table id="entities-table">
+  <tr>
+    <th>Alias</th>
+    <th>URL</th>
+    <th></th>
+  <tr>
+  <tr class="js-add-row">
+    <td><input type="text" class="add-alias js-add-alias"></input></td>
+    <td><input type="url" class="add-url js-add-url"></input></td>
+    <td><button class="js-add" onclick="return addClick(event);">Add</button></td>
+  <tr>
+</table>
+
+<textarea id="log-area" readonly="true">Loading...</textarea>
+</body>
+
+</html>

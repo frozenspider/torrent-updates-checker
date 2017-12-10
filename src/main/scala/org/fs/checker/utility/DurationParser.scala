@@ -29,6 +29,8 @@ object DurationParser {
         now - amount.days
       case x if Seq("месяц", "месяца", "месяцев", "мес.") contains x =>
         now - amount.months
+      case x if Seq("год", "года", "лет") contains x =>
+        now - amount.years
     }
     new Duration(then, now)
   }

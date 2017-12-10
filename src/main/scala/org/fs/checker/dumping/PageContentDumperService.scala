@@ -1,5 +1,5 @@
 package org.fs.checker.dumping
 
-trait PageContentDumper {
+trait PageContentDumperService {
   def dump(content: String, providerName: String): Unit
 }

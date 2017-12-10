@@ -4,6 +4,9 @@ import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 
+import java.net.ConnectException
+import java.net.UnknownHostException
+
 import org.fs.checker.provider.impl.AlltorMe
 import org.fs.checker.provider.impl.TasIxMe
 import org.joda.time.DateTime
@@ -26,13 +29,15 @@ class Providers(config: Config) extends Logging {
       log.warn(s"Couldn't find a key for ${pc.getClass.getSimpleName}, skipping provider")
       None
     } else {
-      Try(pc(config.getConfig(pc.providerKey))) match {
-        case Success(p: Provider) =>
-          Some(p)
-        case Failure(ex) =>
-          log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName}", ex)
-          None
-      }
+      Try(
+        pc(config.getConfig(pc.providerKey))
+      ) match {
+          case Success(p: Provider) =>
+            Some(p)
+          case Failure(ex) =>
+            reportProviderInitFailure(pc, ex)
+            None
+        }
     }
   }) collect {
     case Some(p) => p
@@ -40,5 +45,13 @@ class Providers(config: Config) extends Logging {
 
   def providerFor(url: String): Option[Provider] = {
     providers.find(_.recognizeUrl(url))
+  }
+
+  private def reportProviderInitFailure(pc: ProviderCompanion[_], ex: Throwable): Unit = ex match {
+    case _: ConnectException | _: UnknownHostException =>
+      // Do not log non-informative stacktraces
+      log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName} - ${ex.getClass.getName}: ${ex.getMessage}")
+    case _ =>
+      log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName}", ex)
   }
 }

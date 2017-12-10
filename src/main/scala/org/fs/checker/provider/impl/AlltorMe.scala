@@ -24,7 +24,7 @@ class AlltorMe(httpClient: HttpClient) extends Provider {
   }
 
   override def fetch(url: String): String = {
-    val resp = httpClient.request(GET(url))
+    val resp = httpClient.request(GET(url).addTimeout(AlltorMe.timeoutMs))
     resp.bodyString
   }
 
@@ -43,9 +43,12 @@ class AlltorMe(httpClient: HttpClient) extends Provider {
 object AlltorMe extends ProviderCompanion[AlltorMe] {
   override val providerKey: String = "alltor"
 
+  val timeoutMs: Int = 60 * 1000
+
   override def apply(config: Config): AlltorMe = {
     val (httpClient, cookieStore) = simpleClientWithStore()
     val authReq = POST("https://alltor.me/login.php")
+      .addTimeout(timeoutMs)
       .addParameters(Map(
         "login_username" -> config.getString("login"),
         "login_password" -> config.getString("password"),
