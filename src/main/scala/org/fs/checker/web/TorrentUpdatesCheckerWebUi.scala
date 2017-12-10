@@ -1,6 +1,5 @@
 package org.fs.checker.web
 
-import java.io.{ File => JFile }
 import java.nio.charset.Charset
 
 import scala.reflect.io.File
@@ -111,12 +110,12 @@ class TorrentUpdatesCheckerWebUi(daoService: TorrentDaoService, logFile: File) e
           if isValidRelativePath(pathSegments)
           path = "static/" + pathSegments.mkString("/")
           classLoader = Thread.currentThread.getContextClassLoader
-          //          stream <- Option(classLoader.getResourceAsStream(path))
-          url <- Option(classLoader.getResource(path))
-          file = new JFile(url.toURI)
-          if file.isFile
-          reader = Reader.fromFile(file)
-          content = Reader.readAll(reader)
+          resource <- Option(classLoader.getResource(path))
+          // User will see directory inside JAR as an empty file
+          if resource.getProtocol == "file" || resource.getProtocol == "jar"
+          stream = resource.openStream()
+          reader = Reader.fromStream(stream)
+          content = Reader.readAll(reader).respond(_ => stream.close())
           response = content map Ok
         } yield response
       ) getOrElse Future.value(Output.empty(Status.NotFound))
