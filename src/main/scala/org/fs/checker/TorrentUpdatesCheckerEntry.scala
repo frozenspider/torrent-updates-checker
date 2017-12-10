@@ -46,6 +46,9 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
   lazy val cacheFile: File = getFile("cache.conf")
 
+  // TODO: Read name from config
+  lazy val logFile: File = getFile("torrent-updates-checker.log")
+
   lazy val webUiPort = config.getInt("webui.port")
 
   lazy val cacheService: CacheService = new CacheServiceImpl(cacheFile)
@@ -57,6 +60,9 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
       val file = getFile(providerName + "/" + nowString + ".html")
       file.writeAll(content)
     }
+  }
+  lazy val webUi = {
+    new TorrentUpdatesCheckerWebUi(daoService, logFile)
   }
 
   lazy val updateChecker: UpdateChecker =
@@ -120,7 +126,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   private def startAsyncServer(): ListeningServer = {
-    (new TorrentUpdatesCheckerWebUi(daoService)).start(webUiPort)
+    webUi.start(webUiPort)
   }
 
   def iterate(args: Seq[String]): Unit = {
