@@ -2,88 +2,8 @@
 
 <head>
 <title>Torrent Updates Checker</title>
-<script language="javascript">
-// Blocking requests are intended
-var httpRequest;
-window.onload = onLoad;
-
-function onLoad() {
-  httpRequest = new XMLHttpRequest();
-  httpRequest.onreadystatechange = wrapRequestCallback(onLoadCallback);
-  httpRequest.open('GET', '/entries', false);
-  httpRequest.send();
-}
-
-function onLoadCallback() {
-  populateTable(JSON.parse(httpRequest.responseText));
-}
-
-function populateTable(jsonArray) {
-  var table = document.getElementById("entities-table")
-
-  for (i = 0; i < jsonArray.length; i++) {
-    var entry = jsonArray[i];
-    var tr = table.insertRow(table.rows.length - 2);
-
-    var cell0 = tr.insertCell(0);
-    cell0.innerHTML = entry["alias"];
-
-    var cell1 = tr.insertCell(1);
-    cell1.innerHTML = entry["url"];
-
-    var cell2 = tr.insertCell(2);
-    cell2.innerHTML = '<button class="js-remove" data=' + entry["alias"] +' onclick="return removeClick(event);">Remove</button>'
-  }
-}
-
-function addClick(event) {
-  var aliasEl = document.getElementsByClassName("js-add-alias")[0]
-  var urlEl = document.getElementsByClassName("js-add-url")[0]
-  var alias = aliasEl.value
-  var url = urlEl.value
-  httpRequest = new XMLHttpRequest();
-  httpRequest.onreadystatechange = wrapRequestCallback(function () {
-    aliasEl.value = '';
-    urlEl.value = '';
-    window.location.reload();
-  });
-  httpRequest.open('POST', '/entries/' + alias + '?url=' + url, false);
-  httpRequest.send();
-}
-
-function removeClick(event) {
-  var alias = event.target.getAttribute("data")
-  if (window.confirm('Remove "' + alias + '"?')) { 
-    httpRequest = new XMLHttpRequest();
-    httpRequest.onreadystatechange = wrapRequestCallback(function () {
-      window.location.reload();
-    });
-    httpRequest.open('DELETE', '/entries/' + alias, false);
-    httpRequest.send();
-  }
-}
-
-function wrapRequestCallback(callback) {
-  return function() {
-    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-      if (httpRequest.status === 200) {
-        callback();
-      } else {
-        showError();
-      }
-    }
-  };
-}
-
-function showError() {
-  var errorDetailsString = 'There was a problem with the request';
-  try {
-    var responseText = httpRequest.responseText;
-    var responseJson = JSON.parse(responseText);
-    errorDetailsString += ':\n' + responseJson['message']
-  } catch(ex) {}
-  alert(errorDetailsString);
-}
+<link rel="stylesheet" href="static/root.css">
+<script language="javascript" src="static/root.js">
 </script>
 </head>
 
@@ -95,11 +15,13 @@ function showError() {
     <th></th>
   <tr>
   <tr class="js-add-row">
-    <td><input type="text" class="js-add-alias"></input></td>
-    <td><input type="url" class="js-add-url"></input></td>
+    <td><input type="text" class="add-alias js-add-alias"></input></td>
+    <td><input type="url" class="add-url js-add-url"></input></td>
     <td><button class="js-add" onclick="return addClick(event);">Add</button></td>
   <tr>
 </table>
+
+<textarea id="log-area" readonly="true">Loading...</textarea>
 </body>
 
 </html>
