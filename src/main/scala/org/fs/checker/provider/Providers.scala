@@ -26,13 +26,14 @@ class Providers(config: Config) extends Logging {
 
   private val providers: Seq[Provider] = providerCompanions map (pc => {
     if (!config.hasPath(pc.providerKey)) {
-      log.warn(s"Couldn't find a key for ${pc.getClass.getSimpleName}, skipping provider")
+      log.debug(s"Couldn't find config for '${pc.prettyName}', skipping")
       None
     } else {
       Try(
         pc(config.getConfig(pc.providerKey))
       ) match {
           case Success(p: Provider) =>
+            log.debug(s"Provider '${pc.prettyName}' initialized successfully")
             Some(p)
           case Failure(ex) =>
             reportProviderInitFailure(pc, ex)
