@@ -11,7 +11,7 @@ import org.fs.checker.dumping.PageContentDumperService
 import org.fs.checker.notification.UpdateNotifierService
 import org.fs.checker.notification.UpdateNotifierServiceImpl
 import org.fs.checker.provider.Providers
-import org.fs.checker.web.TorrentUpdatesCheckerWebUi
+import org.fs.checker.web.HttpServer
 import org.slf4j.bridge.SLF4JBridgeHandler
 import org.slf4s.Logging
 
@@ -48,7 +48,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   // TODO: Read name from config
   lazy val logFile: File = getFile("torrent-updates-checker.log")
 
-  lazy val webUiPort = config.getInt("webui.port")
+  lazy val httpPort = config.getInt("http.port")
 
   lazy val cacheService: CacheService = new CacheServiceImpl(cacheFile)
   lazy val daoService: TorrentDaoService = new TorrentDaoServiceImpl(aliasesFile, checkUrlRecognized, cacheService)
@@ -60,8 +60,8 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
       file.writeAll(content)
     }
   }
-  lazy val webUi = {
-    new TorrentUpdatesCheckerWebUi(daoService, logFile)
+  lazy val httpServer = {
+    new HttpServer(daoService, logFile)
   }
 
   lazy val updateChecker: UpdateChecker =
@@ -93,7 +93,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   def start(args: Seq[String]): Unit = {
-    if (webUiPort != 0) {
+    if (httpPort != 0) {
       startAsyncServer()
     }
     val runnable = new Runnable {
@@ -125,7 +125,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   private def startAsyncServer(): ListeningServer = {
-    webUi.start(webUiPort)
+    httpServer.start(httpPort)
   }
 
   def iterate(args: Seq[String]): Unit = {

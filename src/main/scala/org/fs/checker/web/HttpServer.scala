@@ -26,7 +26,7 @@ import io.finch.circe._
 /**
  * @author FS
  */
-class TorrentUpdatesCheckerWebUi(daoService: TorrentDaoService, logFile: File) extends Logging {
+class HttpServer(daoService: TorrentDaoService, logFile: File) extends Logging {
 
   def start(port: Int): ListeningServer = {
     require((1 to 65535) contains port, "Web UI server port should be between 1 and 65535")
