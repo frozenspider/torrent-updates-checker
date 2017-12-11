@@ -44,12 +44,12 @@ class HttpServer(daoService: TorrentDaoService, logFile: File) extends Logging {
   // Endpoints
   //
 
-  private val htmlEndpoint: Endpoint[Buf] =
+  private[web] val rootEndpoint: Endpoint[Buf] =
     get(/) {
       serveResource(Seq("root.html"))
     }
 
-  private val logEndpoint: Endpoint[Buf] =
+  private[web] val logEndpoint: Endpoint[Buf] =
     get("log" :: paramOptionInt("tailLines")) { (tailLinesOption: Option[Int]) =>
       val reader: Reader = Reader.fromFile(logFile.jfile)
       Reader.readAll(reader).map(buf => {
@@ -58,7 +58,7 @@ class HttpServer(daoService: TorrentDaoService, logFile: File) extends Logging {
       })
     }
 
-  private val entriesEndpoint = {
+  private[web] val entriesEndpoint = {
     val listEndpoint: Endpoint[Seq[TorrentEntry]] =
       get(/) {
         Future {
@@ -83,7 +83,7 @@ class HttpServer(daoService: TorrentDaoService, logFile: File) extends Logging {
     "entries" :: (listEndpoint :+: addEndpoint :+: removeEndpoint)
   }
 
-  private val staticEndpoint: Endpoint[Buf] =
+  private[web] val staticEndpoint: Endpoint[Buf] =
     get("static" :: paths[String])(serveResource _)
 
   private val exceptionFilter = new ExceptionInterceptingFilter
@@ -95,7 +95,7 @@ class HttpServer(daoService: TorrentDaoService, logFile: File) extends Logging {
       .serve[Application.Json](entriesEndpoint.withCharset(Utf8))
       .serve[Text.Plain](logEndpoint.withCharset(Utf8))
       .serve[Text.Plain](staticEndpoint.withCharset(Utf8))
-      .serve[Text.Html](htmlEndpoint.withCharset(Utf8))
+      .serve[Text.Html](rootEndpoint.withCharset(Utf8))
       .toService
 
   //
