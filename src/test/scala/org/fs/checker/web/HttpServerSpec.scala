@@ -5,7 +5,6 @@ import scala.reflect.io.File
 import org.fs.checker.TestHelper
 import org.fs.checker.dao.TorrentEntry
 import org.junit.runner.RunWith
-import org.scalatest.BeforeAndAfterAll
 import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
 
@@ -22,7 +21,6 @@ import shapeless._
 @RunWith(classOf[JUnitRunner])
 class HttpServerSpec
     extends FlatSpec
-    with BeforeAndAfterAll
     with TestHelper {
 
   private type TE = TorrentEntry

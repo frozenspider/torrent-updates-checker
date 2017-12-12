@@ -29,6 +29,8 @@ class CacheServiceImpl(cacheFile: File)
 
   override def update(newCache: Config): Unit =
     this.synchronized {
-      cacheFile.writeAll(cache.root.render(cacheWriteFormat))
+      cacheFile.writeAll(newCache.root.render(cacheWriteFormat))
+    } ensuring {
+      cache == newCache
     }
 }
