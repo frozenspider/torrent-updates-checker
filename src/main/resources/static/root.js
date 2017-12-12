@@ -74,7 +74,7 @@ function showLog() {
   httpRequest.onreadystatechange = wrapRequestCallback(function () {
     renderLog(httpRequest.responseText);
   });
-  httpRequest.open('GET', '/log', false);
+  httpRequest.open('GET', '/log?tailLines=50', false);
   httpRequest.send();
 }
 

@@ -17,8 +17,7 @@ import scala.util.Try
  * @author FS
  */
 class TasIxMe(httpClient: HttpClient) extends Provider {
-
-  override val prettyName: String = "tas-ix.me"
+  override val prettyName: String = TasIxMe.prettyName
 
   override def recognizeUrl(url: String): Boolean = {
     Try(Seq("tas-ix.me", "tas-ix.net") contains (new URL(url)).getHost).getOrElse(false)
@@ -42,6 +41,8 @@ class TasIxMe(httpClient: HttpClient) extends Provider {
 }
 
 object TasIxMe extends ProviderCompanion[TasIxMe] {
+  override val prettyName: String = "tas-ix.me"
+
   override val providerKey: String = "tasix"
 
   val timeoutMs: Int = 60 * 1000

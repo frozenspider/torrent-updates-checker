@@ -1,11 +1,17 @@
 package org.fs.checker
 
-import scala.collection.immutable.ListMap
 import scala.reflect.io.File
 
+import org.fs.checker.cache.CacheService
+import org.fs.checker.cache.CacheServiceImpl
+import org.fs.checker.dao.TorrentDaoService
+import org.fs.checker.dao.TorrentDaoServiceImpl
+import org.fs.checker.dao.TorrentEntry
 import org.fs.checker.dumping.PageContentDumperService
+import org.fs.checker.notification.UpdateNotifierService
+import org.fs.checker.notification.UpdateNotifierServiceImpl
 import org.fs.checker.provider.Providers
-import org.fs.checker.web.TorrentUpdatesCheckerWebUi
+import org.fs.checker.web.HttpServer
 import org.slf4j.bridge.SLF4JBridgeHandler
 import org.slf4s.Logging
 
@@ -14,42 +20,35 @@ import com.twitter.finagle.ListeningServer
 import com.twitter.util.Await
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
-import com.typesafe.config.ConfigRenderOptions
-import org.fs.checker.dao.TorrentDaoService
-import org.fs.checker.dao.TorrentEntry
-import org.fs.checker.cache.CacheService
-import org.fs.checker.cache.CacheServiceImpl
-import org.fs.checker.dao.TorrentDaoServiceImpl
-import org.fs.checker.notification.UpdateNotifierService
-import org.fs.checker.notification.UpdateNotifierServiceImpl
 
 /**
  * @author FS
  */
 object TorrentUpdatesCheckerEntry extends App with Logging {
-  SLF4JBridgeHandler.removeHandlersForRootLogger();
+  SLF4JBridgeHandler.removeHandlersForRootLogger()
   SLF4JBridgeHandler.install()
-
-  val aliasesFile: File = getFile("urls.txt")
-  if (!aliasesFile.exists) {
-    log.error(s"${aliasesFile.name} is not found")
-    scala.sys.exit(1)
-  }
 
   val configFile: File = getFile("application.conf")
   def config: Config = {
     if (!configFile.exists) {
-      log.error("Config file is not found")
+      log.error(s"${configFile.name} does not exist at ${absolutePath(configFile)}")
       scala.sys.exit(1)
     }
     ConfigFactory.parseFileAnySyntax(configFile.jfile)
   }
+
+  val aliasesFile: File = getFile("urls.txt")
+  if (!aliasesFile.exists) {
+    aliasesFile.writeAll("")
+    log.info(s"Aliases file does not exist, created at ${absolutePath(aliasesFile)}")
+  }
+
   lazy val cacheFile: File = getFile("cache.conf")
 
   // TODO: Read name from config
   lazy val logFile: File = getFile("torrent-updates-checker.log")
 
-  lazy val webUiPort = config.getInt("webui.port")
+  lazy val httpPort = config.getInt("http.port")
 
   lazy val cacheService: CacheService = new CacheServiceImpl(cacheFile)
   lazy val daoService: TorrentDaoService = new TorrentDaoServiceImpl(aliasesFile, checkUrlRecognized, cacheService)
@@ -61,8 +60,8 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
       file.writeAll(content)
     }
   }
-  lazy val webUi = {
-    new TorrentUpdatesCheckerWebUi(daoService, logFile)
+  lazy val httpServer = {
+    new HttpServer(daoService, logFile)
   }
 
   lazy val updateChecker: UpdateChecker =
@@ -94,7 +93,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   def start(args: Seq[String]): Unit = {
-    if (webUiPort != 0) {
+    if (httpPort != 0) {
       startAsyncServer()
     }
     val runnable = new Runnable {
@@ -126,7 +125,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   private def startAsyncServer(): ListeningServer = {
-    webUi.start(webUiPort)
+    httpServer.start(httpPort)
   }
 
   def iterate(args: Seq[String]): Unit = {
@@ -144,6 +143,8 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   private def checkUrlRecognized(url: String): Boolean = {
     getProviders().providerFor(url).isDefined
   }
+
+  private def absolutePath(f: File): String = f.jfile.getAbsolutePath
 
   private def wrapServiceCallForCli[R](code: => R): Option[R] = {
     try {

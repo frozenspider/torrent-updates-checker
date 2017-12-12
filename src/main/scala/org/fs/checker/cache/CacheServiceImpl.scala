@@ -1,16 +1,26 @@
 package org.fs.checker.cache
 
+import scala.reflect.io.File
+
+import org.slf4s.Logging
+
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
-import scala.reflect.io.File
 
 /**
  * @author FS
  */
-class CacheServiceImpl(cacheFile: File) extends CacheService {
+class CacheServiceImpl(cacheFile: File)
+    extends CacheService
+    with Logging {
 
-  private lazy val cacheWriteFormat: ConfigRenderOptions = ConfigRenderOptions.concise.setFormatted(true).setJson(false)
+  log.debug("Cache file: " + cacheFile.jfile.getAbsolutePath)
+
+  private lazy val cacheWriteFormat: ConfigRenderOptions =
+    ConfigRenderOptions.concise
+      .setFormatted(true)
+      .setJson(false)
 
   override def cache: Config =
     this.synchronized {
@@ -19,6 +29,8 @@ class CacheServiceImpl(cacheFile: File) extends CacheService {
 
   override def update(newCache: Config): Unit =
     this.synchronized {
-      cacheFile.writeAll(cache.root.render(cacheWriteFormat))
+      cacheFile.writeAll(newCache.root.render(cacheWriteFormat))
+    } ensuring {
+      cache == newCache
     }
 }

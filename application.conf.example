@@ -1,0 +1,5 @@
+http.port       = 8100 // 0 to not start a server
+tasix.login     = ""
+tasix.password  = ""
+alltor.login    = ""
+alltor.password = ""

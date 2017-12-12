@@ -16,8 +16,7 @@ import scala.util.Try
  * @author FS
  */
 class AlltorMe(httpClient: HttpClient) extends Provider {
-
-  override val prettyName: String = "alltor.me"
+  override val prettyName: String = AlltorMe.prettyName
 
   override def recognizeUrl(url: String): Boolean = {
     Try("alltor.me" == (new URL(url)).getHost).getOrElse(false)
@@ -41,6 +40,8 @@ class AlltorMe(httpClient: HttpClient) extends Provider {
 }
 
 object AlltorMe extends ProviderCompanion[AlltorMe] {
+  override val prettyName: String = "alltor.me"
+
   override val providerKey: String = "alltor"
 
   val timeoutMs: Int = 60 * 1000
