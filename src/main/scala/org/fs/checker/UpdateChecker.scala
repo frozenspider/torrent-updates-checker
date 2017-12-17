@@ -53,7 +53,7 @@ class UpdateChecker(
             new DateTime(cache.getLong(lastCheckMsPath))
           } catch {
             case ex: ConfigException.Missing =>
-              log.info(s"URL $url wasn't checked before")
+              log.info(s"'$alias' ($url) wasn't checked before")
               // Treat it as not updated
               dateUpdated.plusSeconds(1)
           }
