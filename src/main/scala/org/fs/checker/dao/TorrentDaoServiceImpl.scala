@@ -30,7 +30,7 @@ class TorrentDaoServiceImpl(
     require(checkUrlRecognized(entry.url), s"URL ${entry.url} is not recognized by any provider")
     val newAliasesMap = aliasesMap + (entry.alias -> entry.url)
     val cache = cacheService.cache
-    val cachePrefix = cachePrefixFor(entry.url)
+    val cachePrefix = doubleQuote(entry.url)
     val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
     cacheService.update(cacheService.cache
       .withValue(s"$cachePrefix.alias", ConfigValueFactory.fromAnyRef(entry.alias))
@@ -47,7 +47,7 @@ class TorrentDaoServiceImpl(
     // Exclude removed path and renumerate remaining entries
     val newCache = newAliasesMap.zipWithIndex.foldLeft(cacheWithoutRemoved) {
       case (cache, ((alias, url), idx)) =>
-        val cachePrefix = cachePrefixFor(url)
+        val cachePrefix = doubleQuote(url)
         cache.withValue(s"$cachePrefix.index", ConfigValueFactory.fromAnyRef(idx + 1))
     }
     cacheService.update(newCache)
@@ -59,7 +59,7 @@ class TorrentDaoServiceImpl(
     val cache = cacheService.cache
     val urls = cache.root.keys.toSeq
     val sortedSeq = urls.map { u =>
-      u -> cache.getConfig(u)
+      u -> cache.getConfig(doubleQuote(u))
     }.sortBy {
       case (_, c) if c.hasPath("index") => c.getInt("index")
       case _                            => 0
@@ -69,7 +69,7 @@ class TorrentDaoServiceImpl(
     }: _*)
   }
 
-  private def cachePrefixFor(url: String): String =
+  private def doubleQuote(url: String): String =
     "\"" + url + "\""
 
   private def aliasesMapToString(urlsMap: ListMap[String, String]): String = {

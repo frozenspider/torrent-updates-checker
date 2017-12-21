@@ -22,7 +22,7 @@ class TorrentDaoServiceImplSpec
     new CacheServiceImpl(cacheFile)
   }
   private val service = new TorrentDaoServiceImpl(
-    (url: String) => url startsWith "xyz",
+    (url: String) => url startsWith "http://xyz",
     cacheService
   )
 
@@ -77,7 +77,7 @@ class TorrentDaoServiceImplSpec
   }
 
   private def validEntry(i: Int): TorrentEntry =
-    TorrentEntry(s"alias$i", s"xyz$i")
+    TorrentEntry(s"alias$i", s"http://xyz$i")
 
   private def assertCacheCorrectness(entries: Seq[TorrentEntry]): Unit = {
     entries.zipWithIndex.foreach {
