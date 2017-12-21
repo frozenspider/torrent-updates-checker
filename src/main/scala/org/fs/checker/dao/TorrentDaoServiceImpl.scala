@@ -25,16 +25,17 @@ class TorrentDaoServiceImpl(
 
   override def add(entry: TorrentEntry): Unit = {
     val aliasesMap = getAliasesMap()
+    require(!(entry.alias contains "\\"), s"Alias can't contain backslashes")
     require(!(aliasesMap contains entry.alias), s"Alias ${entry.alias} is already beign checked")
     require(!(aliasesMap.values.toSeq contains entry.url), s"URL ${entry.url} is already beign checked under the alias '${aliasesMap.find(_._2 == entry.url).get._1}'")
     require(checkUrlRecognized(entry.url), s"URL ${entry.url} is not recognized by any provider")
     val newAliasesMap = aliasesMap + (entry.alias -> entry.url)
     val cache = cacheService.cache
-    val cachePrefix = doubleQuote(entry.url)
+    val cachePrefix = doubleQuote(entry.alias)
     val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
     cacheService.update(cacheService.cache
-      .withValue(s"$cachePrefix.alias", ConfigValueFactory.fromAnyRef(entry.alias))
-      .withValue(s"$cachePrefix.index", ConfigValueFactory.fromAnyRef(newAliasesMap.size)))
+      .withValue(s"$cachePrefix.index", ConfigValueFactory.fromAnyRef(newAliasesMap.size))
+      .withValue(s"$cachePrefix.url", ConfigValueFactory.fromAnyRef(entry.url)))
     log.info(s"'${entry.alias}' added, current aliases: ${aliasesMapToString(newAliasesMap)}")
   }
 
@@ -43,12 +44,14 @@ class TorrentDaoServiceImpl(
     require((aliasesMap contains alias), s"'$alias' alias is not being checked, current aliases: ${aliasesMapToString(aliasesMap)}")
     val url = aliasesMap(alias)
     val newAliasesMap = aliasesMap - alias
-    val cacheWithoutRemoved = cacheService.cache.withoutPath("\"" + url + "\"")
-    // Exclude removed path and renumerate remaining entries
-    val newCache = newAliasesMap.zipWithIndex.foldLeft(cacheWithoutRemoved) {
-      case (cache, ((alias, url), idx)) =>
-        val cachePrefix = doubleQuote(url)
-        cache.withValue(s"$cachePrefix.index", ConfigValueFactory.fromAnyRef(idx + 1))
+    val newCache = {
+      // Exclude removed path and renumerate remaining entries
+      val cacheWithoutRemoved = cacheService.cache.withoutPath(doubleQuote(alias))
+      newAliasesMap.zipWithIndex.foldLeft(cacheWithoutRemoved) {
+        case (cache, ((alias, url), idx)) =>
+          val cachePrefix = doubleQuote(alias)
+          cache.withValue(s"$cachePrefix.index", ConfigValueFactory.fromAnyRef(idx + 1))
+      }
     }
     cacheService.update(newCache)
     log.info(s"'$alias' ($url) removed from checking, current aliases: ${aliasesMapToString(newAliasesMap)}")
@@ -57,15 +60,15 @@ class TorrentDaoServiceImpl(
   /** Alias -> URL map */
   private def getAliasesMap(): ListMap[String, String] = {
     val cache = cacheService.cache
-    val urls = cache.root.keys.toSeq
-    val sortedSeq = urls.map { u =>
-      u -> cache.getConfig(doubleQuote(u))
+    val aliases = cache.root.keys.toSeq
+    val sortedSeq = aliases.map { alias =>
+      alias -> cache.getConfig(doubleQuote(alias))
     }.sortBy {
       case (_, c) if c.hasPath("index") => c.getInt("index")
       case _                            => 0
     }
     ListMap(sortedSeq.map {
-      case (url, c) => c.getString("alias") -> url
+      case (alias, c) => alias -> c.getString("url")
     }: _*)
   }
 

@@ -42,7 +42,7 @@ class UpdateChecker(
 
   private def isUpdated(alias: String, url: String, providers: Providers): Boolean = {
     val cache = cacheService.cache
-    val cachePrefix = "\"" + url + "\""
+    val cachePrefix = "\"" + alias + "\""
     val lastCheckMsPath = s"$cachePrefix.lastCheckMs"
     val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
     providers.providerFor(url) match {

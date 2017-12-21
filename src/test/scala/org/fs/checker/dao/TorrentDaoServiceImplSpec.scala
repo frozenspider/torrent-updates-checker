@@ -50,6 +50,9 @@ class TorrentDaoServiceImplSpec
       service.add(validEntry(1))
     }
     intercept[IllegalArgumentException] {
+      service.add(validEntry(1).copy(alias = "ali\\as"))
+    }
+    intercept[IllegalArgumentException] {
       service.add(TorrentEntry("alias1", "xyz2"))
     }
     intercept[IllegalArgumentException] {
@@ -77,13 +80,13 @@ class TorrentDaoServiceImplSpec
   }
 
   private def validEntry(i: Int): TorrentEntry =
-    TorrentEntry(s"alias$i", s"http://xyz$i")
+    TorrentEntry("alias://,. !@#$%^&*()_+-=" + i, s"http://xyz$i")
 
   private def assertCacheCorrectness(entries: Seq[TorrentEntry]): Unit = {
     entries.zipWithIndex.foreach {
       case (TorrentEntry(alias, url), idx) =>
-        assert(cacheService.cache.getString("\"" + url + "\".alias") === alias)
-        assert(cacheService.cache.getInt("\"" + url + "\".index") === idx + 1)
+        assert(cacheService.cache.getInt("\"" + alias + "\".index") === idx + 1)
+        assert(cacheService.cache.getString("\"" + alias + "\".url") === url)
     }
   }
 }
