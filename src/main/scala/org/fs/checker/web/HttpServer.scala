@@ -1,5 +1,6 @@
 package org.fs.checker.web
 
+import java.net.URLDecoder
 import java.nio.charset.Charset
 
 import scala.annotation.tailrec
@@ -67,16 +68,18 @@ class HttpServer(daoService: TorrentDaoService, logFile: File) extends Logging {
       }
 
     val addEndpoint: Endpoint[Seq[TorrentEntry]] =
-      post(/ :: path[String] :: param("url")) { (alias: String, url: String) =>
+      post(/ :: encPath :: param("url")) { (alias: String, url: String) =>
         Future {
-          Ok(daoService.add(TorrentEntry(alias, url)))
+          daoService.add(TorrentEntry(alias, url))
+          Ok(daoService.list)
         }
       }
 
     val removeEndpoint: Endpoint[Seq[TorrentEntry]] =
-      delete(/ :: path[String]) { (alias: String) =>
+      delete(/ :: encPath) { (alias: String) =>
         Future {
-          Ok(daoService.remove(alias))
+          daoService.remove(alias)
+          Ok(daoService.list)
         }
       }
 
@@ -101,6 +104,11 @@ class HttpServer(daoService: TorrentDaoService, logFile: File) extends Logging {
   //
   // Helpers
   //
+
+  /** URL-encoded string path element */
+  private def encPath: Endpoint[String] = {
+    path[String].map(s => URLDecoder.decode(s, Utf8.name))
+  }
 
   /**
    * Serve the local resource to user if it's represented by a valid relative path and does exist,

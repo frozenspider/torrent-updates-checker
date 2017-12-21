@@ -40,20 +40,20 @@ class UpdateChecker(
     }
   }
 
-  private def isUpdated(alias: String, url: String, providers: Providers): Boolean =
+  private def isUpdated(alias: String, url: String, providers: Providers): Boolean = {
+    val cache = cacheService.cache
+    val cachePrefix = "\"" + alias + "\""
+    val lastCheckMsPath = s"$cachePrefix.lastCheckMs"
+    val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
     providers.providerFor(url) match {
-      case Some(provider) =>
+      case Some(provider) if cache.hasPath(cachePrefix) =>
         try {
-          val cache = cacheService.cache
           val dateUpdated = provider.checkDateLastUpdated(url)
-          val cachePrefix = "\"" + url + "\""
-          val lastCheckMsPath = s"$cachePrefix.lastCheckMs"
-          val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
           val lastCheckDate = try {
             new DateTime(cache.getLong(lastCheckMsPath))
           } catch {
             case ex: ConfigException.Missing =>
-              log.info(s"URL $url wasn't checked before")
+              log.info(s"'$alias' ($url) wasn't checked before")
               // Treat it as not updated
               dateUpdated.plusSeconds(1)
           }
@@ -69,8 +69,12 @@ class UpdateChecker(
             dumperService.dump(content, providerName)
             false
         }
+      case Some(provider) =>
+        log.warn(s"Provider for '$alias' found, but it has been removed from cache")
+        false
       case None =>
         log.warn(s"Can't find provider for '$alias' ($url)")
         false
     }
+  }
 }

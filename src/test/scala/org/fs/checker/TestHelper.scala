@@ -14,6 +14,8 @@ trait TestHelper {
 
   val daoServiceMock: TestHelper.TorrentDaoServiceMock =
     new TestHelper.TorrentDaoServiceMock
+
+  val nonStandardAllowedChars = "!@#$%^&*()[]<>_+-=,.:;'?// "
 }
 
 object TestHelper {
@@ -27,16 +29,14 @@ object TestHelper {
     def list: Seq[TorrentEntry] =
       storage
 
-    def add(entry: TorrentEntry): Seq[TorrentEntry] = {
+    def add(entry: TorrentEntry): Unit = {
       require(!storage.exists(_.alias == entry.alias), "Alias exists")
       require(!storage.exists(_.url == entry.url), "URL exists")
       storage = storage :+ entry
-      storage
     }
 
-    def remove(alias: String): Seq[TorrentEntry] = {
+    def remove(alias: String): Unit = {
       storage = storage.filter(_.alias != alias)
-      storage
     }
   }
 }

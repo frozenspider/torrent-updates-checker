@@ -28,8 +28,8 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   SLF4JBridgeHandler.removeHandlersForRootLogger()
   SLF4JBridgeHandler.install()
 
-  val configFile: File = getFile("application.conf")
-  def config: Config = {
+  val config: Config = {
+    val configFile: File = getFile("application.conf")
     if (!configFile.exists) {
       log.error(s"${configFile.name} does not exist at ${absolutePath(configFile)}")
       scala.sys.exit(1)
@@ -37,21 +37,19 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     ConfigFactory.parseFileAnySyntax(configFile.jfile)
   }
 
-  val aliasesFile: File = getFile("urls.txt")
-  if (!aliasesFile.exists) {
-    aliasesFile.writeAll("")
-    log.info(s"Aliases file does not exist, created at ${absolutePath(aliasesFile)}")
+  val cacheFile: File = getFile("cache.conf")
+  if (!cacheFile.exists) {
+    cacheFile.writeAll("")
+    log.info(s"Cache file does not exist, created")
   }
 
-  lazy val cacheFile: File = getFile("cache.conf")
-
-  // TODO: Read name from config
+  // TODO: Read name from logback appender config
   lazy val logFile: File = getFile("torrent-updates-checker.log")
 
   lazy val httpPort = config.getInt("http.port")
 
   lazy val cacheService: CacheService = new CacheServiceImpl(cacheFile)
-  lazy val daoService: TorrentDaoService = new TorrentDaoServiceImpl(aliasesFile, checkUrlRecognized, cacheService)
+  lazy val daoService: TorrentDaoService = new TorrentDaoServiceImpl(checkUrlRecognized, cacheService)
   lazy val updateNotifierService: UpdateNotifierService = new UpdateNotifierServiceImpl
   lazy val dumperService: PageContentDumperService = new PageContentDumperService {
     override def dump(content: String, providerName: String): Unit = {
