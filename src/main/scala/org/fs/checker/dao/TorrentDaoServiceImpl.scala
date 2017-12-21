@@ -30,7 +30,7 @@ class TorrentDaoServiceImpl(
     require(checkUrlRecognized(entry.url), s"URL ${entry.url} is not recognized by any provider")
     val newAliasesMap = aliasesMap + (entry.alias -> entry.url)
     val cache = cacheService.cache
-    val cachePrefix = "\"" + entry.url + "\""
+    val cachePrefix = cachePrefixFor(entry.url)
     val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
     cacheService.update(cacheService.cache
       .withValue(s"$cachePrefix.alias", ConfigValueFactory.fromAnyRef(entry.alias))
@@ -40,10 +40,17 @@ class TorrentDaoServiceImpl(
 
   override def remove(alias: String): Unit = {
     val aliasesMap = getAliasesMap()
-    require((aliasesMap contains alias), s"'$alias' alias is not beign checked, current aliases: ${aliasesMapToString(aliasesMap)}")
+    require((aliasesMap contains alias), s"'$alias' alias is not being checked, current aliases: ${aliasesMapToString(aliasesMap)}")
     val url = aliasesMap(alias)
     val newAliasesMap = aliasesMap - alias
-    cacheService.update(cacheService.cache.withoutPath("\"" + url + "\""))
+    val cacheWithoutRemoved = cacheService.cache.withoutPath("\"" + url + "\"")
+    // Exclude removed path and renumerate remaining entries
+    val newCache = newAliasesMap.zipWithIndex.foldLeft(cacheWithoutRemoved) {
+      case (cache, ((alias, url), idx)) =>
+        val cachePrefix = cachePrefixFor(url)
+        cache.withValue(s"$cachePrefix.index", ConfigValueFactory.fromAnyRef(idx + 1))
+    }
+    cacheService.update(newCache)
     log.info(s"'$alias' ($url) removed from checking, current aliases: ${aliasesMapToString(newAliasesMap)}")
   }
 
@@ -58,9 +65,12 @@ class TorrentDaoServiceImpl(
       case _                            => 0
     }
     ListMap(sortedSeq.map {
-      case (url, c) => url -> c.getString("alias")
+      case (url, c) => c.getString("alias") -> url
     }: _*)
   }
+
+  private def cachePrefixFor(url: String): String =
+    "\"" + url + "\""
 
   private def aliasesMapToString(urlsMap: ListMap[String, String]): String = {
     urlsMap.keys.toSeq.mkString("'", ", ", "'")
