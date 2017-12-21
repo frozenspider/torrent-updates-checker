@@ -37,7 +37,11 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     ConfigFactory.parseFileAnySyntax(configFile.jfile)
   }
 
-  lazy val cacheFile: File = getFile("cache.conf")
+  val cacheFile: File = getFile("cache.conf")
+  if (!cacheFile.exists) {
+    cacheFile.writeAll("")
+    log.info(s"Cache file does not exist, created")
+  }
 
   // TODO: Read name from config
   lazy val logFile: File = getFile("torrent-updates-checker.log")
