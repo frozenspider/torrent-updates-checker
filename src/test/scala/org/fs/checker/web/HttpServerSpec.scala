@@ -17,6 +17,7 @@ import com.twitter.util.Throw
 import io.finch._
 import io.finch.circe._
 import shapeless._
+import java.net.URLEncoder
 
 @RunWith(classOf[JUnitRunner])
 class HttpServerSpec
@@ -65,6 +66,16 @@ class HttpServerSpec
     assert(req("/a1", Method.Delete) === Some(TE("a2", "u2") :: Nil))
     assert(req("/a2", Method.Delete) === Some(Nil))
     assert(req("", Method.Get) === Some(Nil))
+  }
+
+  it should "properly handle entry with non-URL characters" in {
+    def req(subUrl: String, method: Method) = {
+      requestChecked(server.entriesEndpoint, "/entries" + subUrl, method)
+    }
+    val string = s"a${nonStandardAllowedChars}b"
+    val encoded = URLEncoder.encode(string, utf8.name)
+    assert(req(s"/$encoded?url=$encoded", Method.Post) === Some(TE(string, string) :: Nil))
+    assert(req(s"/$encoded", Method.Delete) === Some(Nil))
   }
 
   /** Issue request to an endpoint, verify that it's 200 and return the content */
