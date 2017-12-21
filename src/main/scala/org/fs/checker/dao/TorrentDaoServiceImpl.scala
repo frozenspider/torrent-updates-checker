@@ -23,7 +23,7 @@ class TorrentDaoServiceImpl(
     getAliasesMap().map(TorrentEntry.tupled).toSeq
   }
 
-  override def add(entry: TorrentEntry): Seq[TorrentEntry] = {
+  override def add(entry: TorrentEntry): Unit = {
     val aliasesMap = getAliasesMap()
     require(!(aliasesMap contains entry.alias), s"Alias ${entry.alias} is already beign checked")
     require(!(aliasesMap.values.toSeq contains entry.url), s"URL ${entry.url} is already beign checked under the alias '${aliasesMap.find(_._2 == entry.url).get._1}'")
@@ -36,17 +36,15 @@ class TorrentDaoServiceImpl(
       .withValue(s"$cachePrefix.alias", ConfigValueFactory.fromAnyRef(entry.alias))
       .withValue(s"$cachePrefix.index", ConfigValueFactory.fromAnyRef(newAliasesMap.size)))
     log.info(s"'${entry.alias}' added, current aliases: ${aliasesMapToString(newAliasesMap)}")
-    list()
   }
 
-  override def remove(alias: String): Seq[TorrentEntry] = {
+  override def remove(alias: String): Unit = {
     val aliasesMap = getAliasesMap()
     require((aliasesMap contains alias), s"'$alias' alias is not beign checked, current aliases: ${aliasesMapToString(aliasesMap)}")
     val url = aliasesMap(alias)
     val newAliasesMap = aliasesMap - alias
     cacheService.update(cacheService.cache.withoutPath("\"" + url + "\""))
     log.info(s"'$alias' ($url) removed from checking, current aliases: ${aliasesMapToString(newAliasesMap)}")
-    list()
   }
 
   /** Alias -> URL map */

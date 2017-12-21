@@ -6,7 +6,7 @@ package org.fs.checker.dao
 trait TorrentDaoService {
   def list: Seq[TorrentEntry]
 
-  def add(entry: TorrentEntry): Seq[TorrentEntry]
+  def add(entry: TorrentEntry): Unit
 
-  def remove(alias: String): Seq[TorrentEntry]
+  def remove(alias: String): Unit
 }
