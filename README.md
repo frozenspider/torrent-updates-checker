@@ -1,0 +1,38 @@
+torrent-updates-checker
+=======================
+Application for checking torrent updates automatically.
+
+
+Building
+--------
+Java binary can be assembled via SBT by running `sbt assembly` command (will create 
+`torrent-updates-checker-<VER>.jar` in `_build` subfolder).
+
+
+Configuration
+-------------
+Copy `application.conf.example` as `application.conf` to the location of application jar
+and modify it accordingly.
+
+
+Usage
+--------
+Make sure that Java (at least version 8) is installed and `java`/`javaw` are available in `PATH`.
+
+To start an application in the background, run it as
+
+    javaw -jar torrent-updates-checker-<VER>.jar start
+
+or use the startup script in the project root.
+
+There are two ways of adding/removing aliases - via CLI or web interface.
+
+Recommended way to control the application is through web interface at http://localhost:8100/
+(given that default port is left unchanged). From there it's pretty straightforward.
+
+Alternatively, you may use this application through CLI.
+To see a list of available CLI commands, run
+
+    java -jar torrent-updates-checker-<VER>.jar
+
+However, note that aliases can't be handled through CLI if they contain some special characters (e.g. spaces).
