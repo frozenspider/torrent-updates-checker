@@ -29,7 +29,7 @@ function renderEntries(jsonArray) {
     cell1.innerHTML = entry["url"];
 
     var cell2 = tr.insertCell(2);
-    cell2.innerHTML = '<button class="js-remove" data=' + entry["alias"] +' onclick="return removeClick(event);">Remove</button>'
+    cell2.innerHTML = '<button class="js-remove" data="' + entry["alias"] + '" onclick="return removeClick(event);">Remove</button>'
   }
 }
 
@@ -44,7 +44,7 @@ function addClick(event) {
     urlEl.value = '';
     window.location.reload();
   });
-  httpRequest.open('POST', '/entries/' + alias + '?url=' + url, false);
+  httpRequest.open('POST', '/entries/' + encodeURIComponent(alias) + '?url=' + encodeURIComponent(url), false);
   httpRequest.send();
 }
 
@@ -55,18 +55,9 @@ function removeClick(event) {
     httpRequest.onreadystatechange = wrapRequestCallback(function () {
       window.location.reload();
     });
-    httpRequest.open('DELETE', '/entries/' + alias, false);
+    httpRequest.open('DELETE', '/entries/' + encodeURIComponent(alias), false);
     httpRequest.send();
   }
-}
-
-function showLog() {
-  httpRequest = new XMLHttpRequest();
-  httpRequest.onreadystatechange = wrapRequestCallback(function () {
-    window.location.reload();
-  });
-  httpRequest.open('DELETE', '/entries/' + alias, false);
-  httpRequest.send();
 }
 
 function showLog() {
