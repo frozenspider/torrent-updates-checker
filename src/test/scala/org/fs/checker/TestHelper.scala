@@ -14,6 +14,8 @@ trait TestHelper {
 
   val daoServiceMock: TestHelper.TorrentDaoServiceMock =
     new TestHelper.TorrentDaoServiceMock
+
+  val nonStandardAllowedChars = "!@#$%^&*()[]<>_+-=,.:;'?// "
 }
 
 object TestHelper {

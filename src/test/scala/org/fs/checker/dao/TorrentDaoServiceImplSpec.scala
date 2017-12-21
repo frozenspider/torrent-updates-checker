@@ -22,7 +22,7 @@ class TorrentDaoServiceImplSpec
     new CacheServiceImpl(cacheFile)
   }
   private val service = new TorrentDaoServiceImpl(
-    (url: String) => url startsWith "http://xyz",
+    (url: String) => url startsWith s"http://xyz$nonStandardAllowedChars",
     cacheService
   )
 
@@ -53,10 +53,13 @@ class TorrentDaoServiceImplSpec
       service.add(validEntry(1).copy(alias = "ali\\as"))
     }
     intercept[IllegalArgumentException] {
-      service.add(TorrentEntry("alias1", "xyz2"))
+      service.add(validEntry(1).copy(alias = "ali\"as"))
     }
     intercept[IllegalArgumentException] {
-      service.add(TorrentEntry("alias2", "xyz1"))
+      service.add(TorrentEntry(validEntry(1).alias, validEntry(2).url))
+    }
+    intercept[IllegalArgumentException] {
+      service.add(TorrentEntry(validEntry(2).alias, validEntry(1).url))
     }
     intercept[IllegalArgumentException] {
       service.add(TorrentEntry("alias2", "xy"))
@@ -79,8 +82,9 @@ class TorrentDaoServiceImplSpec
     assertCacheCorrectness(Seq(3, 10, 1).map(validEntry))
   }
 
-  private def validEntry(i: Int): TorrentEntry =
-    TorrentEntry("alias://,. !@#$%^&*()_+-=" + i, s"http://xyz$i")
+  private def validEntry(i: Int): TorrentEntry = {
+    TorrentEntry(s"alias$nonStandardAllowedChars$i", s"http://xyz$nonStandardAllowedChars$i")
+  }
 
   private def assertCacheCorrectness(entries: Seq[TorrentEntry]): Unit = {
     entries.zipWithIndex.foreach {

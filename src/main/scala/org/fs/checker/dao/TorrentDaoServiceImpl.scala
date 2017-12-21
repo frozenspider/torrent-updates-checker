@@ -25,7 +25,8 @@ class TorrentDaoServiceImpl(
 
   override def add(entry: TorrentEntry): Unit = {
     val aliasesMap = getAliasesMap()
-    require(!(entry.alias contains "\\"), s"Alias can't contain backslashes")
+    requireNoSpecialChars("Alias", entry.alias)
+    requireNoSpecialChars("URL", entry.url)
     require(!(aliasesMap contains entry.alias), s"Alias ${entry.alias} is already beign checked")
     require(!(aliasesMap.values.toSeq contains entry.url), s"URL ${entry.url} is already beign checked under the alias '${aliasesMap.find(_._2 == entry.url).get._1}'")
     require(checkUrlRecognized(entry.url), s"URL ${entry.url} is not recognized by any provider")
@@ -77,6 +78,11 @@ class TorrentDaoServiceImpl(
 
   private def aliasesMapToString(urlsMap: ListMap[String, String]): String = {
     urlsMap.keys.toSeq.mkString("'", ", ", "'")
+  }
+
+  private def requireNoSpecialChars(paramName: String, value: String): Unit = {
+    require(!(value contains "\\"), s"$paramName can't contain backslashes")
+    require(!(value contains "\""), s"$paramName can't contain double-quotes")
   }
 
   private implicit class RichConfigObject(c: ConfigObject) {
