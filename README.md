@@ -3,6 +3,16 @@ torrent-updates-checker
 Application for checking torrent updates automatically.
 
 
+Tracker support
+---------------
+Currently supports only the following torrent trackers:
+
+* [ALLTOR.ME](https://alltor.me)
+* [TAS-IX.ME](http://tas-ix.me)
+
+Both are only accessible from inside TAS-IX - Uzbekistan internal Internet exchange point.
+
+
 Building
 --------
 Java binary can be assembled via SBT by running `sbt assembly` command (will create 
@@ -16,7 +26,7 @@ and modify it accordingly.
 
 
 Usage
---------
+-----
 Make sure that Java (at least version 8) is installed and `java`/`javaw` are available in `PATH`.
 
 To start an application in the background, run it as
