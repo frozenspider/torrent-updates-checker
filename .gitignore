@@ -21,7 +21,6 @@ buildinfo.*
 # Application
 application.conf
 cache.conf
-urls.txt
 
 *.class
 *.log

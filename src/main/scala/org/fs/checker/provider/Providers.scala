@@ -18,24 +18,24 @@ import com.typesafe.config.Config
  * @author FS
  */
 class Providers(config: Config) extends Logging {
-  private val providerCompanions: Seq[ProviderCompanion[_ <: Provider]] =
+  private val providerFactories: Seq[ProviderFactory[_ <: Provider]] =
     Seq(
       TasIxMe,
       AlltorMe
     )
 
-  private val providers: Seq[Provider] = providerCompanions map (pc => {
-    if (!config.hasPath(pc.providerKey)) {
-      log.debug(s"Couldn't find config for '${pc.prettyName}', skipping")
+  private val providers: Seq[Provider] = providerFactories map (pf => {
+    if (!config.hasPath(pf.providerKey)) {
+      log.debug(s"Couldn't find config for '${pf.prettyName}', skipping")
       None
     } else {
       Try(
-        pc(config.getConfig(pc.providerKey))
+        pf(config.getConfig(pf.providerKey))
       ) match {
           case Success(p: Provider) =>
             Some(p)
           case Failure(ex) =>
-            reportProviderInitFailure(pc, ex)
+            reportProviderInitFailure(pf, ex)
             None
         }
     }
@@ -47,11 +47,11 @@ class Providers(config: Config) extends Logging {
     providers.find(_.recognizeUrl(url))
   }
 
-  private def reportProviderInitFailure(pc: ProviderCompanion[_], ex: Throwable): Unit = ex match {
+  private def reportProviderInitFailure(pf: ProviderFactory[_], ex: Throwable): Unit = ex match {
     case _: ConnectException | _: UnknownHostException =>
       // Do not log non-informative stacktraces
-      log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName} - ${ex.getClass.getName}: ${ex.getMessage}")
+      log.warn(s"Exception creating provider for ${pf.getClass.getSimpleName} - ${ex.getClass.getName}: ${ex.getMessage}")
     case _ =>
-      log.warn(s"Exception creating provider for ${pc.getClass.getSimpleName}", ex)
+      log.warn(s"Exception creating provider for ${pf.getClass.getSimpleName}", ex)
   }
 }

@@ -4,7 +4,7 @@ import java.net.URL
 
 import org.apache.http.client.HttpClient
 import org.fs.checker.provider.Provider
-import org.fs.checker.provider.ProviderCompanion
+import org.fs.checker.provider.ProviderFactory
 import org.fs.checker.utility.DurationParser
 import org.fs.utility.web.Imports._
 
@@ -39,7 +39,7 @@ class AlltorMe(httpClient: HttpClient) extends Provider {
   }
 }
 
-object AlltorMe extends ProviderCompanion[AlltorMe] {
+object AlltorMe extends ProviderFactory[AlltorMe] {
   override val prettyName: String = "alltor.me"
 
   override val providerKey: String = "alltor"

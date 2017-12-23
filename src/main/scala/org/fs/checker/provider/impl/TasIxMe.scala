@@ -5,7 +5,7 @@ import java.net.URL
 import org.apache.http.client.HttpClient
 import org.apache.http.impl.cookie.BasicClientCookie
 import org.fs.checker.provider.Provider
-import org.fs.checker.provider.ProviderCompanion
+import org.fs.checker.provider.ProviderFactory
 import org.fs.checker.utility.DurationParser
 import org.fs.utility.web.Imports._
 
@@ -40,7 +40,7 @@ class TasIxMe(httpClient: HttpClient) extends Provider {
   }
 }
 
-object TasIxMe extends ProviderCompanion[TasIxMe] {
+object TasIxMe extends ProviderFactory[TasIxMe] {
   override val prettyName: String = "tas-ix.me"
 
   override val providerKey: String = "tasix"
