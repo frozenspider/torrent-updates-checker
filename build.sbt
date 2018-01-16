@@ -17,22 +17,23 @@ resolvers += "jitpack" at "https://jitpack.io"
 
 libraryDependencies ++= Seq(
   // Logging
-  "org.slf4s"               %% "slf4s-api"       % "1.7.25",
-  "org.slf4j"               %  "jul-to-slf4j"    % "1.7.25",
-  "ch.qos.logback"          %  "logback-classic" % "1.1.2",
+  "org.slf4s"               %% "slf4s-api"         % "1.7.25",
+  "org.slf4j"               %  "jul-to-slf4j"      % "1.7.25",
+  "ch.qos.logback"          %  "logback-classic"   % "1.1.2",
   // UI
-  "org.scala-lang.modules"  %% "scala-swing"     % "2.0.0",
+  "org.scala-lang.modules"  %% "scala-swing"       % "2.0.0",
   // Web
-  "com.github.finagle"      %% "finch-core"      % "0.16.0-M5",
-  "com.github.finagle"      %% "finch-circe"     % "0.16.0-M5",
-  "io.circe"                %% "circe-generic"   % "0.9.0-M2",
+  "com.github.finagle"      %% "finch-core"        % "0.16.0-M5",
+  "com.github.finagle"      %% "finch-circe"       % "0.16.0-M5",
+  "io.circe"                %% "circe-generic"     % "0.9.0-M2",
   // Other
-  "com.github.frozenspider" %% "fs-web-utils"    % "0.5.3",
-  "org.apache.commons"      %  "commons-lang3"   % "3.4",
-  "com.github.nscala-time"  %% "nscala-time"     % "2.16.0",
-  "com.typesafe"            %  "config"          % "1.3.0",
+  "com.github.frozenspider" %% "fs-web-utils"      % "0.5.3",
+  "org.apache.commons"      %  "commons-lang3"     % "3.4",
+  "com.github.nscala-time"  %% "nscala-time"       % "2.16.0",
+  "com.typesafe"            %  "config"            % "1.3.0",
+  "com.github.albfernandez" %  "juniversalchardet" % "2.1.0",
   // Test
-  "junit"                   %  "junit"           % "4.12"  % "test",
-  "org.scalactic"           %% "scalactic"       % "3.0.4" % "test",
-  "org.scalatest"           %% "scalatest"       % "3.0.4" % "test"
+  "junit"                   %  "junit"             % "4.12"  % "test",
+  "org.scalactic"           %% "scalactic"         % "3.0.4" % "test",
+  "org.scalatest"           %% "scalatest"         % "3.0.4" % "test"
 )

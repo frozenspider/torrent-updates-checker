@@ -2,16 +2,18 @@ package org.fs.checker.provider.impl
 
 import java.net.URL
 
+import scala.util.Try
+
 import org.apache.http.client.HttpClient
 import org.apache.http.impl.cookie.BasicClientCookie
 import org.fs.checker.provider.Provider
 import org.fs.checker.provider.ProviderFactory
 import org.fs.checker.utility.DurationParser
+import org.fs.checker.utility.ResponseBodyDecoder
 import org.fs.utility.web.Imports._
 
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.Config
-import scala.util.Try
 
 /**
  * @author FS
@@ -25,7 +27,7 @@ class TasIxMe(httpClient: HttpClient) extends Provider {
 
   override def fetch(url: String): String = {
     val resp = httpClient.request(GET(url).addTimeout(TasIxMe.timeoutMs))
-    resp.bodyString
+    ResponseBodyDecoder.bodyToString(resp)
   }
 
   override def parseDateLastUpdated(content: String): DateTime = {

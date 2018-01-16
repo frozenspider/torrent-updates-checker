@@ -46,3 +46,9 @@ To see a list of available CLI commands, run
     java -jar torrent-updates-checker-<VER>.jar
 
 However, note that aliases can't be handled through CLI if they contain some special characters (e.g. spaces).
+
+
+Changelog
+---------
+
+See [CHANGELOG.md](CHANGELOG.md)

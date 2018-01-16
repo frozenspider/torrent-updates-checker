@@ -65,7 +65,7 @@ class UpdateChecker(
           dateUpdated >= lastCheckDate
         } catch {
           case PageParsingException(providerName, url, content, th) =>
-            log.error("$name failed to process $url, content dumped", th)
+            log.error(s"${provider.prettyName} failed to process $url, content dumped", th)
             dumperService.dump(content, providerName)
             false
         }
