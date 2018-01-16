@@ -55,6 +55,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     override def dump(content: String, providerName: String): Unit = {
       val nowString = DateTime.now.toString("yyyy-MM-dd_HH-mm")
       val file = getFile(providerName + "/" + nowString + ".html")
+      file.parent.createDirectory()
       file.writeAll(content)
     }
   }
