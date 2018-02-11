@@ -75,10 +75,24 @@ class LinkLabel extends Label with Logging {
   }
 
   private def openLinkIfPossible(uri: URI): Unit = {
-    // Code for other OS: https://binfalse.de/2011/01/03/adding-a-hyperlink-to-java-swing-gui/
     try {
+      // Only supported on Windows and Gnome
+      // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6486393
       if (Desktop.isDesktopSupported()) {
         Desktop.getDesktop.browse(uri)
+      } else {
+        // Code for other OS: https://binfalse.de/2011/01/03/adding-a-hyperlink-to-java-swing-gui/
+        val osName = System.getProperty("os.name")
+        val browser = System.getenv.get("BROWSER")
+        if (osName.startsWith("Mac OS")) {
+          val fileMgrClass = Class.forName("com.apple.eio.FileManager")
+          val openUrlMethod = fileMgrClass.getDeclaredMethod("openURL", classOf[String])
+          openUrlMethod.invoke(null, uri)
+        } else if (browser != null) {
+          Runtime.getRuntime.exec(s"$browser $uri")
+        } else {
+          log.warn(s"Can't open links on this system ($osName)")
+        }
       }
     } catch {
       case ex: Exception =>
