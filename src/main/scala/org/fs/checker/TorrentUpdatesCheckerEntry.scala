@@ -92,6 +92,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   def start(args: Seq[String]): Unit = {
+    log.info(s"${BuildInfo.name} v${BuildInfo.version}")
     if (httpPort != 0) {
       startAsyncServer()
     }
