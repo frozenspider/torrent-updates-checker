@@ -1,4 +1,4 @@
-### CURRENT
+### 1.2
 * Links in popup are now clickable
   * Works on Windows, untested best-shot implementation for Linux (uses `BROWSER` env var) and Mac OS
 
