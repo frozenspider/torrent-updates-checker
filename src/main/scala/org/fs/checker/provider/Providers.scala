@@ -18,24 +18,24 @@ import com.typesafe.config.Config
  * @author FS
  */
 class Providers(config: Config) extends Logging {
-  private val providerFactories: Seq[ProviderFactory[_ <: Provider]] =
+  private val rawProvider: Seq[RawProvider] =
     Seq(
       TasIxMe,
       AlltorMe
     )
 
-  private val providers: Seq[Provider] = providerFactories map (pf => {
-    if (!config.hasPath(pf.providerKey)) {
-      log.debug(s"Couldn't find config for '${pf.prettyName}', skipping")
+  private lazy val configuredProviders: Seq[ConfiguredProvider] = rawProvider map (raw => {
+    if (!config.hasPath(raw.providerKey)) {
+      log.debug(s"Couldn't find config for '${raw.prettyName}', skipping")
       None
     } else {
       Try(
-        pf(config.getConfig(pf.providerKey))
+        raw.withConfig(config.getConfig(raw.providerKey))
       ) match {
-          case Success(p: Provider) =>
+          case Success(p: ConfiguredProvider) =>
             Some(p)
           case Failure(ex) =>
-            reportProviderInitFailure(pf, ex)
+            reportProviderInitFailure(raw, ex)
             None
         }
     }
@@ -43,15 +43,19 @@ class Providers(config: Config) extends Logging {
     case Some(p) => p
   }
 
-  def providerFor(url: String): Option[Provider] = {
-    providers.find(_.recognizeUrl(url))
+  def hasProviderFor(url: String): Boolean = {
+    rawProvider.exists(_.recognizeUrl(url))
   }
 
-  private def reportProviderInitFailure(pf: ProviderFactory[_], ex: Throwable): Unit = ex match {
+  def providerFor(url: String): Option[ConfiguredProvider] = {
+    configuredProviders.find(_.recognizeUrl(url))
+  }
+
+  private def reportProviderInitFailure(raw: RawProvider, ex: Throwable): Unit = ex match {
     case _: ConnectException | _: UnknownHostException =>
       // Do not log non-informative stacktraces
-      log.warn(s"Exception creating provider for ${pf.getClass.getSimpleName} - ${ex.getClass.getName}: ${ex.getMessage}")
+      log.warn(s"Exception creating provider for ${raw.getClass.getSimpleName} - ${ex.getClass.getName}: ${ex.getMessage}")
     case _ =>
-      log.warn(s"Exception creating provider for ${pf.getClass.getSimpleName}", ex)
+      log.warn(s"Exception creating provider for ${raw.getClass.getSimpleName}", ex)
   }
 }
