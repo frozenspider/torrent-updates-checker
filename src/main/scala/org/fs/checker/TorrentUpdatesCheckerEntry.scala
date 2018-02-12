@@ -141,7 +141,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   private def checkUrlRecognized(url: String): Boolean = {
-    getProviders().providerFor(url).isDefined
+    getProviders().hasProviderFor(url)
   }
 
   private def absolutePath(f: File): String = f.jfile.getAbsolutePath

@@ -6,8 +6,9 @@ import scala.util.Try
 
 import org.apache.http.client.HttpClient
 import org.apache.http.impl.cookie.BasicClientCookie
-import org.fs.checker.provider.Provider
-import org.fs.checker.provider.ProviderFactory
+import org.fs.checker.provider.ConfiguredProvider
+import org.fs.checker.provider.GenProvider
+import org.fs.checker.provider.RawProvider
 import org.fs.checker.utility.DurationParser
 import org.fs.checker.utility.ResponseBodyDecoder
 import org.fs.utility.web.Imports._
@@ -15,18 +16,21 @@ import org.fs.utility.web.Imports._
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.Config
 
-/**
- * @author FS
- */
-class TasIxMe(httpClient: HttpClient) extends Provider {
-  override val prettyName: String = TasIxMe.prettyName
+class TasIxMeBase extends GenProvider {
+  override val prettyName: String = "tas-ix.me"
+
+  override val providerKey: String = "tasix"
+
+  val timeoutMs: Int = 60 * 1000
 
   override def recognizeUrl(url: String): Boolean = {
     Try(Seq("tas-ix.me", "tas-ix.net") contains (new URL(url)).getHost).getOrElse(false)
   }
+}
 
+class TasIxMe(httpClient: HttpClient) extends TasIxMeBase with ConfiguredProvider {
   override def fetch(url: String): String = {
-    val resp = httpClient.request(GET(url).addTimeout(TasIxMe.timeoutMs))
+    val resp = httpClient.request(GET(url).addTimeout(timeoutMs))
     ResponseBodyDecoder.bodyToString(resp)
   }
 
@@ -42,14 +46,8 @@ class TasIxMe(httpClient: HttpClient) extends Provider {
   }
 }
 
-object TasIxMe extends ProviderFactory[TasIxMe] {
-  override val prettyName: String = "tas-ix.me"
-
-  override val providerKey: String = "tasix"
-
-  val timeoutMs: Int = 60 * 1000
-
-  override def apply(config: Config): TasIxMe = {
+object TasIxMe extends TasIxMeBase with RawProvider {
+  override def withConfig(config: Config): TasIxMe = {
     val (httpClient, cookieStore) = simpleClientWithStore()
     // Recently introduced "anti-ddos", so to speak
     val antiDdosCookie = {
