@@ -1,3 +1,5 @@
+### SNAPSHOT
+
 ### 1.2.2
 * Fixed issue with non-ASCII chars in alias and username/password
 
