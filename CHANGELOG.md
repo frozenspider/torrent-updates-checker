@@ -1,4 +1,4 @@
-### CURRENT
+### 1.2.1
 * Adding URLs no longer causes immediate auth query from every provider
 
 ### 1.2
