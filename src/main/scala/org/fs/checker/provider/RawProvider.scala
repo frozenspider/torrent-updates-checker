@@ -1,5 +1,7 @@
 package org.fs.checker.provider
 
+import org.fs.checker.dumping.PageContentDumpService
+
 import com.typesafe.config.Config
 
 /**
@@ -8,6 +10,6 @@ import com.typesafe.config.Config
  * @author FS
  */
 trait RawProvider extends GenProvider {
-  /** Create a provider, initialized using a given (full) config */
-  def withConfig(config: Config): ConfiguredProvider
+  /** Create a provider, initialized using a given (full) config and content dumping service */
+  def withConfig(config: Config, dumpService: PageContentDumpService): ConfiguredProvider
 }

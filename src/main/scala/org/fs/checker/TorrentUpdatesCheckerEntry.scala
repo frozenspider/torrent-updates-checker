@@ -1,5 +1,6 @@
 package org.fs.checker
 
+import scala.io.Codec
 import scala.reflect.io.File
 
 import org.fs.checker.cache.CacheService
@@ -7,7 +8,7 @@ import org.fs.checker.cache.CacheServiceImpl
 import org.fs.checker.dao.TorrentDaoService
 import org.fs.checker.dao.TorrentDaoServiceImpl
 import org.fs.checker.dao.TorrentEntry
-import org.fs.checker.dumping.PageContentDumperService
+import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.notification.UpdateNotifierService
 import org.fs.checker.notification.UpdateNotifierServiceImpl
 import org.fs.checker.provider.Providers
@@ -51,9 +52,9 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   lazy val cacheService: CacheService = new CacheServiceImpl(cacheFile)
   lazy val daoService: TorrentDaoService = new TorrentDaoServiceImpl(checkUrlRecognized, cacheService)
   lazy val updateNotifierService: UpdateNotifierService = new UpdateNotifierServiceImpl
-  lazy val dumperService: PageContentDumperService = new PageContentDumperService {
+  lazy val dumpService: PageContentDumpService = new PageContentDumpService {
     override def dump(content: String, providerName: String): Unit = {
-      val nowString = DateTime.now.toString("yyyy-MM-dd_HH-mm")
+      val nowString = DateTime.now.toString("yyyy-MM-dd_HH-mm-ss")
       val file = getFile(providerName + "/" + nowString + ".html")
       file.parent.createDirectory()
       file.writeAll(content)
@@ -64,7 +65,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   lazy val updateChecker: UpdateChecker =
-    new UpdateChecker(getProviders, () => daoService.list, updateNotifierService, cacheService, dumperService)
+    new UpdateChecker(getProviders _, () => daoService.list, updateNotifierService, cacheService)
 
   def add(args: Seq[String]): Unit = {
     wrapServiceCallForCli {
@@ -133,11 +134,11 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   private def getFile(s: String): File = {
-    new File(new java.io.File(s))
+    new File(new java.io.File(s))(Codec.UTF8)
   }
 
   private def getProviders(): Providers = {
-    new Providers(config)
+    new Providers(config, dumpService)
   }
 
   private def checkUrlRecognized(url: String): Boolean = {

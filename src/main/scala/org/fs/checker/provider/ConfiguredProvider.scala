@@ -1,5 +1,6 @@
 package org.fs.checker.provider
 
+import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.dumping.PageParsingException
 import org.joda.time.DateTime
 import org.slf4s.Logging
@@ -25,4 +26,10 @@ trait ConfiguredProvider extends GenProvider with Logging {
   def fetch(url: String): String
 
   def parseDateLastUpdated(content: String): DateTime
+
+  protected def dumpService: PageContentDumpService
+
+  /** Dump the given HTML content to a file for further examination by hand */
+  def dump(content: String): Unit =
+    dumpService.dump(content, providerKey)
 }
