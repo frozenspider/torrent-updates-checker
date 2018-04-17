@@ -1,6 +1,7 @@
 package org.fs.checker.provider.impl
 
 import java.net.URL
+import java.nio.charset.StandardCharsets
 
 import scala.util.Try
 
@@ -60,12 +61,12 @@ object TasIxMe extends TasIxMeBase with RawProvider {
     cookieStore.addCookie(antiDdosCookie)
     val authReq = POST("http://tas-ix.me/login.php")
       .addTimeout(timeoutMs)
+      .setCharset(StandardCharsets.UTF_8) // Needed for transmitting non-ASCII parameters
       .addParameters(Map(
         "login_username" -> config.getString("login"),
         "login_password" -> config.getString("password"),
         "autologin" -> "1",
-        "login" -> "Вход",
-        "redirect" -> "index.php"
+        "login" -> "Вход"
       ))
     val response = httpClient.request(authReq)
     if (response.code != 302) {
