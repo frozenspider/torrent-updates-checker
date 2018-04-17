@@ -2,7 +2,7 @@ package org.fs.checker
 
 import org.fs.checker.cache.CacheService
 import org.fs.checker.dao.TorrentEntry
-import org.fs.checker.dumping.PageContentDumperService
+import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.dumping.PageParsingException
 import org.fs.checker.notification.UpdateNotifierService
 import org.fs.checker.provider.Providers
@@ -19,8 +19,7 @@ class UpdateChecker(
   getProviders:          () => Providers,
   listEntries:           () => Seq[TorrentEntry],
   updateNotifierService: UpdateNotifierService,
-  cacheService:          CacheService,
-  dumperService:         PageContentDumperService
+  cacheService:          CacheService
 ) extends Logging {
 
   def checkForUpdates(): Unit = {
@@ -66,7 +65,7 @@ class UpdateChecker(
         } catch {
           case PageParsingException(providerName, url, content, th) =>
             log.error(s"${provider.prettyName} failed to process $url, content dumped", th)
-            dumperService.dump(content, providerName)
+            provider.dump(content)
             false
         }
       case Some(provider) =>

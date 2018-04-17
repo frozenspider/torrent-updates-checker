@@ -17,7 +17,7 @@ class AlltorMeSpec
     extends FlatSpec
     with TestHelper {
 
-  val instance: org.fs.checker.provider.impl.AlltorMe = new AlltorMe(null)
+  val instance: AlltorMe = new AlltorMe(null, null)
 
   behavior of "alltor.me provider"
 

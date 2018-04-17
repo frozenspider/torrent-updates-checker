@@ -17,7 +17,7 @@ class TasIxNetSpec
     extends FlatSpec
     with TestHelper {
 
-  val instance: org.fs.checker.provider.impl.TasIxMe = new TasIxMe(null)
+  val instance: TasIxMe = new TasIxMe(null, null)
 
   behavior of "tas-ix.net provider"
 
