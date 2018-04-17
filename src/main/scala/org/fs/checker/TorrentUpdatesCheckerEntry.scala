@@ -1,5 +1,6 @@
 package org.fs.checker
 
+import scala.io.Codec
 import scala.reflect.io.File
 
 import org.fs.checker.cache.CacheService
@@ -133,7 +134,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   private def getFile(s: String): File = {
-    new File(new java.io.File(s))
+    new File(new java.io.File(s))(Codec.UTF8)
   }
 
   private def getProviders(): Providers = {

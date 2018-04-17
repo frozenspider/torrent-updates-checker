@@ -1,4 +1,5 @@
 ### SNAPSHOT
+* Fixed issue with non-ASCII chars in download name
 
 ### 1.2.1
 * Adding URLs no longer causes immediate auth query from every provider
