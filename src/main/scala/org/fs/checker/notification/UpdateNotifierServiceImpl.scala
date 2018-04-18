@@ -64,7 +64,7 @@ object UpdateNotifierServiceImpl extends App {
   import scala.concurrent.duration._
 
   val f = (new UpdateNotifierServiceImpl).notifyInner(Seq(
-    TorrentEntry("example", "http://www.example.com"),
+    TorrentEntry("проверка", "http://www.example.com"),
     TorrentEntry("google", "http://www.google.com")
   ))
   Await.ready(f, 100.second)
