@@ -18,11 +18,13 @@ import io.finch._
 import io.finch.circe._
 import shapeless._
 import java.net.URLEncoder
+import org.scalatest.BeforeAndAfter
 
 @RunWith(classOf[JUnitRunner])
 class HttpServerSpec
-    extends FlatSpec
-    with TestHelper {
+  extends FlatSpec
+  with BeforeAndAfter
+  with TestHelper {
 
   private type TE = TorrentEntry
   private val TE = TorrentEntry
@@ -36,6 +38,10 @@ class HttpServerSpec
   private val server = new HttpServer(daoServiceMock, logFile)
 
   behavior of "finch http server"
+
+  before {
+    daoServiceMock.reset()
+  }
 
   it should "serve root page" in {
     assert(requestTextChecked(server.rootEndpoint, "/").startsWith("<html>"))
@@ -75,15 +81,16 @@ class HttpServerSpec
     val string = s"a${nonStandardAllowedChars}b"
     val encoded = URLEncoder.encode(string, utf8.name)
     assert(req(s"/$encoded?url=$encoded", Method.Post) === Some(TE(string, string) :: Nil))
+//    assert(req("/%D0%BF%D1%80?url=%D0%BE%D0%B2", Method.Post) === Some(TE(string, string) :: TE("\u043F\u0440", "\u043e\u0432") :: Nil))
     assert(req(s"/$encoded", Method.Delete) === Some(Nil))
   }
 
   /** Issue request to an endpoint, verify that it's 200 and return the content */
   private def requestChecked(
-      endpoint:     Endpoint[_],
-      url:          String,
-      method:       Method      = Method.Get,
-      expectedCode: Int         = 200
+    endpoint:     Endpoint[_],
+    url:          String,
+    method:       Method      = Method.Get,
+    expectedCode: Int         = 200
   ): Option[Any] = {
     val input = Input.fromRequest(Request(method, Request.queryString(url)))
     val resultOptionTry = endpoint(input).awaitOutput()

@@ -1,15 +1,15 @@
 package org.fs.checker.provider
 
+import java.net.ConnectException
+import java.net.UnknownHostException
+
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 
-import java.net.ConnectException
-import java.net.UnknownHostException
-
+import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.provider.impl.AlltorMe
 import org.fs.checker.provider.impl.TasIxMe
-import org.joda.time.DateTime
 import org.slf4s.Logging
 
 import com.typesafe.config.Config
@@ -17,7 +17,7 @@ import com.typesafe.config.Config
 /**
  * @author FS
  */
-class Providers(config: Config) extends Logging {
+class Providers(config: Config, dumpService: PageContentDumpService) extends Logging {
   private val rawProvider: Seq[RawProvider] =
     Seq(
       TasIxMe,
@@ -30,7 +30,7 @@ class Providers(config: Config) extends Logging {
       None
     } else {
       Try(
-        raw.withConfig(config.getConfig(raw.providerKey))
+        raw.withConfig(config.getConfig(raw.providerKey), dumpService)
       ) match {
           case Success(p: ConfiguredProvider) =>
             Some(p)

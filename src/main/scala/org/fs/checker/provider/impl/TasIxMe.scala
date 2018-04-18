@@ -1,11 +1,13 @@
 package org.fs.checker.provider.impl
 
 import java.net.URL
+import java.nio.charset.StandardCharsets
 
 import scala.util.Try
 
 import org.apache.http.client.HttpClient
 import org.apache.http.impl.cookie.BasicClientCookie
+import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.provider.ConfiguredProvider
 import org.fs.checker.provider.GenProvider
 import org.fs.checker.provider.RawProvider
@@ -28,7 +30,7 @@ class TasIxMeBase extends GenProvider {
   }
 }
 
-class TasIxMe(httpClient: HttpClient) extends TasIxMeBase with ConfiguredProvider {
+class TasIxMe(httpClient: HttpClient, override val dumpService: PageContentDumpService) extends TasIxMeBase with ConfiguredProvider {
   override def fetch(url: String): String = {
     val resp = httpClient.request(GET(url).addTimeout(timeoutMs))
     ResponseBodyDecoder.bodyToString(resp)
@@ -47,7 +49,7 @@ class TasIxMe(httpClient: HttpClient) extends TasIxMeBase with ConfiguredProvide
 }
 
 object TasIxMe extends TasIxMeBase with RawProvider {
-  override def withConfig(config: Config): TasIxMe = {
+  override def withConfig(config: Config, dumpService: PageContentDumpService): TasIxMe = {
     val (httpClient, cookieStore) = simpleClientWithStore()
     // Recently introduced "anti-ddos", so to speak
     val antiDdosCookie = {
@@ -59,17 +61,18 @@ object TasIxMe extends TasIxMeBase with RawProvider {
     cookieStore.addCookie(antiDdosCookie)
     val authReq = POST("http://tas-ix.me/login.php")
       .addTimeout(timeoutMs)
+      .setCharset(StandardCharsets.UTF_8) // Needed for transmitting non-ASCII parameters
       .addParameters(Map(
         "login_username" -> config.getString("login"),
         "login_password" -> config.getString("password"),
         "autologin" -> "1",
-        "login" -> "Вход",
-        "redirect" -> "index.php"
+        "login" -> "Вход"
       ))
     val response = httpClient.request(authReq)
     if (response.code != 302) {
-      throw new IllegalArgumentException(s"Failed to auth, got code ${response.code}, content ${response.bodyString}")
+      dumpService.dump(response.bodyString, providerKey)
+      throw new IllegalArgumentException(s"Failed to auth, got code ${response.code}, content dumped to file")
     }
-    new TasIxMe(httpClient)
+    new TasIxMe(httpClient, dumpService)
   }
 }
