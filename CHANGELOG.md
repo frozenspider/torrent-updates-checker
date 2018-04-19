@@ -1,4 +1,6 @@
 ### SNAPSHOT
+* Providers are now skipped if their configured login is empty
+(previously, was skipped if their config lines were deleted)
 
 ### 1.2.2
 * Fixed issue with non-ASCII chars in alias and username/password
