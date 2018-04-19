@@ -70,7 +70,7 @@ object TasIxMe extends TasIxMeBase with RawProvider {
       ))
     val response = httpClient.request(authReq)
     if (response.code != 302) {
-      dumpService.dump(response.bodyString, providerKey)
+      dumpService.dump(response.bodyStringUTF8, providerKey)
       throw new IllegalArgumentException(s"Failed to auth, got code ${response.code}, content dumped to file")
     }
     new TasIxMe(httpClient, dumpService)
