@@ -1,4 +1,5 @@
 ### SNAPSHOT
+* Fixed startup script to work properly with path containing spaces
 * Providers are now skipped if their configured login is empty
 (previously, was skipped if their config lines were deleted)
 
