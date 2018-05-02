@@ -1,4 +1,5 @@
 ### SNAPSHOT
+* Popup now plays a notification sound when displayed
 * Links in web interface are now also clickable
 * Fixed startup script to work properly with path containing spaces
 * Providers are now skipped if their configured login is empty

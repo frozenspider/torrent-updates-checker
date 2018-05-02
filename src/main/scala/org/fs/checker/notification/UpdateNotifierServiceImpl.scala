@@ -1,18 +1,20 @@
 package org.fs.checker.notification
 
+import java.awt.Toolkit
+import java.net.URI
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.swing.BorderPanel
+import scala.swing.BorderPanel.Position._
 import scala.swing.Dialog
+import scala.swing.FlowPanel
 import scala.swing.Frame
+import scala.swing.Label
+import scala.swing.event.WindowOpened
 
 import org.fs.checker.dao.TorrentEntry
 import org.slf4s.Logging
-import java.net.URI
-import scala.swing.Panel
-import scala.swing.FlowPanel
-import scala.swing.BorderPanel
-import scala.swing.event.MouseEntered
-import scala.swing.Label
 
 /**
  * @author FS
@@ -40,9 +42,11 @@ class UpdateNotifierServiceImpl extends UpdateNotifierService with Logging {
         frame.peer.setLocationRelativeTo(null)
         frame
       }
+      frame.reactions += {
+        case e: WindowOpened => Toolkit.getDefaultToolkit().beep()
+      }
       frame.visible = true
       val content = new BorderPanel {
-        import BorderPanel.Position._
         val inner = new FlowPanel(labels: _*) {
           hGap = 1
           vGap = 1
