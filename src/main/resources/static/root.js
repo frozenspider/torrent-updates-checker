@@ -26,7 +26,7 @@ function renderEntries(jsonArray) {
     cell0.innerHTML = entry["alias"];
 
     var cell1 = tr.insertCell(1);
-    cell1.innerHTML = entry["url"];
+    cell1.innerHTML = '<a href="' + entry["url"] + '">' + entry["url"] + '</a>';
 
     var cell2 = tr.insertCell(2);
     cell2.innerHTML = '<button class="js-remove" data="' + entry["alias"] + '" onclick="return removeClick(event);">Remove</button>'
