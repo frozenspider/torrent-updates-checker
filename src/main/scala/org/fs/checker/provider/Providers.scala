@@ -25,7 +25,7 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
     )
 
   private lazy val configuredProviders: Seq[ConfiguredProvider] = rawProvider map (raw => {
-    if (!config.hasPath(raw.providerKey)) {
+    if (!config.hasPath(raw.providerKey) || config.getConfig(raw.providerKey).getString("login").isEmpty) {
       log.debug(s"Couldn't find config for '${raw.prettyName}', skipping")
       None
     } else {
