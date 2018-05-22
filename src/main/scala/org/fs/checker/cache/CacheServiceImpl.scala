@@ -3,11 +3,9 @@ package org.fs.checker.cache
 import scala.reflect.io.File
 import scala.util.Try
 
+import org.fs.checker.utility.ConfigAccessor
 import org.slf4s.Logging
 
-import com.typesafe.config.Config
-import com.typesafe.config.ConfigFactory
-import com.typesafe.config.ConfigRenderOptions
 import com.typesafe.config.ConfigValueFactory
 
 /**
@@ -17,50 +15,35 @@ class CacheServiceImpl(cacheFile: File)
   extends CacheService
   with Logging {
 
+  protected[cache] val accessor = new ConfigAccessor(cacheFile)
+
   log.debug("Cache file: " + cacheFile.jfile.getAbsolutePath)
 
-  private lazy val cacheWriteFormat: ConfigRenderOptions =
-    ConfigRenderOptions.concise
-      .setFormatted(true)
-      .setJson(false)
-
-  override def cache: Config =
-    this.synchronized {
-      ConfigFactory.parseFileAnySyntax(cacheFile.jfile)
-    }
-
-  override def update(newCache: Config): Unit =
-    this.synchronized {
-      cacheFile.writeAll(newCache.root.render(cacheWriteFormat))
-    } ensuring {
-      cache == newCache
-    }
-
-  override def getCachedDetails(alias: String): Option[CachedDetails] = {
-    val cachePrefix = "\"" + alias + "\""
+  override def getCachedDetails(url: String): Option[CachedDetails] = {
+    val cachePrefix = "\"" + url + "\""
     val lastCheckMsPath = s"$cachePrefix.lastCheckMs"
     val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
-    if (!cache.hasPath(cachePrefix)) {
+    if (!accessor.config.hasPath(cachePrefix)) {
       None
     } else {
-      val lastCheckMsOption = Try(cache.getLong(lastCheckMsPath)).toOption
-      val lastUpdateMsOption = Try(cache.getLong(lastUpdateMsPath)).toOption
+      val lastCheckMsOption = Try(accessor.config.getLong(lastCheckMsPath)).toOption
+      val lastUpdateMsOption = Try(accessor.config.getLong(lastUpdateMsPath)).toOption
       Some(CachedDetails(lastCheckMsOption, lastUpdateMsOption))
     }
   }
 
-  override def updateCachedDetails(alias: String, cachedDetails: CachedDetails): Unit = {
-    val cachePrefix = "\"" + alias + "\""
+  override def updateCachedDetails(url: String, cachedDetails: CachedDetails): Unit = {
+    val cachePrefix = "\"" + url + "\""
     val lastCheckMsPath = s"$cachePrefix.lastCheckMs"
     val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
     val updateMap = Map(
       lastCheckMsPath -> cachedDetails.lastCheckMsOption,
       lastUpdateMsPath -> cachedDetails.lastUpdateMsOption
     )
-    val newCache = updateMap.foldLeft(cache) {
-      case (cache, (path, Some(value))) => cache.withValue(path, ConfigValueFactory.fromAnyRef(value))
-      case _                            => cache
+    val newConfig = updateMap.foldLeft(accessor.config) {
+      case (config, (path, Some(value))) => config.withValue(path, ConfigValueFactory.fromAnyRef(value))
+      case (config, _)                   => config
     }
-    update(newCache)
+    accessor.update(newConfig)
   }
 }

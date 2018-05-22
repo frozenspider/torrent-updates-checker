@@ -1,10 +1,12 @@
 package org.fs.checker.dao
 
 import scala.collection.immutable.ListMap
+import scala.reflect.io.File
 
-import org.fs.checker.cache.CacheService
+import org.fs.checker.utility.ConfigAccessor
 import org.slf4s.Logging
 
+import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigObject
 import com.typesafe.config.ConfigValue
 import com.typesafe.config.ConfigValueFactory
@@ -14,10 +16,12 @@ import com.typesafe.config.ConfigValueFactory
  */
 class TorrentDaoServiceImpl(
   checkUrlRecognized: String => Boolean,
-  cacheService:       CacheService
+  listFile:           File
 )
-    extends TorrentDaoService
-    with Logging {
+  extends TorrentDaoService
+  with Logging {
+
+  protected[dao] val accessor = new ConfigAccessor(listFile)
 
   override def list(): Seq[TorrentEntry] = {
     getAliasesMap().map(TorrentEntry.tupled).toSeq
@@ -31,10 +35,8 @@ class TorrentDaoServiceImpl(
     require(!(aliasesMap.values.toSeq contains entry.url), s"URL ${entry.url} is already beign checked under the alias '${aliasesMap.find(_._2 == entry.url).get._1}'")
     require(checkUrlRecognized(entry.url), s"URL ${entry.url} is not recognized by any provider")
     val newAliasesMap = aliasesMap + (entry.alias -> entry.url)
-    val cache = cacheService.cache
-    val cachePrefix = doubleQuote(entry.alias)
-    val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
-    cacheService.update(cacheService.cache
+    val cachePrefix = "manual." + doubleQuote(entry.alias)
+    accessor.update(accessor.config
       .withValue(s"$cachePrefix.index", ConfigValueFactory.fromAnyRef(newAliasesMap.size))
       .withValue(s"$cachePrefix.url", ConfigValueFactory.fromAnyRef(entry.url)))
     log.info(s"'${entry.alias}' added, current aliases: ${aliasesMapToString(newAliasesMap)}")
@@ -45,25 +47,25 @@ class TorrentDaoServiceImpl(
     require((aliasesMap contains alias), s"'$alias' alias is not being checked, current aliases: ${aliasesMapToString(aliasesMap)}")
     val url = aliasesMap(alias)
     val newAliasesMap = aliasesMap - alias
-    val newCache = {
+    val newConfig = {
       // Exclude removed path and renumerate remaining entries
-      val cacheWithoutRemoved = cacheService.cache.withoutPath(doubleQuote(alias))
+      val cacheWithoutRemoved = accessor.config.withoutPath("manual." + doubleQuote(alias))
       newAliasesMap.zipWithIndex.foldLeft(cacheWithoutRemoved) {
         case (cache, ((alias, url), idx)) =>
-          val cachePrefix = doubleQuote(alias)
+          val cachePrefix = "manual." + doubleQuote(alias)
           cache.withValue(s"$cachePrefix.index", ConfigValueFactory.fromAnyRef(idx + 1))
       }
     }
-    cacheService.update(newCache)
+    accessor.update(newConfig)
     log.info(s"'$alias' ($url) removed from checking, current aliases: ${aliasesMapToString(newAliasesMap)}")
   }
 
   /** Alias -> URL map */
   private def getAliasesMap(): ListMap[String, String] = {
-    val cache = cacheService.cache
-    val aliases = cache.root.keys.toSeq
+    val manualConfig = if (accessor.config.hasPath("manual")) accessor.config.getConfig("manual") else ConfigFactory.empty
+    val aliases = manualConfig.root().keys.toSeq
     val sortedSeq = aliases.map { alias =>
-      alias -> cache.getConfig(doubleQuote(alias))
+      alias -> manualConfig.getConfig(doubleQuote(alias))
     }.sortBy {
       case (_, c) if c.hasPath("index") => c.getInt("index")
       case _                            => 0

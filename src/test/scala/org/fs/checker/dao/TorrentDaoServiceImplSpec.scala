@@ -3,48 +3,43 @@ package org.fs.checker.dao
 import scala.reflect.io.File
 
 import org.fs.checker.TestHelper
-import org.fs.checker.cache.CacheServiceImpl
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfter
 import org.scalatest.FlatSpec
-import org.scalatest.junit.JUnitRunner
 
 import com.typesafe.config.ConfigFactory
 
-@RunWith(classOf[JUnitRunner])
+@RunWith(classOf[org.scalatest.junit.JUnitRunner])
 class TorrentDaoServiceImplSpec
-    extends FlatSpec
-    with BeforeAndAfter
-    with TestHelper {
+  extends FlatSpec
+  with BeforeAndAfter
+  with TestHelper {
 
-  private val cacheService = {
-    val cacheFile: File = File.makeTemp(suffix = ".conf")
-    new CacheServiceImpl(cacheFile)
-  }
+  private val listFile: File = File.makeTemp(suffix = ".conf")
   private val service = new TorrentDaoServiceImpl(
     (url: String) => url startsWith s"http://xyz$nonStandardAllowedChars",
-    cacheService
+    listFile
   )
 
   before {
-    cacheService.update(ConfigFactory.empty)
+    listFile.writeAll("")
   }
 
   behavior of "TorrentDaoServiceImpl"
 
   it should "add valid entries" in {
-    assert(cacheService.cache.isEmpty)
+    assert(listFile.isEmpty)
     val entries = Seq(1, 2, 3, 10, 5) map validEntry
     entries.foreach(
       service.add
     )
-    assert(!cacheService.cache.isEmpty)
+    assert(!listFile.isEmpty)
     assert(service.list === entries)
     assertCacheCorrectness(entries)
   }
 
   it should "not add invalid entries" in {
-    assert(cacheService.cache.isEmpty)
+    assert(listFile.isEmpty)
     service.add(validEntry(1))
     intercept[IllegalArgumentException] {
       service.add(validEntry(1))
@@ -64,7 +59,7 @@ class TorrentDaoServiceImplSpec
     intercept[IllegalArgumentException] {
       service.add(TorrentEntry("alias2", "xy"))
     }
-    assert(!cacheService.cache.isEmpty)
+    assert(!listFile.isEmpty)
     assert(service.list === validEntry(1) :: Nil)
   }
 
@@ -87,10 +82,11 @@ class TorrentDaoServiceImplSpec
   }
 
   private def assertCacheCorrectness(entries: Seq[TorrentEntry]): Unit = {
+    val listConfig = service.accessor.config
     entries.zipWithIndex.foreach {
       case (TorrentEntry(alias, url), idx) =>
-        assert(cacheService.cache.getInt("\"" + alias + "\".index") === idx + 1)
-        assert(cacheService.cache.getString("\"" + alias + "\".url") === url)
+        assert(listConfig.getInt("\"" + alias + "\".index") === idx + 1)
+        assert(listConfig.getString("\"" + alias + "\".url") === url)
     }
   }
 }

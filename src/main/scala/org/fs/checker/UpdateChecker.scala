@@ -38,7 +38,7 @@ class UpdateChecker(
   }
 
   private def checkUpdated(alias: String, url: String, providers: Providers): Boolean = {
-    val cachedDetailsOption = cacheService.getCachedDetails(alias)
+    val cachedDetailsOption = cacheService.getCachedDetails(url)
     (providers.providerFor(url), cachedDetailsOption) match {
       case (Some(provider), Some(cachedDetails)) =>
         try {
@@ -49,7 +49,7 @@ class UpdateChecker(
             dateUpdated.plusSeconds(1)
           }
           val now = DateTime.now
-          cacheService.updateCachedDetails(alias, CachedDetails(Some(now.getMillis), Some(dateUpdated.getMillis)))
+          cacheService.updateCachedDetails(url, CachedDetails(Some(now.getMillis), Some(dateUpdated.getMillis)))
           dateUpdated >= lastCheckDate
         } catch {
           case PageParsingException(providerName, url, content, th) =>

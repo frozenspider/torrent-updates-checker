@@ -29,7 +29,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   SLF4JBridgeHandler.removeHandlersForRootLogger()
   SLF4JBridgeHandler.install()
 
-  val config: Config = {
+  val appConfig: Config = {
     val configFile: File = getFile("application.conf")
     if (!configFile.exists) {
       log.error(s"${configFile.name} does not exist at ${absolutePath(configFile)}")
@@ -44,13 +44,19 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     log.info(s"Cache file does not exist, created")
   }
 
+  val listFile: File = getFile("list.conf")
+  if (!listFile.exists) {
+    listFile.writeAll("")
+    log.info(s"List file does not exist, created")
+  }
+
   // TODO: Read name from logback appender config
   lazy val logFile: File = getFile("torrent-updates-checker.log")
 
-  lazy val httpPort = config.getInt("http.port")
+  lazy val httpPort = appConfig.getInt("http.port")
 
   lazy val cacheService: CacheService = new CacheServiceImpl(cacheFile)
-  lazy val daoService: TorrentDaoService = new TorrentDaoServiceImpl(checkUrlRecognized, cacheService)
+  lazy val daoService: TorrentDaoService = new TorrentDaoServiceImpl(checkUrlRecognized, listFile)
   lazy val updateNotifierService: UpdateNotifierService = new UpdateNotifierServiceImpl
   lazy val dumpService: PageContentDumpService = new PageContentDumpService {
     override def dump(content: String, providerName: String): Unit = {
@@ -138,7 +144,7 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   private def getProviders(): Providers = {
-    new Providers(config, dumpService)
+    new Providers(appConfig, dumpService)
   }
 
   private def checkUrlRecognized(url: String): Boolean = {
