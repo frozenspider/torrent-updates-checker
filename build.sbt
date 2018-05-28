@@ -9,8 +9,12 @@ sourceManaged in Test    := baseDirectory.value / "src_managed" / "test" / "scal
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
   .settings(
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, buildInfoBuildNumber),
-    buildInfoPackage := "org.fs.checker"
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoOptions ++= Seq(
+      BuildInfoOption.BuildTime
+    ),
+    buildInfoPackage := "org.fs.checker",
+    buildInfoUsePackageAsPath := true
   )
 
 resolvers += "jitpack" at "https://jitpack.io"
