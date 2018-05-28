@@ -3,6 +3,8 @@ package org.fs.checker.utility
 import com.typesafe.config._
 
 trait ConfigImplicits {
+  def quote(s: String): String = "\"" + s.replaceAllLiterally("\"", "\\\"") + "\""
+
   def emptyConfig: Config = {
     ConfigFactory.empty()
   }
