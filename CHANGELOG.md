@@ -1,4 +1,6 @@
 ### SNAPSHOT
+* (Internal) Configuration and checks timing cache are now stored in two different config files
+* (Internal) Support for data migration
 
 ### 1.3
 * Popup now plays a notification sound when displayed
@@ -15,7 +17,7 @@
 
 ### 1.2
 * Links in popup are now clickable
-  * Works on Windows, untested best-shot implementation for Linux (uses `BROWSER` env var) and Mac OS
+  * Works on Windows and Linux (uses `BROWSER` env var), untested best-shot implementation for MacOS
 
 ### 1.1.1
 * Fixed issue with incorrectly determined provider page encoding
