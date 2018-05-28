@@ -35,10 +35,10 @@ class MigrationService(internalCfgFile: File, cacheFile: File)
         val url = cacheObj.get[String]("url").value
         val cache2 = cache
           .withoutPath(quotedAlias)
-          .withValue("\"" + url + "\"", newConfig(
-            "lastCheckMs" -> cacheObj.get[Long]("lastCheckMs").valueOrElse(0L),
-            "lastUpdateMs" -> cacheObj.get[Long]("lastUpdateMs").valueOrElse(0L)
-          ).root())
+          .withValue("\"" + url + "\"", newConfig(Map(
+            "lastCheckMs" -> cacheObj.get[Option[Long]]("lastCheckMs").value,
+            "lastUpdateMs" -> cacheObj.get[Option[Long]]("lastUpdateMs").value
+          ).collect { case (k, Some(v)) => (k, v) }).root())
         val internalCfgObj2 = internalCfg.get[Config]("manual").valueOrElse(emptyConfig)
           .withValue(quotedAlias, newConfig(
             "index" -> cacheObj.get[Int]("index").valueOrElse(0L),

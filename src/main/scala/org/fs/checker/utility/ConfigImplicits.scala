@@ -13,6 +13,9 @@ trait ConfigImplicits {
     ConfigFactory.parseMap(scala.collection.JavaConverters.mapAsJavaMap(Map(pairs: _*)))
   }
 
+  def newConfig(map: Map[String, _]): Config =
+    newConfig(map.toList: _*)
+
   implicit class RichConfigObject(c: ConfigObject) {
     def toMap: Map[String, ConfigValue] = {
       scala.collection.JavaConverters.mapAsScalaMap(c).toMap
