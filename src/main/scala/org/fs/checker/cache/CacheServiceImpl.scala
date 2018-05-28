@@ -3,9 +3,8 @@ package org.fs.checker.cache
 import scala.reflect.io.File
 
 import org.fs.checker.utility.ConfigAccessor
+import org.fs.checker.utility.ConfigImplicits._
 import org.slf4s.Logging
-
-import com.typesafe.config.ConfigValueFactory
 
 import configs.syntax._
 
@@ -42,7 +41,7 @@ class CacheServiceImpl(cacheFile: File)
       lastUpdateMsPath -> cachedDetails.lastUpdateMsOption
     )
     val newConfig = updateMap.foldLeft(accessor.config) {
-      case (config, (path, Some(value))) => config.withValue(path, ConfigValueFactory.fromAnyRef(value))
+      case (config, (path, Some(value))) => config.withValue(path, value)
       case (config, _)                   => config
     }
     accessor.update(newConfig)
