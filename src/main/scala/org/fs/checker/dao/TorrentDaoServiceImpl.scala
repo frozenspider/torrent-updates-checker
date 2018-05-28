@@ -16,12 +16,12 @@ import configs.syntax._
  */
 class TorrentDaoServiceImpl(
   checkUrlRecognized: String => Boolean,
-  listFile:           File
+  internalCfgFile:    File
 )
   extends TorrentDaoService
   with Logging {
 
-  protected[dao] val accessor = new ConfigAccessor(listFile)
+  protected[dao] val accessor = new ConfigAccessor(internalCfgFile)
 
   override def list(): Seq[TorrentEntry] = {
     getAliasesMap().map(TorrentEntry.tupled).toSeq

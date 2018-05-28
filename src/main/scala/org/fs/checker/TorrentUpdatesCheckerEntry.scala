@@ -9,6 +9,7 @@ import org.fs.checker.dao.TorrentDaoService
 import org.fs.checker.dao.TorrentDaoServiceImpl
 import org.fs.checker.dao.TorrentEntry
 import org.fs.checker.dumping.PageContentDumpService
+import org.fs.checker.migration.MigrationService
 import org.fs.checker.notification.UpdateNotifierService
 import org.fs.checker.notification.UpdateNotifierServiceImpl
 import org.fs.checker.provider.Providers
@@ -44,10 +45,10 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     log.info(s"Cache file does not exist, created")
   }
 
-  val listFile: File = getFile("list.conf")
-  if (!listFile.exists) {
-    listFile.writeAll("")
-    log.info(s"List file does not exist, created")
+  val internalCfgFile: File = getFile("internal.conf")
+  if (!internalCfgFile.exists) {
+    internalCfgFile.writeAll("")
+    log.info(s"Internal config file does not exist, created")
   }
 
   // TODO: Read name from logback appender config
@@ -55,8 +56,9 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
 
   lazy val httpPort = appConfig.getInt("http.port")
 
+  lazy val migrationService: MigrationService = new MigrationService(internalCfgFile, cacheFile)
   lazy val cacheService: CacheService = new CacheServiceImpl(cacheFile)
-  lazy val daoService: TorrentDaoService = new TorrentDaoServiceImpl(checkUrlRecognized, listFile)
+  lazy val daoService: TorrentDaoService = new TorrentDaoServiceImpl(checkUrlRecognized, internalCfgFile)
   lazy val updateNotifierService: UpdateNotifierService = new UpdateNotifierServiceImpl
   lazy val dumpService: PageContentDumpService = new PageContentDumpService {
     override def dump(content: String, providerName: String): Unit = {
@@ -99,7 +101,6 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
   }
 
   def start(args: Seq[String]): Unit = {
-    log.info(s"${BuildInfo.name} v${BuildInfo.version}")
     if (httpPort != 0) {
       startAsyncServer()
     }
@@ -176,6 +177,8 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     "iterate" -> (iterate, 0.range)
   )
 
+  log.info(s"${BuildInfo.name} v${BuildInfo.version}")
+  migrationService.apply()
   args.toList match {
     case x :: xs if actions.keySet.contains(x) && actions(x)._2.contains(xs.size) =>
       actions(x)._1.apply(xs)
