@@ -13,6 +13,8 @@ import configs.Result
 import configs.syntax._
 
 /**
+ * Handles data migration upon version upgrade
+ *
  * @author FS
  */
 class MigrationService(internalCfgFile: File, cacheFile: File)
@@ -52,7 +54,7 @@ class MigrationService(internalCfgFile: File, cacheFile: File)
   }
 
   def apply(): Unit = {
-    val lastApplied = internalCfgAccessor.config.get[String](LastAppliedKey)
+    val remainingMigrations = getRemainingMigrations()
     if (remainingMigrations.size > 0) {
       log.info(s"Applying ${remainingMigrations.size} migration(s)...")
       remainingMigrations.foreach(ver => migrationMap(ver).apply())
@@ -61,7 +63,7 @@ class MigrationService(internalCfgFile: File, cacheFile: File)
     internalCfgAccessor.update(internalCfgAccessor.config.withValue(LastAppliedKey, migrationMap.last._1))
   }
 
-  private def remainingMigrations: Seq[String] = {
+  private def getRemainingMigrations(): Seq[String] = {
     val internalCfg = internalCfgAccessor.config
     val lastAppliedRes = internalCfg.get[String](LastAppliedKey)
     lastAppliedRes match {
@@ -70,7 +72,7 @@ class MigrationService(internalCfgFile: File, cacheFile: File)
         migrationMap.keys.toSeq.dropWhile(_ != lastApplied).tail
       case Result.Success(lastApplied) =>
         // Last applied migration is unknown
-        throw new Exception("Unknwon migration: " + lastApplied)
+        throw new RuntimeException("Unknown migration: " + lastApplied)
       case Result.Failure(_) if cacheAccessor.config.isEmpty =>
         // Fresh application
         Seq.empty
