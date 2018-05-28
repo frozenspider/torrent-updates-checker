@@ -6,10 +6,13 @@ import scala.reflect.io.File
 import org.fs.checker.utility.ConfigAccessor
 import org.slf4s.Logging
 
+import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigObject
 import com.typesafe.config.ConfigValue
 import com.typesafe.config.ConfigValueFactory
+
+import configs.syntax._
 
 /**
  * @author FS
@@ -62,13 +65,12 @@ class TorrentDaoServiceImpl(
 
   /** Alias -> URL map */
   private def getAliasesMap(): ListMap[String, String] = {
-    val manualConfig = if (accessor.config.hasPath("manual")) accessor.config.getConfig("manual") else ConfigFactory.empty
+    val manualConfig = accessor.config.getOrElse[Config]("manual", ConfigFactory.empty).value
     val aliases = manualConfig.root().keys.toSeq
     val sortedSeq = aliases.map { alias =>
       alias -> manualConfig.getConfig(doubleQuote(alias))
     }.sortBy {
-      case (_, c) if c.hasPath("index") => c.getInt("index")
-      case _                            => 0
+      case (_, c) => c.get[Int]("index").valueOrElse(0)
     }
     ListMap(sortedSeq.map {
       case (alias, c) => alias -> c.getString("url")

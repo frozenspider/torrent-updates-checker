@@ -26,11 +26,13 @@ libraryDependencies ++= Seq(
   "com.github.finagle"      %% "finch-core"        % "0.16.0-M5",
   "com.github.finagle"      %% "finch-circe"       % "0.16.0-M5",
   "io.circe"                %% "circe-generic"     % "0.9.0-M2",
+  // Config
+  "com.typesafe"            %  "config"            % "1.3.2",
+  "com.github.kxbmap"       %% "configs"           % "0.4.4",
   // Other
   "com.github.frozenspider" %% "fs-web-utils"      % "0.5.3",
   "org.apache.commons"      %  "commons-lang3"     % "3.4",
   "com.github.nscala-time"  %% "nscala-time"       % "2.16.0",
-  "com.typesafe"            %  "config"            % "1.3.0",
   "com.github.albfernandez" %  "juniversalchardet" % "2.1.0",
   // Test
   "junit"                   %  "junit"             % "4.12"  % "test",

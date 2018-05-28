@@ -1,12 +1,13 @@
 package org.fs.checker.cache
 
 import scala.reflect.io.File
-import scala.util.Try
 
 import org.fs.checker.utility.ConfigAccessor
 import org.slf4s.Logging
 
 import com.typesafe.config.ConfigValueFactory
+
+import configs.syntax._
 
 /**
  * @author FS
@@ -19,15 +20,15 @@ class CacheServiceImpl(cacheFile: File)
 
   log.debug("Cache file: " + cacheFile.jfile.getAbsolutePath)
 
-  override def getCachedDetails(url: String): Option[CachedDetails] = {
+  override def getCachedDetailsOption(url: String): Option[CachedDetails] = {
     val cachePrefix = "\"" + url + "\""
     val lastCheckMsPath = s"$cachePrefix.lastCheckMs"
     val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
     if (!accessor.config.hasPath(cachePrefix)) {
       None
     } else {
-      val lastCheckMsOption = Try(accessor.config.getLong(lastCheckMsPath)).toOption
-      val lastUpdateMsOption = Try(accessor.config.getLong(lastUpdateMsPath)).toOption
+      val lastCheckMsOption = accessor.config.get[Option[Long]](lastCheckMsPath).value
+      val lastUpdateMsOption = accessor.config.get[Option[Long]](lastUpdateMsPath).value
       Some(CachedDetails(lastCheckMsOption, lastUpdateMsOption))
     }
   }

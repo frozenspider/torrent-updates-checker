@@ -38,7 +38,7 @@ class UpdateChecker(
   }
 
   private def checkUpdated(alias: String, url: String, providers: Providers): Boolean = {
-    val cachedDetailsOption = cacheService.getCachedDetails(url)
+    val cachedDetailsOption = cacheService.getCachedDetailsOption(url)
     (providers.providerFor(url), cachedDetailsOption) match {
       case (Some(provider), Some(cachedDetails)) =>
         try {
