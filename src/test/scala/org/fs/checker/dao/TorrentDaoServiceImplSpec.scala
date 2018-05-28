@@ -7,7 +7,8 @@ import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfter
 import org.scalatest.FlatSpec
 
-import com.typesafe.config.ConfigFactory
+import org.fs.checker.utility.ConfigImplicits._
+import scala.io.Source
 
 @RunWith(classOf[org.scalatest.junit.JUnitRunner])
 class TorrentDaoServiceImplSpec
@@ -15,31 +16,31 @@ class TorrentDaoServiceImplSpec
   with BeforeAndAfter
   with TestHelper {
 
-  private val listFile: File = File.makeTemp(suffix = ".conf")
+  private val internalCfgFile: File = File.makeTemp(suffix = ".conf")
   private val service = new TorrentDaoServiceImpl(
     (url: String) => url startsWith s"http://xyz$nonStandardAllowedChars",
-    listFile
+    internalCfgFile
   )
 
   before {
-    listFile.writeAll("")
+    internalCfgFile.writeAll("")
   }
 
   behavior of "TorrentDaoServiceImpl"
 
   it should "add valid entries" in {
-    assert(listFile.isEmpty)
+    assert(internalCfgFile.jfile.length === 0, quoted(Source.fromFile(internalCfgFile.jfile).mkString))
     val entries = Seq(1, 2, 3, 10, 5) map validEntry
     entries.foreach(
       service.add
     )
-    assert(!listFile.isEmpty)
+    assert(!internalCfgFile.isEmpty)
     assert(service.list === entries)
-    assertCacheCorrectness(entries)
+    assertConfigCorrectness(entries)
   }
 
   it should "not add invalid entries" in {
-    assert(listFile.isEmpty)
+    assert(internalCfgFile.jfile.length === 0, quoted(Source.fromFile(internalCfgFile.jfile).mkString))
     service.add(validEntry(1))
     intercept[IllegalArgumentException] {
       service.add(validEntry(1))
@@ -59,7 +60,7 @@ class TorrentDaoServiceImplSpec
     intercept[IllegalArgumentException] {
       service.add(TorrentEntry("alias2", "xy"))
     }
-    assert(!listFile.isEmpty)
+    assert(!internalCfgFile.isEmpty)
     assert(service.list === validEntry(1) :: Nil)
   }
 
@@ -74,19 +75,19 @@ class TorrentDaoServiceImplSpec
     assert(service.list === Seq(3, 10).map(validEntry))
     service.add(validEntry(1))
     assert(service.list === Seq(3, 10, 1).map(validEntry))
-    assertCacheCorrectness(Seq(3, 10, 1).map(validEntry))
+    assertConfigCorrectness(Seq(3, 10, 1).map(validEntry))
   }
 
   private def validEntry(i: Int): TorrentEntry = {
     TorrentEntry(s"alias$nonStandardAllowedChars$i", s"http://xyz$nonStandardAllowedChars$i")
   }
 
-  private def assertCacheCorrectness(entries: Seq[TorrentEntry]): Unit = {
-    val listConfig = service.accessor.config
+  private def assertConfigCorrectness(entries: Seq[TorrentEntry]): Unit = {
+    val internalCfgConfig = service.accessor.config
     entries.zipWithIndex.foreach {
       case (TorrentEntry(alias, url), idx) =>
-        assert(listConfig.getInt("\"" + alias + "\".index") === idx + 1)
-        assert(listConfig.getString("\"" + alias + "\".url") === url)
+        assert(internalCfgConfig.getInt("manual." + quoted(alias) + ".index") === idx + 1)
+        assert(internalCfgConfig.getString("manual." +quoted(alias) + ".url") === url)
     }
   }
 }

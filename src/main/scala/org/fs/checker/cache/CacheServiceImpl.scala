@@ -20,7 +20,7 @@ class CacheServiceImpl(cacheFile: File)
   log.debug("Cache file: " + cacheFile.jfile.getAbsolutePath)
 
   override def getCachedDetailsOption(url: String): Option[CachedDetails] = {
-    val cachePrefix = quote(url)
+    val cachePrefix = quoted(url)
     val lastCheckMsPath = s"$cachePrefix.lastCheckMs"
     val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
     if (!accessor.config.hasPath(cachePrefix)) {
@@ -33,7 +33,7 @@ class CacheServiceImpl(cacheFile: File)
   }
 
   override def updateCachedDetails(url: String, cachedDetails: CachedDetails): Unit = {
-    val cachePrefix = quote(url)
+    val cachePrefix = quoted(url)
     val lastCheckMsPath = s"$cachePrefix.lastCheckMs"
     val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
     val updateMap = Map(

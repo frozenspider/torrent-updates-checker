@@ -35,7 +35,7 @@ class TorrentDaoServiceImpl(
     require(!(aliasesMap.values.toSeq contains entry.url), s"URL ${entry.url} is already beign checked under the alias '${aliasesMap.find(_._2 == entry.url).get._1}'")
     require(checkUrlRecognized(entry.url), s"URL ${entry.url} is not recognized by any provider")
     val newAliasesMap = aliasesMap + (entry.alias -> entry.url)
-    val cachePrefix = "manual." + quote(entry.alias)
+    val cachePrefix = "manual." + quoted(entry.alias)
     accessor.update(accessor.config
       .withValue(s"$cachePrefix.index", newAliasesMap.size)
       .withValue(s"$cachePrefix.url", entry.url))
@@ -49,10 +49,10 @@ class TorrentDaoServiceImpl(
     val newAliasesMap = aliasesMap - alias
     val newConfig = {
       // Exclude removed path and renumerate remaining entries
-      val cacheWithoutRemoved = accessor.config.withoutPath("manual." + quote(alias))
+      val cacheWithoutRemoved = accessor.config.withoutPath("manual." + quoted(alias))
       newAliasesMap.zipWithIndex.foldLeft(cacheWithoutRemoved) {
         case (cache, ((alias, url), idx)) =>
-          val cachePrefix = "manual." + quote(alias)
+          val cachePrefix = "manual." + quoted(alias)
           cache.withValue(s"$cachePrefix.index", idx + 1)
       }
     }
@@ -65,7 +65,7 @@ class TorrentDaoServiceImpl(
     val manualConfig = accessor.config.getOrElse[Config]("manual", emptyConfig).value
     val aliases = manualConfig.root().keys.toSeq
     val sortedSeq = aliases.map { alias =>
-      alias -> manualConfig.getConfig(quote(alias))
+      alias -> manualConfig.getConfig(quoted(alias))
     }.sortBy {
       case (_, c) => c.get[Int]("index").valueOrElse(0)
     }

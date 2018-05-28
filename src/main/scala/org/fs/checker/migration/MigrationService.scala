@@ -30,7 +30,7 @@ class MigrationService(internalCfgFile: File, cacheFile: File)
   def `post-1.3_1`(): Unit = {
     val (cache, internalCfg) = cacheAccessor.config.root().keys.foldLeft((cacheAccessor.config, emptyConfig)) {
       case ((cache, internalCfg), alias) =>
-        val quotedAlias = quote(alias)
+        val quotedAlias = quoted(alias)
         val cacheObj = cache.get[Config](quotedAlias).value
         val url = cacheObj.get[String]("url").value
         val cache2 = cache
