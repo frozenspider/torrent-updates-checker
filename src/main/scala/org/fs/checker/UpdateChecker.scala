@@ -40,10 +40,10 @@ class UpdateChecker(
   private def checkUpdated(alias: String, url: String, providers: Providers): Boolean = {
     val cachedDetailsOption = cacheService.getCachedDetailsOption(url)
     (providers.providerFor(url), cachedDetailsOption) match {
-      case (Some(provider), Some(cachedDetails)) =>
+      case (Some(provider), cachedDetailsOption) =>
         try {
           val dateUpdated = provider.checkDateLastUpdated(url)
-          val lastCheckDate = cachedDetails.lastCheckDateOption.getOrElse {
+          val lastCheckDate = cachedDetailsOption.flatMap(_.lastCheckDateOption).getOrElse {
             log.info(s"'$alias' ($url) wasn't checked before")
             // Treat it as not updated
             dateUpdated.plusSeconds(1)
@@ -57,9 +57,6 @@ class UpdateChecker(
             provider.dump(content)
             false
         }
-      case (Some(provider), None) =>
-        log.warn(s"Provider for '$alias' found, but it has been removed from cache")
-        false
       case (None, _) =>
         log.warn(s"Can't find provider for '$alias' ($url)")
         false
