@@ -26,8 +26,13 @@ trait ConfigImplicits {
     }
   }
 
-  implicit def any2ConfigValue(ar: Any): ConfigValue =
-    ConfigValueFactory.fromAnyRef(ar)
+  implicit class RichConfig(c: Config) {
+    def withValue(path: String, cfg: Config): Config =
+      c.withValue(path, cfg.root)
+
+    def withValue(path: String, any: Any): Config =
+      c.withValue(path, ConfigValueFactory.fromAnyRef(any))
+  }
 }
 
 object ConfigImplicits extends ConfigImplicits

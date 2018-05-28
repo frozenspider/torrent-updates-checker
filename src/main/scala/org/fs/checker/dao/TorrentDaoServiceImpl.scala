@@ -63,7 +63,7 @@ class TorrentDaoServiceImpl(
   /** Alias -> URL map */
   private def getAliasesMap(): ListMap[String, String] = {
     val manualConfig = accessor.config.getOrElse[Config]("manual", emptyConfig).value
-    val aliases = manualConfig.root().keys.toSeq
+    val aliases = manualConfig.root.keys.toSeq
     val sortedSeq = aliases.map { alias =>
       alias -> manualConfig.getConfig(quoted(alias))
     }.sortBy {

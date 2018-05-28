@@ -35,17 +35,20 @@ class MigrationService(internalCfgFile: File, cacheFile: File)
         val quotedAlias = quoted(alias)
         val cacheObj = cache.get[Config](quotedAlias).value
         val url = cacheObj.get[String]("url").value
+        // Embedding this causes an internal error in Scala compiler
+        // Possibly related: https://github.com/scala/bug/issues/6317
+        val cacheInner = newConfig(Map(
+          "lastCheckMs" -> cacheObj.get[Option[Long]]("lastCheckMs").value,
+          "lastUpdateMs" -> cacheObj.get[Option[Long]]("lastUpdateMs").value
+        ).collect { case (k, Some(v)) => (k, v) })
         val cache2 = cache
           .withoutPath(quotedAlias)
-          .withValue("\"" + url + "\"", newConfig(Map(
-            "lastCheckMs" -> cacheObj.get[Option[Long]]("lastCheckMs").value,
-            "lastUpdateMs" -> cacheObj.get[Option[Long]]("lastUpdateMs").value
-          ).collect { case (k, Some(v)) => (k, v) }).root())
+          .withValue(quoted(url), cacheInner)
         val internalCfgObj2 = internalCfg.get[Config]("manual").valueOrElse(emptyConfig)
           .withValue(quotedAlias, newConfig(
             "index" -> cacheObj.get[Int]("index").valueOrElse(0L),
             "url" -> cacheObj.get[String]("url").value
-          ).root())
+          ))
         val internalCfg2 = internalCfg.withValue("manual", internalCfgObj2.root())
         (cache2, internalCfg2)
     }
