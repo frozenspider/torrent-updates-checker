@@ -50,6 +50,8 @@ class Rutor(httpClient: HttpClient, override val dumpService: PageContentDumpSer
 }
 
 object Rutor extends RutorBase with RawProvider {
+  override val requiresAuth = false
+
   override def withConfig(config: Config, dumpService: PageContentDumpService): Rutor = {
     val (httpClient, cookieStore) = simpleClientWithStore()
     // Ddoes not require authentication

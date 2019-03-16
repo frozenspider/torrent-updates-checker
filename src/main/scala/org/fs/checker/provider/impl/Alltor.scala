@@ -48,6 +48,8 @@ class Alltor(httpClient: HttpClient, override val dumpService: PageContentDumpSe
 }
 
 object Alltor extends AlltorBase with RawProvider {
+  override val requiresAuth = true
+
   override def withConfig(config: Config, dumpService: PageContentDumpService): Alltor = {
     val (httpClient, cookieStore) = simpleClientWithStore()
     val authReq = POST("https://alltor.me/login.php")
