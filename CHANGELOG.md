@@ -1,3 +1,5 @@
+### SNAPSHOT
+
 ### 1.4.2
 * Added providers for the following trackers:
   * RuTracker (rutracker.org)
