@@ -1,3 +1,5 @@
+### SNAPSHOT
+
 ### 1.4
 * Rutor (rutor.info, rutor.is) provider added
 
