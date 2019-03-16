@@ -17,7 +17,7 @@ import org.fs.utility.web.Imports._
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.Config
 
-class AlltorMeBase extends GenProvider {
+class AlltorBase extends GenProvider {
   override val prettyName: String = "alltor.me"
 
   override val providerKey: String = "alltor"
@@ -29,7 +29,7 @@ class AlltorMeBase extends GenProvider {
   }
 }
 
-class AlltorMe(httpClient: HttpClient, override val dumpService: PageContentDumpService) extends AlltorMeBase with ConfiguredProvider {
+class Alltor(httpClient: HttpClient, override val dumpService: PageContentDumpService) extends AlltorBase with ConfiguredProvider {
   override def fetch(url: String): String = {
     val resp = httpClient.request(GET(url).addTimeout(timeoutMs))
     ResponseBodyDecoder.bodyToString(resp)
@@ -47,8 +47,8 @@ class AlltorMe(httpClient: HttpClient, override val dumpService: PageContentDump
   }
 }
 
-object AlltorMe extends AlltorMeBase with RawProvider {
-  override def withConfig(config: Config, dumpService: PageContentDumpService): AlltorMe = {
+object Alltor extends AlltorBase with RawProvider {
+  override def withConfig(config: Config, dumpService: PageContentDumpService): Alltor = {
     val (httpClient, cookieStore) = simpleClientWithStore()
     val authReq = POST("https://alltor.me/login.php")
       .addTimeout(timeoutMs)
@@ -64,6 +64,6 @@ object AlltorMe extends AlltorMeBase with RawProvider {
       dumpService.dump(response.bodyString, providerKey)
       throw new IllegalArgumentException(s"Failed to auth, got code ${response.code}, content dumped to file")
     }
-    new AlltorMe(httpClient, dumpService)
+    new Alltor(httpClient, dumpService)
   }
 }

@@ -19,8 +19,8 @@ import com.typesafe.config.Config
 class Providers(config: Config, dumpService: PageContentDumpService) extends Logging {
   private val rawProvider: Seq[RawProvider] =
     Seq(
-      TasIxMe,
-      AlltorMe,
+      TasIx,
+      Alltor,
       Rutor
     )
 
