@@ -29,7 +29,7 @@ class RutorBase extends GenProvider {
 }
 
 class Rutor(httpClient: HttpClient, override val dumpService: PageContentDumpService) extends RutorBase with ConfiguredProvider {
-  private val dtf: DateTimeFormatter = DateTimeFormat.forPattern("dd-MM-yyyy")
+  private val dtf: DateTimeFormatter = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm:ss")
 
   override def fetch(url: String): String = {
     val resp = httpClient.request(GET(url).addTimeout(timeoutMs))
@@ -44,7 +44,7 @@ class Rutor(httpClient: HttpClient, override val dumpService: PageContentDumpSer
     val row = (detailsTable \ "tr") filter (tr => (tr \ "td" filterByClass "header").trimmedText contains "Добавлен")
     val lastUpdatedNode = (row \ "td")(1)
     val lastUpdatedString = lastUpdatedNode.trimmedText
-    val lastUpdatedDateString = lastUpdatedString.split(" ").head
+    val lastUpdatedDateString = lastUpdatedString.split(" ").take(2).mkString(" ")
     dtf.parseDateTime(lastUpdatedDateString)
   }
 }
