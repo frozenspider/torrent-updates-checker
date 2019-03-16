@@ -21,6 +21,7 @@ buildinfo.*
 # Application
 application.conf
 cache.conf
+internal.conf
 
 *.class
 *.log

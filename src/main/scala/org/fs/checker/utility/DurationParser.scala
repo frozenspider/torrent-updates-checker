@@ -17,21 +17,21 @@ object DurationParser {
   }
 
   private def parseInner(amount: Int, unit: String): Duration = {
-    val now = DateTime.now
-    val then = unit match {
+    val dateNow = DateTime.now
+    val dateThen = unit match {
       case x if Seq("секунда", "секунды", "секунд") contains x =>
-        now - amount.seconds
+        dateNow - amount.seconds
       case x if Seq("минута", "минуты", "минут") contains x =>
-        now - amount.minutes
+        dateNow - amount.minutes
       case x if Seq("час", "часа", "часов") contains x =>
-        now - amount.hours
+        dateNow - amount.hours
       case x if Seq("день", "дня", "дней") contains x =>
-        now - amount.days
+        dateNow - amount.days
       case x if Seq("месяц", "месяца", "месяцев", "мес.") contains x =>
-        now - amount.months
+        dateNow - amount.months
       case x if Seq("год", "года", "лет") contains x =>
-        now - amount.years
+        dateNow - amount.years
     }
-    new Duration(then, now)
+    new Duration(dateThen, dateNow)
   }
 }

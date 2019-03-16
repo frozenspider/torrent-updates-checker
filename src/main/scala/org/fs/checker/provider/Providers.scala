@@ -12,6 +12,7 @@ import org.fs.checker.provider.impl._
 import org.slf4s.Logging
 
 import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
 
 /**
  * @author FS
@@ -25,12 +26,17 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
     )
 
   private lazy val configuredProviders: Seq[ConfiguredProvider] = rawProvider map (raw => {
-    if (!config.hasPath(raw.providerKey) || config.getConfig(raw.providerKey).getString("login").isEmpty) {
+    val subConfig = if (config.hasPath(raw.providerKey)) {
+      config.getConfig(raw.providerKey)
+    } else {
+      ConfigFactory.empty()
+    }
+    if (raw.requiresAuth && subConfig.getString("login").isEmpty) {
       log.debug(s"Couldn't find config for '${raw.prettyName}', skipping")
       None
     } else {
       Try(
-        raw.withConfig(config.getConfig(raw.providerKey), dumpService)
+        raw.withConfig(subConfig, dumpService)
       ) match {
           case Success(p: ConfiguredProvider) =>
             Some(p)

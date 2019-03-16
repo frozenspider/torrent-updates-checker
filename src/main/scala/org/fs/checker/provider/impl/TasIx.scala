@@ -49,6 +49,8 @@ class TasIx(httpClient: HttpClient, override val dumpService: PageContentDumpSer
 }
 
 object TasIx extends TasIxBase with RawProvider {
+  override val requiresAuth = true
+
   override def withConfig(config: Config, dumpService: PageContentDumpService): TasIx = {
     val (httpClient, cookieStore) = simpleClientWithStore()
     // Recently introduced "anti-ddos", so to speak
