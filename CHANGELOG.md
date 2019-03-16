@@ -1,3 +1,5 @@
+### SNAPSHOT
+
 ### 1.4.1
 * Fixed issue with Rutor provider being excluded on startup
 * (Internal) Configuration and checks timing cache are now stored in two different config files
