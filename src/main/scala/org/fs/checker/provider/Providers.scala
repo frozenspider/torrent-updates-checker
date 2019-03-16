@@ -8,8 +8,7 @@ import scala.util.Success
 import scala.util.Try
 
 import org.fs.checker.dumping.PageContentDumpService
-import org.fs.checker.provider.impl.AlltorMe
-import org.fs.checker.provider.impl.TasIxMe
+import org.fs.checker.provider.impl._
 import org.slf4s.Logging
 
 import com.typesafe.config.Config
@@ -21,7 +20,8 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
   private val rawProvider: Seq[RawProvider] =
     Seq(
       TasIxMe,
-      AlltorMe
+      AlltorMe,
+      Rutor
     )
 
   private lazy val configuredProviders: Seq[ConfiguredProvider] = rawProvider map (raw => {
