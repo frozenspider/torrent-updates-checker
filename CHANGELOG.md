@@ -2,6 +2,7 @@
 * Fixed issue with Rutor provider being excluded on startup
 * (Internal) Configuration and checks timing cache are now stored in two different config files
 * (Internal) Support for data migration
+* (Internal) Bunch of smaller infrastructural changes
 
 ### 1.4
 * Rutor (rutor.info, rutor.is) provider added
