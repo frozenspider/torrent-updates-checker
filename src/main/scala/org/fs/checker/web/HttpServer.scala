@@ -70,7 +70,7 @@ class HttpServer(daoService: TorrentDaoService, logFile: File) extends Logging {
     val addEndpoint: Endpoint[Seq[TorrentEntry]] =
       post(/ :: encPath :: param("url")) { (alias: String, url: String) =>
         Future {
-          daoService.add(TorrentEntry(alias, url))
+          daoService.add(TorrentEntry(alias.trim, url.trim))
           Ok(daoService.list)
         }
       }

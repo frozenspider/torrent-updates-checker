@@ -1,4 +1,6 @@
 ### SNAPSHOT
+* (Internal) Configuration and checks timing cache are now stored in two different config files
+* (Internal) Support for data migration
 
 ### 1.4
 * Rutor (rutor.info, rutor.is) provider added
@@ -18,7 +20,7 @@
 
 ### 1.2
 * Links in popup are now clickable
-  * Works on Windows, untested best-shot implementation for Linux (uses `BROWSER` env var) and Mac OS
+  * Works on Windows and Linux (uses `BROWSER` env var), untested best-shot implementation for MacOS
 
 ### 1.1.1
 * Fixed issue with incorrectly determined provider page encoding
