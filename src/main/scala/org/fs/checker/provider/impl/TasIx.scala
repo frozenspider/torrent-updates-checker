@@ -18,7 +18,7 @@ import org.fs.utility.web.Imports._
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.Config
 
-class TasIxMeBase extends GenProvider {
+class TasIxBase extends GenProvider {
   override val prettyName: String = "tas-ix.me"
 
   override val providerKey: String = "tasix"
@@ -30,7 +30,7 @@ class TasIxMeBase extends GenProvider {
   }
 }
 
-class TasIxMe(httpClient: HttpClient, override val dumpService: PageContentDumpService) extends TasIxMeBase with ConfiguredProvider {
+class TasIx(httpClient: HttpClient, override val dumpService: PageContentDumpService) extends TasIxBase with ConfiguredProvider {
   override def fetch(url: String): String = {
     val resp = httpClient.request(GET(url).addTimeout(timeoutMs))
     ResponseBodyDecoder.bodyToString(resp)
@@ -48,8 +48,8 @@ class TasIxMe(httpClient: HttpClient, override val dumpService: PageContentDumpS
   }
 }
 
-object TasIxMe extends TasIxMeBase with RawProvider {
-  override def withConfig(config: Config, dumpService: PageContentDumpService): TasIxMe = {
+object TasIx extends TasIxBase with RawProvider {
+  override def withConfig(config: Config, dumpService: PageContentDumpService): TasIx = {
     val (httpClient, cookieStore) = simpleClientWithStore()
     // Recently introduced "anti-ddos", so to speak
     val antiDdosCookie = {
@@ -73,6 +73,6 @@ object TasIxMe extends TasIxMeBase with RawProvider {
       dumpService.dump(response.bodyStringUTF8, providerKey)
       throw new IllegalArgumentException(s"Failed to auth, got code ${response.code}, content dumped to file")
     }
-    new TasIxMe(httpClient, dumpService)
+    new TasIx(httpClient, dumpService)
   }
 }

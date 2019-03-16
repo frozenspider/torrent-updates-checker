@@ -5,7 +5,7 @@ import java.io.File
 import scala.io.Source
 
 import org.fs.checker.TestHelper
-import org.joda.time.Days
+import org.joda.time.Hours
 import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
@@ -13,20 +13,20 @@ import org.scalatest.junit.JUnitRunner
 import com.github.nscala_time.time.Imports._
 
 @RunWith(classOf[JUnitRunner])
-class TasIxNetSpec
+class AlltorSpec
     extends FlatSpec
     with TestHelper {
 
-  val instance: TasIxMe = new TasIxMe(null, null)
+  val instance: Alltor = new Alltor(null, null)
 
-  behavior of "tas-ix.net provider"
+  behavior of "alltor provider"
 
-  it should "parse 8-days ago state" in {
-    val content = Source.fromFile(new File(routerFolder, "expanse-8d.html"), "UTF-8").mkString
+  it should "parse 1-day 11-hours ago state" in {
+    val content = Source.fromFile(new File(routerFolder, "blacklist_1d11h.html"), "UTF-8").mkString
     val parsed = instance.parseDateLastUpdated(content)
     val now = DateTime.now
-    assert(Days.daysBetween(parsed, now) === Days.days(8))
+    assert(Hours.hoursBetween(parsed, now) === Hours.hours(24 + 11))
   }
 
-  val routerFolder: java.io.File = new File(resourcesFolder, "tas-ix.net")
+  val routerFolder: java.io.File = new File(resourcesFolder, "alltor")
 }

@@ -1,5 +1,8 @@
 ### SNAPSHOT
 
+### 1.4
+* Rutor (rutor.info, rutor.is) provider added
+
 ### 1.3
 * Popup now plays a notification sound when displayed
 * Links in web interface are now also clickable
