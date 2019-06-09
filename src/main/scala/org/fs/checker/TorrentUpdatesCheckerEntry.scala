@@ -140,6 +140,12 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     updateChecker.checkForUpdates()
   }
 
+  def getLastUpdated(args: Seq[String]): Unit = {
+    val url = args(0)
+    val dateUpdated = updateChecker.fetchUpdateDate(url, url, getProviders())
+    println("Last Updated: " + dateUpdated.map(_.toString("yyyy-MM-dd HH:mm:ss")).getOrElse("(Error!)"))
+  }
+
   private def getFile(s: String): File = {
     new File(new java.io.File(s))(Codec.UTF8)
   }
@@ -174,7 +180,8 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     "list" -> (list, 0.range),
     "start" -> (start, 0.range),
     "startServer" -> (startServer, 0.range),
-    "iterate" -> (iterate, 0.range)
+    "iterate" -> (iterate, 0.range),
+    "getLastUpdated" -> (getLastUpdated, 1.range)
   )
 
   log.info(s"${BuildInfo.name} v${BuildInfo.version}")
@@ -189,7 +196,8 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
       |  list
       |  start
       |  startServer
-      |  iterate""".stripMargin)
+      |  iterate
+      |  getLastUpdated <url>""".stripMargin)
   }
 
   private implicit class RichInt(i: Int) {

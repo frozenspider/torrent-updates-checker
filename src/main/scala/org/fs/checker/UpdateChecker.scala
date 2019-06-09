@@ -58,7 +58,7 @@ class UpdateChecker(
     }
   }
 
-  private def fetchUpdateDate(
+  def fetchUpdateDate(
     alias:     String,
     url:       String,
     providers: Providers
