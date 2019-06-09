@@ -22,7 +22,8 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
     Seq(
       TasIx,
       Alltor,
-      Rutor
+      Rutor,
+      NonameClub
     )
 
   private lazy val configuredProviders: Seq[ConfiguredProvider] = rawProvider map (raw => {

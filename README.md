@@ -8,6 +8,7 @@ Tracker support
 Currently only supports the following torrent trackers:
 
 * [RUTOR](http://rutor.info/)
+* [NoNaMe Club](http://nnmclub.to/)
 * [ALLTOR.ME](https://alltor.me)
 * [TAS-IX.ME](http://tas-ix.me)
 

@@ -22,10 +22,10 @@ class RutorSpec
   behavior of "rutor provider"
 
   it should "parse 2019-02-28 state" in {
-    val content = Source.fromFile(new File(routerFolder, "young-sheldon_2019-02-28.html"), "UTF-8").mkString
+    val content = Source.fromFile(new File(pagesFolder, "young-sheldon_2019-02-28.html"), "UTF-8").mkString
     val parsed = instance.parseDateLastUpdated(content)
     assert(parsed === DateTime.parse("2019-02-28T23:19:22"))
   }
 
-  val routerFolder: java.io.File = new File(resourcesFolder, "rutor")
+  val pagesFolder: java.io.File = new File(resourcesFolder, "rutor")
 }

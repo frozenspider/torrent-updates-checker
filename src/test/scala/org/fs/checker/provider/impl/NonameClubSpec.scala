@@ -13,20 +13,19 @@ import org.scalatest.junit.JUnitRunner
 import com.github.nscala_time.time.Imports._
 
 @RunWith(classOf[JUnitRunner])
-class TasIxSpec
+class NonameClubSpec
     extends FlatSpec
     with TestHelper {
 
-  val instance: TasIx = new TasIx(null, null)
+  val instance: NonameClub = new NonameClub(null, null)
 
-  behavior of "tas-ix provider"
+  behavior of "nnmclub provider"
 
-  it should "parse 8-days ago state" in {
-    val content = Source.fromFile(new File(pagesFolder, "expanse_8d.html"), "UTF-8").mkString
+  it should "parse 09 Jun 2019" in {
+    val content = Source.fromFile(new File(pagesFolder, "elementary_2019-06-09.html"), "windows-1251").mkString
     val parsed = instance.parseDateLastUpdated(content)
-    val now = DateTime.now
-    assert(Days.daysBetween(parsed, now) === Days.days(8))
+    assert(parsed === DateTime.parse("2019-06-09T14:11:53"))
   }
 
-  val pagesFolder: java.io.File = new File(resourcesFolder, "tas-ix")
+  val pagesFolder: java.io.File = new File(resourcesFolder, "nnmclub")
 }

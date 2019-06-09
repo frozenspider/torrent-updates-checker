@@ -37,29 +37,45 @@ class UpdateChecker(
     }
   }
 
-  private def checkUpdated(alias: String, url: String, providers: Providers): Boolean = {
+  private def checkUpdated(
+    alias:     String,
+    url:       String,
+    providers: Providers
+  ): Boolean = {
     val cachedDetailsOption = cacheService.getCachedDetailsOption(url)
-    (providers.providerFor(url), cachedDetailsOption) match {
-      case (Some(provider), cachedDetailsOption) =>
+    fetchUpdateDate(alias, url, providers) match {
+      case Some(dateUpdated) =>
+        val lastCheckDate = cachedDetailsOption.flatMap(_.lastCheckDateOption).getOrElse {
+          log.info(s"'$alias' ($url) wasn't checked before")
+          // Treat it as not updated
+          dateUpdated.plusSeconds(1)
+        }
+        val now = DateTime.now
+        cacheService.updateCachedDetails(url, CachedDetails(Some(now.getMillis), Some(dateUpdated.getMillis)))
+        dateUpdated >= lastCheckDate
+      case None =>
+        false
+    }
+  }
+
+  private def fetchUpdateDate(
+    alias:     String,
+    url:       String,
+    providers: Providers
+  ): Option[DateTime] = {
+    providers.providerFor(url) match {
+      case Some(provider) =>
         try {
-          val dateUpdated = provider.checkDateLastUpdated(url)
-          val lastCheckDate = cachedDetailsOption.flatMap(_.lastCheckDateOption).getOrElse {
-            log.info(s"'$alias' ($url) wasn't checked before")
-            // Treat it as not updated
-            dateUpdated.plusSeconds(1)
-          }
-          val now = DateTime.now
-          cacheService.updateCachedDetails(url, CachedDetails(Some(now.getMillis), Some(dateUpdated.getMillis)))
-          dateUpdated >= lastCheckDate
+          Some(provider.checkDateLastUpdated(url))
         } catch {
           case PageParsingException(providerName, url, content, th) =>
             log.error(s"${provider.prettyName} failed to process $url, content dumped", th)
             provider.dump(content)
-            false
+            None
         }
-      case (None, _) =>
+      case None =>
         log.warn(s"Can't find provider for '$alias' ($url)")
-        false
+        None
     }
   }
 }
