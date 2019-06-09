@@ -1,4 +1,5 @@
 ### SNAPSHOT
+* NoNaMe Club (nnmclub.to) provider added
 
 ### 1.4.1
 * Fixed issue with Rutor provider being excluded on startup
