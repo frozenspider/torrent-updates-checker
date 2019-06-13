@@ -27,5 +27,5 @@ class NonameClubSpec
     assert(parsed === DateTime.parse("2019-06-09T14:11:53"))
   }
 
-  val pagesFolder: java.io.File = new File(resourcesFolder, "nnmclub")
+  val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)
 }

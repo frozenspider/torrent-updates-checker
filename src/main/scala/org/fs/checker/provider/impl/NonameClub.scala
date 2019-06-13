@@ -21,8 +21,6 @@ class NonameClubBase extends GenProvider {
 
   override val providerKey: String = "nnmclub"
 
-  val timeoutMs: Int = 60 * 1000
-
   override def recognizeUrl(url: String): Boolean = {
     Try("nnmclub.to" == (new URL(url)).getHost).getOrElse(false)
   }

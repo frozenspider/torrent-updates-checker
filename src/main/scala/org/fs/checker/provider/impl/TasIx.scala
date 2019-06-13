@@ -23,8 +23,6 @@ class TasIxBase extends GenProvider {
 
   override val providerKey: String = "tasix"
 
-  val timeoutMs: Int = 60 * 1000
-
   override def recognizeUrl(url: String): Boolean = {
     Try(Seq("tas-ix.me", "tas-ix.net") contains (new URL(url)).getHost).getOrElse(false)
   }

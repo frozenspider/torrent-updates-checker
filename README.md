@@ -9,6 +9,7 @@ Currently only supports the following torrent trackers:
 
 * [RUTOR](http://rutor.info/)
 * [NoNaMe Club](http://nnmclub.to/)
+* [Book Tracker](https://booktracker.org/)
 * [ALLTOR.ME](https://alltor.me)
 * [TAS-IX.ME](http://tas-ix.me)
 

@@ -28,5 +28,5 @@ class AlltorSpec
     assert(Hours.hoursBetween(parsed, now) === Hours.hours(24 + 11))
   }
 
-  val pagesFolder: java.io.File = new File(resourcesFolder, "alltor")
+  val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)
 }

@@ -23,7 +23,8 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
       TasIx,
       Alltor,
       Rutor,
-      NonameClub
+      NonameClub,
+      BookTracker
     )
 
   private lazy val configuredProviders: Seq[ConfiguredProvider] = rawProvider map (raw => {
@@ -32,7 +33,7 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
     } else {
       ConfigFactory.empty()
     }
-    if (raw.requiresAuth && subConfig.getString("login").isEmpty) {
+    if (raw.requiresAuth && (!subConfig.hasPath("login") || subConfig.getString("login").isEmpty)) {
       log.debug(s"Couldn't find config for '${raw.prettyName}', skipping")
       None
     } else {

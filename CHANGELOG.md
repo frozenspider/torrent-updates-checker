@@ -1,5 +1,6 @@
 ### SNAPSHOT
 * NoNaMe Club (nnmclub.to) provider added
+* Book Tracker (booktracker.org) provider added
 
 ### 1.4.1
 * Fixed issue with Rutor provider being excluded on startup

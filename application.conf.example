@@ -1,5 +1,7 @@
-http.port       = 8100 // 0 to not start a server
-tasix.login     = ""
-tasix.password  = ""
-alltor.login    = ""
-alltor.password = ""
+http.port            = 8100 // 0 to not start a server
+tasix.login          = ""
+tasix.password       = ""
+alltor.login         = ""
+alltor.password      = ""
+booktracker.login    = ""
+booktracker.password = ""

@@ -21,8 +21,6 @@ class RutorBase extends GenProvider {
 
   override val providerKey: String = "rutor"
 
-  val timeoutMs: Int = 60 * 1000
-
   override def recognizeUrl(url: String): Boolean = {
     Try(Seq("rutor.info", "rutor.is") contains (new URL(url)).getHost).getOrElse(false)
   }

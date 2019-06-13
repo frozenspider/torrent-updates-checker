@@ -28,5 +28,5 @@ class TasIxSpec
     assert(Days.daysBetween(parsed, now) === Days.days(8))
   }
 
-  val pagesFolder: java.io.File = new File(resourcesFolder, "tas-ix")
+  val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)
 }
