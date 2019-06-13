@@ -13,18 +13,18 @@ import org.scalatest.junit.JUnitRunner
 import com.github.nscala_time.time.Imports._
 
 @RunWith(classOf[JUnitRunner])
-class BookTrackerSpec
+class MetalTrackerSpec
     extends FlatSpec
     with TestHelper {
 
-  val instance: BookTracker = new BookTracker(null, null)
+  val instance: MetalTracker = new MetalTracker(null, null)
 
-  behavior of "booktracker provider"
+  behavior of "metaltracker provider"
 
-  it should "parse 08 Jul 2018" in {
-    val content = Source.fromFile(new File(pagesFolder, "on-basilisk-station_2018-07-08.htm"), "UTF-8").mkString
+  it should "parse 31 May 2019" in {
+    val content = Source.fromFile(new File(pagesFolder, "gloryhammer_2019-05-31.htm"), "UTF-8").mkString
     val parsed = instance.parseDateLastUpdated(content)
-    assert(parsed === DateTime.parse("2018-07-08T07:10:00"))
+    assert(parsed === DateTime.parse("2019-05-31T23:37:16"))
   }
 
   val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)

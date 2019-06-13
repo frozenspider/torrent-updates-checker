@@ -24,7 +24,8 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
       Alltor,
       Rutor,
       NonameClub,
-      BookTracker
+      BookTracker,
+      MetalTracker
     )
 
   private lazy val configuredProviders: Seq[ConfiguredProvider] = rawProvider map (raw => {

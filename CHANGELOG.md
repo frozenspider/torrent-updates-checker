@@ -1,6 +1,8 @@
 ### SNAPSHOT
-* NoNaMe Club (nnmclub.to) provider added
-* Book Tracker (booktracker.org) provider added
+* Added providers for the following trackers:
+  * NoNaMe Club (nnmclub.to)
+  * Book Tracker (booktracker.org)
+  * Metal Tracker (www.metal-tracker.com)
 
 ### 1.4.1
 * Fixed issue with Rutor provider being excluded on startup
