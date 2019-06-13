@@ -1,5 +1,5 @@
 name         := "torrent-updates-checker"
-version      := "1.4.1-SNAPSHOT"
+version      := "1.4.2"
 scalaVersion := "2.12.3"
 
 sourceManaged            := baseDirectory.value / "src_managed"
