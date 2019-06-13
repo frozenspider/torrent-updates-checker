@@ -8,6 +8,7 @@ Tracker support
 Currently only supports the following torrent trackers:
 
 * [RUTOR](http://rutor.info/)
+* [RuTracker](https://rutracker.org/)
 * [NoNaMe Club](http://nnmclub.to/)
 * [Book Tracker](https://booktracker.org/)
 * [Metal Tracker](https://www.metal-tracker.com/)

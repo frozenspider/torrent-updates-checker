@@ -1,5 +1,6 @@
 ### SNAPSHOT
 * Added providers for the following trackers:
+  * RuTracker (rutracker.org)
   * NoNaMe Club (nnmclub.to)
   * Book Tracker (booktracker.org)
   * Metal Tracker (www.metal-tracker.com)

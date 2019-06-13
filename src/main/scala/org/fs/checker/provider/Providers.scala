@@ -23,6 +23,7 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
       TasIx,
       Alltor,
       Rutor,
+      RuTracker,
       NonameClub,
       BookTracker,
       MetalTracker
@@ -64,6 +65,9 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
     case _: ConnectException | _: UnknownHostException =>
       // Do not log non-informative stacktraces
       log.warn(s"Exception creating provider for ${raw.getClass.getSimpleName} - ${ex.getClass.getName}: ${ex.getMessage}")
+    case _: IllegalStateException =>
+      // Do not log non-informative stacktraces
+      log.warn(s"Exception creating provider for ${raw.getClass.getSimpleName} - ${ex.getMessage}")
     case _ =>
       log.warn(s"Exception creating provider for ${raw.getClass.getSimpleName}", ex)
   }
