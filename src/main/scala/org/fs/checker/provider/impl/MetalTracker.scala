@@ -9,6 +9,7 @@ import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.provider.ConfiguredProvider
 import org.fs.checker.provider.GenProvider
 import org.fs.checker.provider.RawProvider
+import org.fs.checker.utility.MonthNameParser
 import org.fs.checker.utility.ResponseBodyDecoder
 import org.fs.utility.web.Imports._
 import org.joda.time.format.DateTimeFormatter
@@ -16,18 +17,19 @@ import org.joda.time.format.DateTimeFormatter
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.Config
 
-class RutorBase extends GenProvider {
-  override val prettyName: String = "rutor.info"
+class MetalTrackerBase extends GenProvider {
+  override val prettyName: String = "metal-tracker.com"
 
-  override val providerKey: String = "rutor"
+  override val providerKey: String = "metaltracker"
 
   override def recognizeUrl(url: String): Boolean = {
-    Try(Seq("rutor.info", "rutor.is") contains (new URL(url)).getHost).getOrElse(false)
+    // www.metal-tracker.com, en.metal-tracker.com
+    Try((new URL(url)).getHost endsWith ".metal-tracker.com").getOrElse(false)
   }
 }
 
-class Rutor(httpClient: HttpClient, override val dumpService: PageContentDumpService) extends RutorBase with ConfiguredProvider {
-  private val dtf: DateTimeFormatter = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm:ss")
+class MetalTracker(httpClient: HttpClient, override val dumpService: PageContentDumpService) extends MetalTrackerBase with ConfiguredProvider {
+  private val dtf: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss")
 
   override def fetch(url: String): String = {
     val resp = httpClient.request(GET(url).addTimeout(timeoutMs))
@@ -35,10 +37,11 @@ class Rutor(httpClient: HttpClient, override val dumpService: PageContentDumpSer
   }
 
   override def parseDateLastUpdated(content: String): DateTime = {
-    // Format: 28-02-2019 23:19:22  (15 дней назад)
+    // Format: 13/06/2019 00:23:26
     val body = parseElement(content) \ "body"
-    val detailsTable = body \\ "table" filter (_.attribute("id").exists(_.text == "details"))
-    val row = (detailsTable \ "tr") filter (tr => (tr \ "td" filterByClass "header").trimmedText contains "Добавлен")
+    val detailsTable = body \\ "table" filterByClass "torrent_info"
+    val detailsRightSection = (detailsTable \\ "td" filterByClass "half")(1)
+    val row = (detailsRightSection \\ "tr")(0)
     val lastUpdatedNode = (row \ "td")(1)
     val lastUpdatedString = lastUpdatedNode.trimmedText
     val lastUpdatedDateString = lastUpdatedString.split(" ").take(2).mkString(" ")
@@ -46,12 +49,13 @@ class Rutor(httpClient: HttpClient, override val dumpService: PageContentDumpSer
   }
 }
 
-object Rutor extends RutorBase with RawProvider {
+object MetalTracker extends MetalTrackerBase with RawProvider {
   override val requiresAuth = false
 
-  override def withConfig(config: Config, dumpService: PageContentDumpService): Rutor = {
+  override def withConfig(config: Config, dumpService: PageContentDumpService): MetalTracker = {
     val (httpClient, cookieStore) = simpleClientWithStore()
     // Does not require authentication
-    new Rutor(httpClient, dumpService)
+    new MetalTracker(httpClient, dumpService)
   }
 }
+

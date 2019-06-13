@@ -5,12 +5,17 @@ Application for checking torrent updates automatically.
 
 Tracker support
 ---------------
-Currently supports only the following torrent trackers:
+Currently only supports the following torrent trackers:
 
+* [RUTOR](http://rutor.info/)
+* [RuTracker](https://rutracker.org/)
+* [NoNaMe Club](http://nnmclub.to/)
+* [Book Tracker](https://booktracker.org/)
+* [Metal Tracker](https://www.metal-tracker.com/)
 * [ALLTOR.ME](https://alltor.me)
 * [TAS-IX.ME](http://tas-ix.me)
 
-Both are only accessible from inside TAS-IX - Uzbekistan internal Internet exchange point.
+Last two are only accessible from inside TAS-IX - Uzbekistan internal Internet exchange point.
 
 
 Building

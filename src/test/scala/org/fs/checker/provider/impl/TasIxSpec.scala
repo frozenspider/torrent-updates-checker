@@ -22,11 +22,11 @@ class TasIxSpec
   behavior of "tas-ix provider"
 
   it should "parse 8-days ago state" in {
-    val content = Source.fromFile(new File(routerFolder, "expanse_8d.html"), "UTF-8").mkString
+    val content = Source.fromFile(new File(pagesFolder, "expanse_8d.html"), "UTF-8").mkString
     val parsed = instance.parseDateLastUpdated(content)
     val now = DateTime.now
     assert(Days.daysBetween(parsed, now) === Days.days(8))
   }
 
-  val routerFolder: java.io.File = new File(resourcesFolder, "tas-ix")
+  val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)
 }

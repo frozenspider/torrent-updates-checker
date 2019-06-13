@@ -13,18 +13,18 @@ import org.scalatest.junit.JUnitRunner
 import com.github.nscala_time.time.Imports._
 
 @RunWith(classOf[JUnitRunner])
-class RutorSpec
+class MetalTrackerSpec
     extends FlatSpec
     with TestHelper {
 
-  val instance: Rutor = new Rutor(null, null)
+  val instance: MetalTracker = new MetalTracker(null, null)
 
-  behavior of "rutor provider"
+  behavior of "metaltracker provider"
 
-  it should "parse 2019-02-28 state" in {
-    val content = Source.fromFile(new File(pagesFolder, "young-sheldon_2019-02-28.html"), "UTF-8").mkString
+  it should "parse 31 May 2019" in {
+    val content = Source.fromFile(new File(pagesFolder, "gloryhammer_2019-05-31.htm"), "UTF-8").mkString
     val parsed = instance.parseDateLastUpdated(content)
-    assert(parsed === DateTime.parse("2019-02-28T23:19:22"))
+    assert(parsed === DateTime.parse("2019-05-31T23:37:16"))
   }
 
   val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)

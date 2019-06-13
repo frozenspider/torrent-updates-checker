@@ -1,3 +1,10 @@
+### 1.4.2
+* Added providers for the following trackers:
+  * RuTracker (rutracker.org)
+  * NoNaMe Club (nnmclub.to)
+  * Book Tracker (booktracker.org)
+  * Metal Tracker (www.metal-tracker.com)
+
 ### 1.4.1
 * Fixed issue with Rutor provider being excluded on startup
 * (Internal) Configuration and checks timing cache are now stored in two different config files

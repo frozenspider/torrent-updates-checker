@@ -22,11 +22,11 @@ class AlltorSpec
   behavior of "alltor provider"
 
   it should "parse 1-day 11-hours ago state" in {
-    val content = Source.fromFile(new File(routerFolder, "blacklist_1d11h.html"), "UTF-8").mkString
+    val content = Source.fromFile(new File(pagesFolder, "blacklist_1d11h.html"), "UTF-8").mkString
     val parsed = instance.parseDateLastUpdated(content)
     val now = DateTime.now
     assert(Hours.hoursBetween(parsed, now) === Hours.hours(24 + 11))
   }
 
-  val routerFolder: java.io.File = new File(resourcesFolder, "alltor")
+  val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)
 }

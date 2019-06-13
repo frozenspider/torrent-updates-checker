@@ -10,53 +10,55 @@ import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.provider.ConfiguredProvider
 import org.fs.checker.provider.GenProvider
 import org.fs.checker.provider.RawProvider
-import org.fs.checker.utility.DurationParser
+import org.fs.checker.utility.MonthNameParser
 import org.fs.checker.utility.ResponseBodyDecoder
 import org.fs.utility.web.Imports._
 
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.Config
+import org.joda.time.format.DateTimeFormatter
 
-class AlltorBase extends GenProvider {
-  override val prettyName: String = "alltor.me"
+class BookTrackerBase extends GenProvider {
+  override val prettyName: String = "booktracker.org"
 
-  override val providerKey: String = "alltor"
+  override val providerKey: String = "booktracker"
 
   override def recognizeUrl(url: String): Boolean = {
-    Try("alltor.me" == (new URL(url)).getHost).getOrElse(false)
+    Try("booktracker.org" == (new URL(url)).getHost).getOrElse(false)
   }
 }
 
-class Alltor(httpClient: HttpClient, override val dumpService: PageContentDumpService) extends AlltorBase with ConfiguredProvider {
+class BookTracker(httpClient: HttpClient, override val dumpService: PageContentDumpService) extends BookTrackerBase with ConfiguredProvider {
+  private val dtf: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm")
+
   override def fetch(url: String): String = {
     val resp = httpClient.request(GET(url).addTimeout(timeoutMs))
     ResponseBodyDecoder.bodyToString(resp)
   }
 
   override def parseDateLastUpdated(content: String): DateTime = {
+    // Format: 2018-07-08 07:10
     val body = parseElement(content) \ "body"
-    val downloadTable = body \\ "table" filterByClass "dl_list"
-    val infoNode = (downloadTable \ "tr")(1) \ "td"
-    val lastUpdatedNode = (infoNode \ "b")(1)
+    val downloadTable = body \\ "table" filterByClass "attach"
+    val lastUpdatedNode = ((downloadTable \ "tr" filterByClass "row1")(3) \ "td" \ "span").head
     val lastUpdatedString = lastUpdatedNode.trimmedText
-    val duration = DurationParser.parse(lastUpdatedString)
-    val result = DateTime.now - duration
-    result
+    val lastUpdatedDateString = lastUpdatedString.split(" ").take(2).mkString(" ")
+    dtf.parseDateTime(lastUpdatedDateString)
   }
 }
 
-object Alltor extends AlltorBase with RawProvider {
+object BookTracker extends BookTrackerBase with RawProvider {
   override val requiresAuth = true
 
-  override def withConfig(config: Config, dumpService: PageContentDumpService): Alltor = {
+  override def withConfig(config: Config, dumpService: PageContentDumpService): BookTracker = {
     val (httpClient, cookieStore) = simpleClientWithStore()
-    val authReq = POST("https://alltor.me/login.php")
+    val authReq = POST("https://booktracker.org/login.php")
       .addTimeout(timeoutMs)
       .setCharset(StandardCharsets.UTF_8) // Needed for transmitting non-ASCII parameters
       .addParameters(Map(
         "login_username" -> config.getString("login"),
         "login_password" -> config.getString("password"),
-        "autologin" -> "1",
+        "autologin" -> "on",
         "login" -> "Вход"
       ))
     val response = httpClient.request(authReq)
@@ -64,6 +66,7 @@ object Alltor extends AlltorBase with RawProvider {
       dumpService.dump(response.bodyString, providerKey)
       throw new IllegalArgumentException(s"Failed to auth, got code ${response.code}, content dumped to file")
     }
-    new Alltor(httpClient, dumpService)
+    new BookTracker(httpClient, dumpService)
   }
 }
+

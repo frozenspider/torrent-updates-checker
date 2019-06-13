@@ -22,7 +22,11 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
     Seq(
       TasIx,
       Alltor,
-      Rutor
+      Rutor,
+      RuTracker,
+      NonameClub,
+      BookTracker,
+      MetalTracker
     )
 
   private lazy val configuredProviders: Seq[ConfiguredProvider] = rawProvider map (raw => {
@@ -31,7 +35,7 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
     } else {
       ConfigFactory.empty()
     }
-    if (raw.requiresAuth && subConfig.getString("login").isEmpty) {
+    if (raw.requiresAuth && (!subConfig.hasPath("login") || subConfig.getString("login").isEmpty)) {
       log.debug(s"Couldn't find config for '${raw.prettyName}', skipping")
       None
     } else {
@@ -61,6 +65,9 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
     case _: ConnectException | _: UnknownHostException =>
       // Do not log non-informative stacktraces
       log.warn(s"Exception creating provider for ${raw.getClass.getSimpleName} - ${ex.getClass.getName}: ${ex.getMessage}")
+    case _: IllegalStateException =>
+      // Do not log non-informative stacktraces
+      log.warn(s"Exception creating provider for ${raw.getClass.getSimpleName} - ${ex.getMessage}")
     case _ =>
       log.warn(s"Exception creating provider for ${raw.getClass.getSimpleName}", ex)
   }
