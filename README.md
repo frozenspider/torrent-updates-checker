@@ -21,7 +21,8 @@ Last two are only accessible from inside TAS-IX - Uzbekistan internal Internet e
 Building
 --------
 Java binary can be assembled via SBT by running `sbt assembly` command (will create 
-`torrent-updates-checker-<VER>.jar` in `_build` subfolder).
+`torrent-updates-checker-<VER>_<DATE>_<TIME>.jar` in `_build` subfolder).
+
 
 
 Configuration
