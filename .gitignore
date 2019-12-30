@@ -4,7 +4,12 @@
 .classpath
 .project
 
+# IDEA
+*.iml
+.idea/
+
 # sbt
+.cache
 .cache-*
 target/
 src_managed/
