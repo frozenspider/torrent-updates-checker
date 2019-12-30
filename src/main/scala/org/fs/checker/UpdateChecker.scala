@@ -1,5 +1,7 @@
 package org.fs.checker
 
+import java.net.SocketTimeoutException
+
 import org.fs.checker.cache.CacheService
 import org.fs.checker.cache.CachedDetails
 import org.fs.checker.dao.TorrentEntry
@@ -7,7 +9,6 @@ import org.fs.checker.dumping.PageParsingException
 import org.fs.checker.notification.UpdateNotifierService
 import org.fs.checker.provider.Providers
 import org.slf4s.Logging
-
 import com.github.nscala_time.time.Imports._
 
 /**
@@ -71,6 +72,9 @@ class UpdateChecker(
           case PageParsingException(providerName, url, content, th) =>
             log.error(s"${provider.prettyName} failed to process $url, content dumped", th)
             provider.dump(content)
+            None
+          case ex: SocketTimeoutException =>
+            log.error(s"${provider.prettyName} failed to process $url, socket timeout")
             None
         }
       case None =>
