@@ -6,6 +6,7 @@ function onLoad() {
   showEntries();
   showLog();
 }
+
 function showEntries() {
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = wrapRequestCallback(function () {
@@ -13,6 +14,15 @@ function showEntries() {
   });
   httpRequest.open('GET', '/entries', false);
   httpRequest.send();
+}
+
+function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 function renderEntries(jsonArray) {
@@ -23,10 +33,10 @@ function renderEntries(jsonArray) {
     var tr = table.insertRow(table.rows.length - 2);
 
     var cell0 = tr.insertCell(0);
-    cell0.innerHTML = entry["alias"];
+    cell0.innerHTML = escapeHtml(entry["alias"]);
 
     var cell1 = tr.insertCell(1);
-    cell1.innerHTML = '<a href="' + entry["url"] + '">' + entry["url"] + '</a>';
+    cell1.innerHTML = '<a href="' + entry["url"] + '">' + escapeHtml(entry["url"]) + '</a>';
 
     var cell2 = tr.insertCell(2);
     cell2.innerHTML = '<button class="js-remove" data="' + entry["alias"].replace(/"/g, '&quot;') + '" onclick="return removeClick(event);">Remove</button>'

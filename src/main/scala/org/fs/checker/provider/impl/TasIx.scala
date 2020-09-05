@@ -54,12 +54,12 @@ object TasIx extends TasIxBase with RawProvider {
     // Recently introduced "anti-ddos", so to speak
     val antiDdosCookie = {
       val c = new BasicClientCookie("trololofm", "test")
-      c.setDomain("tas-ix.me")
+      c.setDomain("tas-ix.net")
       c.setPath("/")
       c
     }
     cookieStore.addCookie(antiDdosCookie)
-    val authReq = POST("http://tas-ix.me/login.php")
+    val authReq = POST("http://tas-ix.net/login.php")
       .addTimeout(timeoutMs)
       .setCharset(StandardCharsets.UTF_8) // Needed for transmitting non-ASCII parameters
       .addParameters(Map(
