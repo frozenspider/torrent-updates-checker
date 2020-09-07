@@ -1,6 +1,7 @@
 package org.fs.checker.provider
 
 import java.net.ConnectException
+import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 import scala.util.Failure
@@ -62,7 +63,7 @@ class Providers(config: Config, dumpService: PageContentDumpService) extends Log
   }
 
   private def reportProviderInitFailure(raw: RawProvider, ex: Throwable): Unit = ex match {
-    case _: ConnectException | _: UnknownHostException =>
+    case _: ConnectException | _: UnknownHostException | _: SocketTimeoutException =>
       // Do not log non-informative stacktraces
       log.warn(s"Exception creating provider for ${raw.getClass.getSimpleName} - ${ex.getClass.getName}: ${ex.getMessage}")
     case _: IllegalStateException =>
