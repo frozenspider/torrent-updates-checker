@@ -5,6 +5,7 @@ import java.io.File
 import scala.io.Source
 
 import org.fs.checker.TestHelper
+import org.fs.checker.dao.TorrentParseResult
 import org.joda.time.Days
 import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
@@ -24,8 +25,9 @@ class TasIxSpec
   it should "parse 8-days ago state" in {
     val content = Source.fromFile(new File(pagesFolder, "expanse_8d.html"), "UTF-8").mkString
     val parsed = instance.parseDateLastUpdated(content)
+    assert(parsed.isInstanceOf[TorrentParseResult.Success])
     val now = DateTime.now
-    assert(Days.daysBetween(parsed, now) === Days.days(8))
+    assert(Days.daysBetween(parsed.asInstanceOf[TorrentParseResult.Success].dt, now) === Days.days(8))
   }
 
   val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)

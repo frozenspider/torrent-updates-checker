@@ -6,17 +6,17 @@ import java.nio.charset.StandardCharsets
 import scala.util.Try
 
 import org.apache.http.client.HttpClient
+import org.fs.checker.dao.TorrentParseResult
 import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.provider.ConfiguredProvider
 import org.fs.checker.provider.GenProvider
 import org.fs.checker.provider.RawProvider
-import org.fs.checker.utility.MonthNameParser
 import org.fs.checker.utility.ResponseBodyDecoder
 import org.fs.utility.web.Imports._
+import org.joda.time.format.DateTimeFormatter
 
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.Config
-import org.joda.time.format.DateTimeFormatter
 
 class BookTrackerBase extends GenProvider {
   override val prettyName: String = "booktracker.org"
@@ -36,14 +36,14 @@ class BookTracker(httpClient: HttpClient, override val dumpService: PageContentD
     ResponseBodyDecoder.bodyToString(resp)
   }
 
-  override def parseDateLastUpdated(content: String): DateTime = {
+  override def parseDateLastUpdated(content: String): TorrentParseResult = {
     // Format: 2018-07-08 07:10
     val body = parseElement(content) \ "body"
     val downloadTable = body \\ "table" filterByClass "attach"
     val lastUpdatedNode = ((downloadTable \ "tr" filterByClass "row1")(3) \ "td" \ "span").head
     val lastUpdatedString = lastUpdatedNode.trimmedText
     val lastUpdatedDateString = lastUpdatedString.split(" ").take(2).mkString(" ")
-    dtf.parseDateTime(lastUpdatedDateString)
+    TorrentParseResult.Success(dtf.parseDateTime(lastUpdatedDateString))
   }
 }
 

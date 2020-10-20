@@ -5,10 +5,12 @@ import java.net.SocketTimeoutException
 import org.fs.checker.cache.CacheService
 import org.fs.checker.cache.CachedDetails
 import org.fs.checker.dao.TorrentEntry
+import org.fs.checker.dao.TorrentParseResult
 import org.fs.checker.dumping.PageParsingException
 import org.fs.checker.notification.UpdateNotifierService
 import org.fs.checker.provider.Providers
 import org.slf4s.Logging
+
 import com.github.nscala_time.time.Imports._
 
 /**
@@ -26,36 +28,45 @@ class UpdateChecker(
     if (!entries.isEmpty) {
       log.info(s"Check iteration started")
       val providers = getProviders()
-      val updatedEntries = entries.filter {
-        case TorrentEntry(alias, url) => checkUpdated(alias, url, providers)
+      var updated: Seq[TorrentEntry] = Seq.empty
+      var notAvailable: Seq[(TorrentEntry, String)] = Seq.empty
+      entries.foreach {
+        case te @ TorrentEntry(alias, url) =>
+          val cachedDetailsOption = cacheService.getCachedDetailsOption(url)
+          fetchUpdateDate(alias, url, providers) match {
+            case Some(TorrentParseResult.Success(dateUpdated)) =>
+              val lastCheckDate = cachedDetailsOption.flatMap(_.lastCheckDateOption).getOrElse {
+                log.info(s"'$alias' ($url) wasn't checked before")
+                // Treat it as not updated
+                dateUpdated.plusSeconds(1)
+              }
+              val now = DateTime.now
+              cacheService.updateCachedDetails(url, CachedDetails(Some(now.getMillis), Some(dateUpdated.getMillis), false))
+              if (dateUpdated >= lastCheckDate) {
+                updated = updated :+ te
+              }
+            case Some(TorrentParseResult.NotAvailable(reason)) =>
+              if (cachedDetailsOption.map(_.isUnavailable) getOrElse false) {
+                // NOOP
+              } else {
+                cacheService.updateCachedDetails(
+                  url,
+                  CachedDetails(
+                    cachedDetailsOption flatMap (_.lastCheckMsOption),
+                    cachedDetailsOption flatMap (_.lastUpdateMsOption),
+                    true
+                  )
+                )
+                notAvailable = notAvailable :+ (te, reason)
+              }
+            case None =>
+            // NOOP
+          }
       }
-      if (!updatedEntries.isEmpty) {
-        updateNotifierService.notify(updatedEntries)
-      }
+      updateNotifierService.notify(updated, notAvailable)
       log.info(s"Check iteration complete")
     } else {
       log.info(s"Check iteration skipped, no aliases defined")
-    }
-  }
-
-  private def checkUpdated(
-    alias:     String,
-    url:       String,
-    providers: Providers
-  ): Boolean = {
-    val cachedDetailsOption = cacheService.getCachedDetailsOption(url)
-    fetchUpdateDate(alias, url, providers) match {
-      case Some(dateUpdated) =>
-        val lastCheckDate = cachedDetailsOption.flatMap(_.lastCheckDateOption).getOrElse {
-          log.info(s"'$alias' ($url) wasn't checked before")
-          // Treat it as not updated
-          dateUpdated.plusSeconds(1)
-        }
-        val now = DateTime.now
-        cacheService.updateCachedDetails(url, CachedDetails(Some(now.getMillis), Some(dateUpdated.getMillis)))
-        dateUpdated >= lastCheckDate
-      case None =>
-        false
     }
   }
 
@@ -63,7 +74,7 @@ class UpdateChecker(
     alias:     String,
     url:       String,
     providers: Providers
-  ): Option[DateTime] = {
+  ): Option[TorrentParseResult] = {
     providers.providerFor(url) match {
       case Some(provider) =>
         try {

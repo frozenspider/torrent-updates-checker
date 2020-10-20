@@ -5,6 +5,7 @@ import java.net.URL
 import scala.util.Try
 
 import org.apache.http.client.HttpClient
+import org.fs.checker.dao.TorrentParseResult
 import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.provider.ConfiguredProvider
 import org.fs.checker.provider.GenProvider
@@ -34,7 +35,7 @@ class Rutor(httpClient: HttpClient, override val dumpService: PageContentDumpSer
     ResponseBodyDecoder.bodyToString(resp)
   }
 
-  override def parseDateLastUpdated(content: String): DateTime = {
+  override def parseDateLastUpdated(content: String): TorrentParseResult = {
     // Format: 28-02-2019 23:19:22  (15 дней назад)
     val body = parseElement(content) \ "body"
     val detailsTable = body \\ "table" filter (_.attribute("id").exists(_.text == "details"))
@@ -42,7 +43,7 @@ class Rutor(httpClient: HttpClient, override val dumpService: PageContentDumpSer
     val lastUpdatedNode = (row \ "td")(1)
     val lastUpdatedString = lastUpdatedNode.trimmedText
     val lastUpdatedDateString = lastUpdatedString.split(" ").take(2).mkString(" ")
-    dtf.parseDateTime(lastUpdatedDateString)
+    TorrentParseResult.Success(dtf.parseDateTime(lastUpdatedDateString))
   }
 }
 

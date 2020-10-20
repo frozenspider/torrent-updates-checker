@@ -5,6 +5,7 @@ import java.io.File
 import scala.io.Source
 
 import org.fs.checker.TestHelper
+import org.fs.checker.dao.TorrentParseResult
 import org.joda.time.Hours
 import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
@@ -24,8 +25,9 @@ class AlltorSpec
   it should "parse 1-day 11-hours ago state" in {
     val content = Source.fromFile(new File(pagesFolder, "blacklist_1d11h.html"), "UTF-8").mkString
     val parsed = instance.parseDateLastUpdated(content)
+    assert(parsed.isInstanceOf[TorrentParseResult.Success])
     val now = DateTime.now
-    assert(Hours.hoursBetween(parsed, now) === Hours.hours(24 + 11))
+    assert(Hours.hoursBetween(parsed.asInstanceOf[TorrentParseResult.Success].dt, now) === Hours.hours(24 + 11))
   }
 
   val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)

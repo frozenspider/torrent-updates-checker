@@ -5,6 +5,7 @@ import java.io.File
 import scala.io.Source
 
 import org.fs.checker.TestHelper
+import org.fs.checker.dao.TorrentParseResult
 import org.joda.time.Days
 import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
@@ -24,7 +25,8 @@ class BookTrackerSpec
   it should "parse 08 Jul 2018" in {
     val content = Source.fromFile(new File(pagesFolder, "on-basilisk-station_2018-07-08.htm"), "UTF-8").mkString
     val parsed = instance.parseDateLastUpdated(content)
-    assert(parsed === DateTime.parse("2018-07-08T07:10:00"))
+    assert(parsed.isInstanceOf[TorrentParseResult.Success])
+    assert(parsed.asInstanceOf[TorrentParseResult.Success].dt === DateTime.parse("2018-07-08T07:10:00"))
   }
 
   val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)

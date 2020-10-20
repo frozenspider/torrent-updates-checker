@@ -1,8 +1,8 @@
 package org.fs.checker.provider
 
+import org.fs.checker.dao.TorrentParseResult
 import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.dumping.PageParsingException
-import org.joda.time.DateTime
 import org.slf4s.Logging
 
 /**
@@ -12,7 +12,7 @@ import org.slf4s.Logging
  */
 trait ConfiguredProvider extends GenProvider with Logging {
   @throws[PageParsingException]
-  def checkDateLastUpdated(url: String): DateTime = {
+  def checkDateLastUpdated(url: String): TorrentParseResult = {
     require(recognizeUrl(url))
     val body = fetch(url)
     try {
@@ -25,7 +25,7 @@ trait ConfiguredProvider extends GenProvider with Logging {
 
   def fetch(url: String): String
 
-  def parseDateLastUpdated(content: String): DateTime
+  def parseDateLastUpdated(content: String): TorrentParseResult
 
   protected def dumpService: PageContentDumpService
 

@@ -5,11 +5,11 @@ import java.net.URL
 import scala.util.Try
 
 import org.apache.http.client.HttpClient
+import org.fs.checker.dao.TorrentParseResult
 import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.provider.ConfiguredProvider
 import org.fs.checker.provider.GenProvider
 import org.fs.checker.provider.RawProvider
-import org.fs.checker.utility.MonthNameParser
 import org.fs.checker.utility.ResponseBodyDecoder
 import org.fs.utility.web.Imports._
 import org.joda.time.format.DateTimeFormatter
@@ -36,7 +36,7 @@ class MetalTracker(httpClient: HttpClient, override val dumpService: PageContent
     ResponseBodyDecoder.bodyToString(resp)
   }
 
-  override def parseDateLastUpdated(content: String): DateTime = {
+  override def parseDateLastUpdated(content: String): TorrentParseResult = {
     // Format: 13/06/2019 00:23:26
     val body = parseElement(content) \ "body"
     val detailsTable = body \\ "table" filterByClass "torrent_info"
@@ -45,7 +45,7 @@ class MetalTracker(httpClient: HttpClient, override val dumpService: PageContent
     val lastUpdatedNode = (row \ "td")(1)
     val lastUpdatedString = lastUpdatedNode.trimmedText
     val lastUpdatedDateString = lastUpdatedString.split(" ").take(2).mkString(" ")
-    dtf.parseDateTime(lastUpdatedDateString)
+    TorrentParseResult.Success(dtf.parseDateTime(lastUpdatedDateString))
   }
 }
 

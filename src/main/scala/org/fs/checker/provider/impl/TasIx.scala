@@ -7,6 +7,7 @@ import scala.util.Try
 
 import org.apache.http.client.HttpClient
 import org.apache.http.impl.cookie.BasicClientCookie
+import org.fs.checker.dao.TorrentParseResult
 import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.provider.ConfiguredProvider
 import org.fs.checker.provider.GenProvider
@@ -34,7 +35,7 @@ class TasIx(httpClient: HttpClient, override val dumpService: PageContentDumpSer
     ResponseBodyDecoder.bodyToString(resp)
   }
 
-  override def parseDateLastUpdated(content: String): DateTime = {
+  override def parseDateLastUpdated(content: String): TorrentParseResult = {
     val body = parseElement(content) \ "body"
     val downloadTable = body \\ "table" filterByClass "dl_list"
     val infoNode = (downloadTable \ "tr")(1) \ "td"
@@ -42,7 +43,7 @@ class TasIx(httpClient: HttpClient, override val dumpService: PageContentDumpSer
     val lastUpdatedString = lastUpdatedNode.trimmedText
     val duration = DurationParser.parse(lastUpdatedString)
     val result = DateTime.now - duration
-    result
+    TorrentParseResult.Success(result)
   }
 }
 

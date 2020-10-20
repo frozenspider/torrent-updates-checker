@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets
 import scala.util.Try
 
 import org.apache.http.client.HttpClient
+import org.fs.checker.dao.TorrentParseResult
 import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.provider.ConfiguredProvider
 import org.fs.checker.provider.GenProvider
@@ -16,7 +17,6 @@ import org.fs.utility.web.Imports._
 
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.Config
-import org.joda.time.format.DateTimeFormatter
 
 class RuTrackerBase extends GenProvider {
   override val prettyName: String = "rutracker.org"
@@ -34,16 +34,22 @@ class RuTracker(httpClient: HttpClient, override val dumpService: PageContentDum
     ResponseBodyDecoder.bodyToString(resp)
   }
 
-  override def parseDateLastUpdated(content: String): DateTime = {
+  override def parseDateLastUpdated(content: String): TorrentParseResult = {
     // Format (bottom section): 10-Июн-19 20:39
-    val body = parseElement(content) \ "body"
-    val downloadTable = body \\ "table" filterByClass "attach"
-    val lastUpdatedNode = ((downloadTable \ "tr" filterByClass "row1")(0) \\ "li").head
-    val lastUpdatedString = lastUpdatedNode.trimmedText
-    val split = lastUpdatedString.split("[- :]")
-    assert(split.size == 5, "Unexpected page format!")
-    val monthInt = MonthNameParser.parse(split(1))
-    new DateTime(2000 + split(2).toInt, monthInt, split(0).toInt, split(3).toInt, split(4).toInt, 0)
+    if (content contains "class=\"dl-unregistered") {
+      TorrentParseResult.NotAvailable("absorbed")
+    } else {
+      val body = parseElement(content) \ "body"
+      val downloadTable = body \\ "table" filterByClass "attach"
+      val lastUpdatedNode = ((downloadTable \ "tr" filterByClass "row1")(0) \\ "li").head
+      val lastUpdatedString = lastUpdatedNode.trimmedText
+      val split = lastUpdatedString.split("[- :]")
+      assert(split.size == 5, "Unexpected page format!")
+      val monthInt = MonthNameParser.parse(split(1))
+      TorrentParseResult.Success(
+        new DateTime(2000 + split(2).toInt, monthInt, split(0).toInt, split(3).toInt, split(4).toInt, 0)
+      )
+    }
   }
 }
 

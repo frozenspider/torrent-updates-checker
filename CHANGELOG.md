@@ -1,4 +1,7 @@
 ### SNAPSHOT
+* Handling the case when RuTracker torrent has been absorbed
+* Changed tas-ix.me to tas-ix.net
+* Better handling of SocketTimeoutException, no longer causes a crash
 
 ### 1.4.2
 * Added providers for the following trackers:

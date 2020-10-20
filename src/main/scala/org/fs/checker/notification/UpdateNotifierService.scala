@@ -2,9 +2,7 @@ package org.fs.checker.notification
 
 import org.fs.checker.dao.TorrentEntry
 
-/**
- * @author FS
- */
 trait UpdateNotifierService {
-  def notify(entries: Seq[TorrentEntry]): Unit
+  /** Notify user about updates, if any. */
+  def notify(updated: Seq[TorrentEntry], notAvailable: Seq[(TorrentEntry, String)]): Unit
 }

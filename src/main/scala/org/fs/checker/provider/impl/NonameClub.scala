@@ -5,6 +5,7 @@ import java.net.URL
 import scala.util.Try
 
 import org.apache.http.client.HttpClient
+import org.fs.checker.dao.TorrentParseResult
 import org.fs.checker.dumping.PageContentDumpService
 import org.fs.checker.provider.ConfiguredProvider
 import org.fs.checker.provider.GenProvider
@@ -32,7 +33,7 @@ class NonameClub(httpClient: HttpClient, override val dumpService: PageContentDu
     ResponseBodyDecoder.bodyToString(resp)
   }
 
-  override def parseDateLastUpdated(content: String): DateTime = {
+  override def parseDateLastUpdated(content: String): TorrentParseResult = {
     // Format: 09 Июн 2019 14:11:53
     val body = parseElement(content) \ "body"
     val detailsTable = body \\ "table" filterByClass "btTbl"
@@ -42,7 +43,9 @@ class NonameClub(httpClient: HttpClient, override val dumpService: PageContentDu
     val split = lastUpdatedString.split("[ :]")
     assert(split.size == 6, "Unexpected page format!")
     val monthInt = MonthNameParser.parse(split(1))
-    new DateTime(split(2).toInt, monthInt, split(0).toInt, split(3).toInt, split(4).toInt, split(5).toInt)
+    TorrentParseResult.Success(
+      new DateTime(split(2).toInt, monthInt, split(0).toInt, split(3).toInt, split(4).toInt, split(5).toInt)
+    )
   }
 }
 

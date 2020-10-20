@@ -23,12 +23,14 @@ class CacheServiceImpl(cacheFile: File)
     val cachePrefix = quoted(url)
     val lastCheckMsPath = s"$cachePrefix.lastCheckMs"
     val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
+    val isUnavailablePath = s"$cachePrefix.isUnavailable"
     if (!accessor.config.hasPath(cachePrefix)) {
       None
     } else {
       val lastCheckMsOption = accessor.config.get[Option[Long]](lastCheckMsPath).value
       val lastUpdateMsOption = accessor.config.get[Option[Long]](lastUpdateMsPath).value
-      Some(CachedDetails(lastCheckMsOption, lastUpdateMsOption))
+      val isUnavailable = accessor.config.get[Boolean](isUnavailablePath).valueOrElse(false)
+      Some(CachedDetails(lastCheckMsOption, lastUpdateMsOption, isUnavailable))
     }
   }
 
@@ -36,13 +38,16 @@ class CacheServiceImpl(cacheFile: File)
     val cachePrefix = quoted(url)
     val lastCheckMsPath = s"$cachePrefix.lastCheckMs"
     val lastUpdateMsPath = s"$cachePrefix.lastUpdateMs"
+    val isUnavailablePath = s"$cachePrefix.isUnavailable"
     val updateMap = Map(
       lastCheckMsPath -> cachedDetails.lastCheckMsOption,
-      lastUpdateMsPath -> cachedDetails.lastUpdateMsOption
+      lastUpdateMsPath -> cachedDetails.lastUpdateMsOption,
+      isUnavailablePath -> cachedDetails.isUnavailable
     )
     val newConfig = updateMap.foldLeft(accessor.config) {
       case (config, (path, Some(value))) => config.withValue(path, value)
-      case (config, _)                   => config
+      case (config, (path, None))        => config
+      case (config, (path, value))       => config.withValue(path, value)
     }
     accessor.update(newConfig)
   }

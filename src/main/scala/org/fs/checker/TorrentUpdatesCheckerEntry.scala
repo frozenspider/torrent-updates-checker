@@ -22,6 +22,7 @@ import com.twitter.finagle.ListeningServer
 import com.twitter.util.Await
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
+import org.fs.checker.dao.TorrentParseResult
 
 /**
  * @author FS
@@ -142,8 +143,15 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
 
   def getLastUpdated(args: Seq[String]): Unit = {
     val url = args(0)
-    val dateUpdated = updateChecker.fetchUpdateDate(url, url, getProviders())
-    println("Last Updated: " + dateUpdated.map(_.toString("yyyy-MM-dd HH:mm:ss")).getOrElse("(Error!)"))
+    val fetchResult = updateChecker.fetchUpdateDate(url, url, getProviders())
+    fetchResult match {
+      case Some(TorrentParseResult.Success(dateUpdated)) =>
+        println("Last Updated: " + dateUpdated.toString("yyyy-MM-dd HH:mm:ss"))
+      case Some(TorrentParseResult.NotAvailable(reason)) =>
+        println(s"Torrent is not available ($reason)")
+      case None =>
+        println("Error!")
+    }
   }
 
   private def getFile(s: String): File = {
