@@ -1,5 +1,6 @@
 ### SNAPSHOT
 * Handling the case when RuTracker torrent has been absorbed
+* Handling thread not found/deleted case for alltor
 * Changed tas-ix.me to tas-ix.net
 * Better handling of SocketTimeoutException, no longer causes a crash
 

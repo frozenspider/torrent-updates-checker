@@ -30,5 +30,11 @@ class AlltorSpec
     assert(Hours.hoursBetween(parsed.asInstanceOf[TorrentParseResult.Success].dt, now) === Hours.hours(24 + 11))
   }
 
+  it should "parse a not found case" in {
+    val content = Source.fromFile(new File(pagesFolder, "_not-found.html"), "UTF-8").mkString
+    val parsed = instance.parseDateLastUpdated(content)
+    assert(parsed === TorrentParseResult.Failure.NotFound)
+  }
+
   val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)
 }

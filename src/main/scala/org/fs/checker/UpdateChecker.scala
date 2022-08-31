@@ -40,12 +40,18 @@ class UpdateChecker(
                 // Treat it as not updated
                 dateUpdated.plusSeconds(1)
               }
-              val now = DateTime.now
-              cacheService.updateCachedDetails(url, CachedDetails(Some(now.getMillis), Some(dateUpdated.getMillis), false))
+              cacheService.updateCachedDetails(
+                url,
+                CachedDetails(
+                  Some(DateTime.now.getMillis),
+                  Some(dateUpdated.getMillis),
+                  false
+                )
+              )
               if (dateUpdated >= lastCheckDate) {
                 updated = updated :+ te
               }
-            case Some(TorrentParseResult.NotAvailable(reason)) =>
+            case Some(na: TorrentParseResult.Failure) =>
               if (cachedDetailsOption.map(_.isUnavailable) getOrElse false) {
                 // NOOP
               } else {
@@ -57,7 +63,7 @@ class UpdateChecker(
                     true
                   )
                 )
-                notAvailable = notAvailable :+ (te, reason)
+                notAvailable = notAvailable :+ (te, na.reason)
               }
             case None =>
             // NOOP

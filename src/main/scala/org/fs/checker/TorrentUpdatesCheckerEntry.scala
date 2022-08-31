@@ -147,8 +147,8 @@ object TorrentUpdatesCheckerEntry extends App with Logging {
     fetchResult match {
       case Some(TorrentParseResult.Success(dateUpdated)) =>
         println("Last Updated: " + dateUpdated.toString("yyyy-MM-dd HH:mm:ss"))
-      case Some(TorrentParseResult.NotAvailable(reason)) =>
-        println(s"Torrent is not available ($reason)")
+      case Some(na: TorrentParseResult.Failure) =>
+        println(s"Torrent is not available (${na.reason})")
       case None =>
         println("Error!")
     }

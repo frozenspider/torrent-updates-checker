@@ -37,12 +37,23 @@ class Alltor(httpClient: HttpClient, override val dumpService: PageContentDumpSe
   override def parseDateLastUpdated(content: String): TorrentParseResult = {
     val body = parseElement(content) \ "body"
     val downloadTable = body \\ "table" filterByClass "dl_list"
-    val infoNode = (downloadTable \ "tr")(1) \ "td"
-    val lastUpdatedNode = (infoNode \ "b")(1)
-    val lastUpdatedString = lastUpdatedNode.trimmedText
-    val duration = DurationParser.parse(lastUpdatedString)
-    val result = DateTime.now - duration
-    TorrentParseResult.Success(result)
+    if (downloadTable.isEmpty) {
+      val msgTable = body \\ "table" filterByClass "forumline" filterByClass "message"
+      val msgTd = msgTable \\ "td"
+      val msg: String = msgTd(0).trimmedText
+      if (msg contains "не существует") {
+        TorrentParseResult.Failure.NotFound
+      } else {
+        throw new IllegalStateException(s"Unexpected service message error")
+      }
+    } else {
+      val infoNode = (downloadTable \ "tr")(1) \ "td"
+      val lastUpdatedNode = (infoNode \ "b")(1)
+      val lastUpdatedString = lastUpdatedNode.trimmedText
+      val duration = DurationParser.parse(lastUpdatedString)
+      val result = DateTime.now - duration
+      TorrentParseResult.Success(result)
+    }
   }
 }
 

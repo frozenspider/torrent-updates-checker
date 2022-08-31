@@ -32,8 +32,7 @@ class RuTrackerSpec
   it should "parse absorbed" in {
     val content = Source.fromFile(new File(pagesFolder, "the-boys_2020-10-19.htm"), "utf8").mkString
     val parsed = instance.parseDateLastUpdated(content)
-    assert(parsed.isInstanceOf[TorrentParseResult.NotAvailable])
-    assert(parsed.asInstanceOf[TorrentParseResult.NotAvailable].reason === "absorbed")
+    assert(parsed === TorrentParseResult.Failure.Absorbed)
   }
 
   val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)

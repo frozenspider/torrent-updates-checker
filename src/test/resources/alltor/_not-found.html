@@ -1,0 +1,528 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html dir="ltr">
+
+<head>
+<title>ALLTOR.ME - Форум для Всех</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<link rel="stylesheet" href="./templates/simple/css/allstile.css?v=1" type="text/css">
+<link rel="icon" type="image/png" href="/images/logo/logo_big.png" />
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<link rel="search" type="application/opensearchdescription+xml" href="opensearch_desc.xml" title="ALLTOR.ME - Форум для Всех (Forum)" />
+<link rel="search" type="application/opensearchdescription+xml" href="opensearch_desc_bt.xml" title="ALLTOR.ME - Форум для Всех (Tracker)" />
+
+<script type="text/javascript" src="./misc/js/jquery.pack.js?v=1"></script>
+<script type="text/javascript" src="./misc/js/ui/jquery.mousewheel.js?v=1"></script>
+<script type="text/javascript" src="./misc/js/ui/jquery.scrollable.js?v=1"></script>
+<script type="text/javascript" src="./misc/js/main.js?v=1"></script>
+<script type="text/javascript" src="./misc/js/glossy.js?v=1"></script> 
+<script type="text/javascript" src="./misc/js/cvi_glossy_lib.js?v=1"></script>
+<script type="text/javascript" src="./misc/js/jquery.tooltip.js?v=1"></script>
+
+<script type="text/javascript" src="./misc/js/bbcode.js?v=1"></script>
+<script type="text/javascript">
+var postImg_MaxWidth = screen.width - 202;
+var postImgAligned_MaxWidth = Math.round(screen.width/3);
+var attachImg_MaxWidth = screen.width - 280;
+var ExternalLinks_InNewWindow = '1';
+var hidePostImg = false;
+
+function copyText_writeLink(node)
+{
+	if (!is_ie) return;
+	document.write('<p style="float: right;"><a class="txtb" onclick="if (ie_copyTextToClipboard('+node+')) alert(\'Код скопирован в буфер обмена\'); return false;" href="#">скопировать в буфер обмена</a></p>');
+}
+function initPostBBCode(context)
+{
+	$('span.post-hr', context).html('<hr align="left" />');
+	initQuotes(context);
+	initExternalLinks(context);
+	initPostImages(context);
+	initSpoilers(context);
+}
+function initQuotes(context)
+{
+	$('div.q', context).each(function(){
+		var $q = $(this);
+		var name = $(this).attr('head');
+		$q.before('<div class="q-head">'+ (name ? '<b>'+name+'</b> писал(а):' : '<b>Цитата</b>') +'</div>');
+	});
+}
+function initPostImages(context)
+{
+	if (hidePostImg) return;
+	var $in_spoilers = $('div.sp-body var.postImg', context);
+	$('var.postImg', context).not($in_spoilers).each(function(){
+		var $v = $(this);
+		var src = $v.attr('title');
+		var $img = $('<img src="'+ src +'" class="'+ $v.attr('className') +'" alt="pic" />');
+		$img = fixPostImage($img);
+		var maxW = ($v.hasClass('postImgAligned')) ? postImgAligned_MaxWidth : postImg_MaxWidth;
+		$img.bind('click', function(){ return imgFit(this, maxW); });
+		if (user.opt_js.i_aft_l) {
+			$('#preload').append($img);
+			var loading_icon = '<a href="'+ src +'" target="_blank"><img src="images/pic_loading.gif" alt="" /></a>';
+			$v.html(loading_icon);
+			if ($.browser.msie) {
+				$v.after('<wbr>');
+			}
+			$img.one('load', function(){
+				imgFit(this, maxW);
+				$v.empty().append(this);
+			});
+		}
+		else {
+			$img.one('load', function(){ imgFit(this, maxW) });
+			$v.empty().append($img);
+			if ($.browser.msie) {
+				$v.after('<wbr>');
+			}
+		}
+	});
+}
+function initSpoilers(context)
+{
+	$('div.sp-body', context).each(function(){
+		var $sp_body = $(this);
+		var name = $.trim(this.title) || 'Скрытый текст';
+		this.title = '';
+		var $sp_head = $('<div class="sp-head folded clickable">'+ name +'</div>');
+		$sp_head.insertBefore($sp_body).click(function(e){
+			if (!$sp_body.hasClass('inited')) {
+				initPostImages($sp_body);
+				var $sp_fold_btn = $('<div class="sp-fold clickable">[Свернуть]</div>').click(function(){
+					$.scrollTo($sp_head, { duration:200, axis:'y', offset:-200 });
+					$sp_head.click().animate({opacity: 0.1}, 500).animate({opacity: 1}, 700);
+				});
+				$sp_body.prepend('<div class="clear"></div>').append('<div class="clear"></div>').append($sp_fold_btn).addClass('inited');
+			}
+			if (e.shiftKey) {
+				e.stopPropagation();
+				e.shiftKey = false;
+				var fold = $(this).hasClass('unfolded');
+				$('div.sp-head', $($sp_body.parents('td')[0])).filter( function(){ return $(this).hasClass('unfolded') ? fold : !fold } ).click();
+			}
+			else {
+				$(this).toggleClass('unfolded');
+				$sp_body.slideToggle('fast');
+			}
+		});
+	});
+}
+function initExternalLinks(context)
+{
+  	var context = context || 'body';
+  	if (ExternalLinks_InNewWindow) {
+  		$("a.postLink:not([href*='"+ window.location.hostname +"/'])", context).attr({ target: '_blank' });
+  		//$("a.postLink:not([@href*='"+ window.location.hostname +"/'])", context).replaceWith('<span style="color: red;">Ссылки запрещены</span>');
+  	}
+}
+function fixPostImage ($img)
+{
+	var banned_image_hosts = /imagebanana|hidebehind/i;  // imageshack
+	var src = $img[0].src;
+	if (src.match(banned_image_hosts)) {
+		$img.wrap('<a href="'+ this.src +'" target="_blank"></a>').attr({ src: "/tr_oops.gif", title: "Прочтите правила размещения скриншотов!" });
+	}
+	return $img;
+}
+$(document).ready(function(){
+  	$('div.post_wrap, div.signature').each(function(){ initPostBBCode( $(this) ) });
+});
+</script>
+<script type="text/javascript">
+var BB_ROOT       = "./";
+var cookieDomain  = "alltor.me";
+var cookiePath    = "/";
+var cookieSecure  = 1;
+var cookiePrefix  = "bb_";
+var LOGGED_IN     = 1;
+var InfoWinParams = 'HEIGHT=510,resizable=yes,WIDTH=780';
+
+var user = {
+  	opt_js: {"only_new":0,"h_av":0,"h_rnk_i":0,"h_post_i":0,"h_smile":0,"h_sig":0,"sp_op":0,"tr_t_ax":0,"tr_t_t":0,"hl_tr":1,"i_aft_l":0},
+
+  	set: function(opt, val, days, reload) {
+  		this.opt_js[opt] = val;
+  		setCookie('opt_js', $.toJSON(this.opt_js), days);
+  		if (reload) {
+  			window.location.reload();
+  		}
+  	}
+}
+
+var ajax = new Ajax('./ajax.php', 'POST', 'json');
+
+function getElText (e)
+{
+  	var t = '';
+  	if (e.textContent !== undefined) { t = e.textContent; } else if (e.innerText !== undefined) { t = e.innerText; } else { t = jQuery(e).text(); }
+  	return t;
+}
+function escHTML (txt)
+{
+  	return txt.replace(/</g, '&lt;');
+}
+</script>
+
+<!--[if lte IE 6]><script type="text/javascript">
+$(ie6_make_clickable_labels);
+
+$(function(){
+	$('div.menu-sub').prepend('<iframe class="ie-fix-select-overlap"></iframe>'); // iframe for IE select box z-index issue
+	Menu.iframeFix = true;
+});
+</script><![endif]-->
+
+
+<!--[if gte IE 7]><style type="text/css">
+input[type="checkbox"] { margin-bottom: -1px; }
+</style><![endif]-->
+
+<!--[if lte IE 6]><style type="text/css">
+.forumline th { height: 24px; padding: 2px 4px; }
+.menu-sub iframe.ie-fix-select-overlap { display: none; display: block; position: absolute; z-index: -1; filter: mask(); }
+</style><![endif]-->
+
+<!--[if IE]><style type="text/css">
+.post-hr { margin: 2px auto; }
+.fieldsets div > p { margin-bottom: 0; }
+</style><![endif]-->
+
+<style type="text/css">
+	.menu-sub, #ajax-loading, #ajax-error, var.ajax-params, .sp-title { display: none; }
+</style>
+
+<script type="text/javascript" src="./misc/js/subSiver/highslide.js"></script> 
+<link rel="stylesheet" type="text/css" href="./misc/js/subSiver/highslide.css" /> 
+<script type="text/javascript"> 
+  hs.graphicsDir = './misc/js/subSiver/graphics/'; 
+  hs.align = 'center'; 
+  hs.transitions = ['expand', 'crossfade']; 
+  hs.outlineType = 'glossy-dark'; 
+    hs.wrapperClassName = 'dark'; 
+  hs.fadeInOut = true; 
+  hs.dimmingOpacity = 0.50; 
+  hs.numberPosition = 'caption'; 
+</script>
+
+</head>
+
+<body>
+<script type="text/javascript">
+(function($){
+  /* использование: <a class='scrollTop' href='#' style='display:none;'></a>
+  ------------------------------------------------- */
+  $(function(){
+    var e = $(".scrollTop");
+    var  speed = 500;
+    e.click(function(){
+      $("html:not(:animated)" +( !$.browser.opera ? ",body:not(:animated)" : "")).animate({ scrollTop: 0}, 500 );
+      return false; //важно!
+    });
+    //появление
+    function show_scrollTop(){
+      ( $(window).scrollTop()>300 ) ? e.fadeIn(600) : e.hide();
+    }
+    $(window).scroll( function(){show_scrollTop()} ); show_scrollTop();
+  });
+})(jQuery)
+</script>
+
+
+<div id="ajax-loading"></div><div id="ajax-error"></div>
+<div id="preload" style="position: absolute; overflow: hidden; top: 0; left: 0; height: 1px; width: 1px;"></div>
+
+<div id="body_container">
+
+<!--******************-->
+<!--======-->
+
+<div class="scrollTop" style="display:none;"></div>
+
+<!--page_container-->
+<div id="page_container">
+<a name="top"></a>
+
+<!--page_header-->
+<div id="page_header">
+
+<!--main_nav-->
+<div id="main-nav"  style="height: 17px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+                <td class="nowrap">
+                        <a href="/forum.php"><b style="color: #FF0000;">Форум</b></a><span style="color:#CDCDCD;">|</span>
+                        <a href="tracker.php"><b>Трекер</b></a><span style="color:#CDCDCD;">|</span>
+                        <a href="search.php"><b>Поиск</b></a><span style="color:#CDCDCD;">|</span>
+                        <a href="http://img.alltor.me" target=_blank><b style="color: #6b08f2;">Галерея</b></a><span style="color:#CDCDCD;">|</span>
+                        <a href="viewtopic.php?t=8"><b style="color: #FF0000;">Правила</b></a><span style="color:#CDCDCD;">|</span>
+                        <a href="groupcp.php"><b>Группы</b></a><span style="color:#CDCDCD;">|</span>
+                        <a href="memberlist.php"><b>Пользователи</b></a><span style="color:#CDCDCD;">|</span>
+                        <a href="medal.php"><b>Доска почета</b></a><span style="color:#CDCDCD;">|</span>
+                        <a href="presents.php"><b style="color: #2501ff;">Подарки</b></a><span style="color:#CDCDCD;">|</span>
+                        <a href="block_lucky.php"><b style="color: #f95209;">Лотерея</b></a><span style="color:#CDCDCD;">|</span>
+                        <a href="chat.php"><b style="color: #ff0000;">Чат</b></a><span style="color:#CDCDCD;">|</span>
+    		</td>
+		<td class="nowrap" align="right">
+												<a href="privmsg.php?folder=inbox" class="new-pm-link"><b>ЛС: <b>15</b> непрочитанных</b></a>
+									</td>
+	</tr>
+	</table>
+</div>
+<!--/main_nav-->
+
+<!--logo-->
+<div id="logo">
+	<!--<h1>ALLTOR.ME - Форум для Всех</h1>
+	<h6></h6> -->
+	<a href="./index.php"><img src="images/logo/logo_simple_me.png" alt="ALLTOR.ME - Форум для Всех"
+	<div style="position:absolute; top:40px; left:10px;"/>
+</a>
+	</div>
+<!--/logo-->
+
+<div style="position:absolute; top:30px; right:4px;"/>
+<html>
+<body>
+</body>
+</html>
+
+</div>
+        
+
+
+<script type="text/javascript">
+ajax.index_data = function(tz) {
+	ajax.exec({
+		action  : 'index_data',
+		mode    : 'change_tz',
+		tz      : tz,
+	});
+};
+ajax.callback.index_data = function(data) {
+};
+$(document).ready(function() {
+	x = new Date();
+	tz = -x.getTimezoneOffset()/60;
+	if (tz != 5.00)
+	{
+		ajax.index_data(tz);
+	}
+});
+</script>
+
+<!--logout-->
+<div class="topmenu">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+    <td width="40%">
+        Рады видеть Вас,  &nbsp;<b class="med"><a href="https://alltor.me/profile.php?mode=viewprofile&amp;u=45409"><span title="Пользователь" style="color:#00496c">frozenspider</span></a></b>&nbsp; [ <a href="./login.php?logout=1" onclick="return confirm('Вы уверены, что хотите выйти?');">Выход</a> ]
+    </td>
+
+	<td align="center" nowrap="nowrap">
+				    </td>
+
+	<td style="padding: 2px;">
+	<div>
+	<form id="quick-search" action="" method="post" onsubmit="
+		$(this).attr('action', $('#search-action').val());
+		var txt=$('#search-text').val(); return !(txt=='поиск…' || !txt);
+	">
+		<input type="hidden" name="max" value="1" />
+		<input type="hidden" name="to" value="1" />
+		<input id="search-text" type="text" name="nm" onfocus="if(this.value=='поиск…') this.value='';" onblur="if(this.value=='') this.value='поиск…';" value="поиск…" class="hint" style="width: 120px;" />
+		<select id="search-action">
+			<option value="tracker.php#results" selected="selected"> по трекеру </option>
+			<option value="search.php"> по форуму </option>
+			<option value="memberlist.php"> &nbsp;пользователей </option>
+		</select>
+		<input type="submit" class="med bold" value="&raquo;" style="width: 30px;" />
+	</form>
+	</div>
+	</td>
+    <td width="50%" class="tRight">
+	    	    <a href="report.php?mode=report">Сообщить о нарушении</a> &#0183;
+	    	    <a href="profile.php?mode=editprofile"><b>Настройки</b></a> &#0183;
+	    <a href="profile.php?mode=viewprofile&amp;u=45409">Профиль</a> <a href="#dls-menu" class="menu-root menu-alt1">&#9660;</a> &#0183;
+	    <a href="search.php?uid=45409&amp;o=5">Мои сообщения</a>
+    </td>
+        </tr>
+    </table>
+</div>
+<!--/logout-->
+<div class="menu-sub" id="dls-menu">
+	<div class="menu-a bold nowrap">
+		<a class="med" href="tracker.php?rid=45409#results">Текущие раздачи</a>
+		<a class="med" href="profile.php?mode=viewprofile&amp;u=45409#torrent">Текущие закачки</a>
+		<a class="med" href="search.php?dlu=45409&dlc=1">Прошлые закачки</a>
+		<a class="med" href="search.php?dlu=45409&dlw=1">Будущие закачки</a>
+	</div>
+</div>
+
+
+<!--breadcrumb-->
+<!--<div id="breadcrumb"></div>-->
+<!--/breadcrumb-->
+
+
+</div>
+<!--/page_header-->
+
+<!--menus-->
+
+
+<!--/menus-->
+
+
+<!--page_content-->
+<div id="page_content">
+<table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+ <tr>
+<!--main_content-->
+    <td id="main_content">
+
+
+<center>
+<html>
+<body>
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Top - 1 (alltor.me) -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3294629950554505"
+     data-ad-slot="3388753670"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+</body>
+</html>
+</center>
+<br>
+         
+
+    <div id="main_content_wrap">
+    <div id="latest_news">
+    <table cellspacing="0" cellpadding="0" width="100%"> 
+        <tr>
+            <td width="50%">
+                            </td>
+   
+                    </tr>
+    </table>
+    </div>
+
+
+<!--=======================-->
+<!--***********************-->
+
+
+
+<!-- page_header.tpl END -->
+<!-- module_xx.tpl START -->
+<!--========================================================================-->
+
+	<div class="spacer_10"></div>
+	<table class="forumline message">
+		<tr><th>Информация</th></tr>
+		<tr><td>Темы, которую вы запросили, не существует.</td></tr>
+			</table>
+
+	<div class="spacer_10"></div>
+<!--========================================================================-->
+
+
+	</div><!--/main_content_wrap-->
+	</td><!--/main_content-->
+
+	
+	</tr></table>
+	</div>
+	<!--/page_content-->
+
+ 
+
+	<!--page_footer-->
+	<div id="page_footer">
+
+		<div class="clear"></div>
+
+		<br /><br />
+
+				<div class="med bold tCenter">
+			<a href="misc.php?do=info&show=user_agreement" onclick="window.open(this.href, '', InfoWinParams); return false;">Пользовательское соглашение</a>
+						<span class="normal">&nbsp;|&nbsp;</span>
+			<a href="misc.php?do=info&show=copyright_holders" onclick="window.open(this.href, '', InfoWinParams); return false;">Для правообладателей</a>
+									<span class="normal">&nbsp;|&nbsp;</span>
+			<a href="misc.php?do=info&show=advert" onclick="window.open(this.href, '', InfoWinParams); return false;">Реклама на сайте</a>
+					</div>
+		<br />
+		
+<div class="med bold tCenter">
+<!-- <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-69626314-1', 'auto');
+  ga('require', 'linkid');
+  ga('send', 'pageview');
+
+</script> 
+<br> -->
+<!-- START WWW.UZ TOP-RATING --><SCRIPT language="javascript" type="text/javascript">
+<!--
+top_js="1.0";top_r="id=30657&r="+escape(document.referrer)+"&pg="+escape(window.location.href);document.cookie="smart_top=1; path=/"; top_r+="&c="+(document.cookie?"Y":"N")
+//-->
+</SCRIPT>
+<SCRIPT language="javascript1.1" type="text/javascript">
+<!--
+top_js="1.1";top_r+="&j="+(navigator.javaEnabled()?"Y":"N")
+//-->
+</SCRIPT>
+<SCRIPT language="javascript1.2" type="text/javascript">
+<!--
+top_js="1.2";top_r+="&wh="+screen.width+'x'+screen.height+"&px="+
+(((navigator.appName.substring(0,3)=="Mic"))?screen.colorDepth:screen.pixelDepth)
+//-->
+</SCRIPT>
+<SCRIPT language="javascript1.3" type="text/javascript">
+<!--
+top_js="1.3";
+//-->
+</SCRIPT>
+<SCRIPT language="JavaScript" type="text/javascript">
+<!--
+top_rat="&col=D0D0CF&t=ffffff&p=24211D";top_r+="&js="+top_js+"";document.write('<a href="http://www.uz/ru/res/visitor/index?id=30657" target=_top><img src="https://cnt0.www.uz/counter/collect?'+top_r+top_rat+'" width=88 height=31 border=0 alt="Топ рейтинг www.uz"></a>')//-->
+</SCRIPT><NOSCRIPT><A href="http://www.uz/ru/res/visitor/index?id=30657" target=_top><IMG height=31 src="http://cnt0.www.uz/counter/collect?id=30657&pg=http%3A//uzinfocom.uz&&col=D0D0CF&amp;t=ffffff&amp;p=24211D" width=88 border=0 alt="Топ рейтинг www.uz"></A></NOSCRIPT>
+<!-- FINISH WWW.UZ TOP-RATING -->
+</div>
+		
+
+	
+		<div class="copyright tCenter">
+			Powered by <a target="_blank" href="http://torrentpier.me">TorrentPier II</a> &copy; Meithar, TorrentPier II Team <br />
+		</div>
+<div class="copyright tCenter">
+			Рекомендуем использовать на <a target="_blank" href="http://mozilla-russia.org">Firefox</a>; <a target="_blank" href="http://ru.opera.com/">Opera</a>; <a target="_blank" href="http://windows.microsoft.com/ru-RU/internet-explorer/products/ie/home">Internet Explorer</a>. <br />
+		</div>
+
+	</div>
+
+	<div class="copyright tCenter">
+		<b style="color:rgb(204,0,0);">!ВНИМАНИЕ!</b><br />
+		Сайт не предоставляет электронные версии произведений, а занимается лишь коллекционированием и каталогизацией ссылок, присылаемых и публикуемых на форуме нашими читателями. Если вы являетесь правообладателем какого-либо представленного материала и не желаете, чтобы ссылка на него находилась в нашем каталоге, свяжитесь с нами, и мы незамедлительно удалим её. Файлы для обмена на трекере предоставлены пользователями сайта, и администрация не несёт ответственности за их содержание. Просьба не заливать файлы, защищенные авторскими правами, а также файлы нелегального содержания!	</div>
+
+	<!--/page_footer -->
+
+	</div>
+	<!--/page_container -->
+
+
+
+	</div><!--/body_container-->
+
+	</body>
+	</html>
