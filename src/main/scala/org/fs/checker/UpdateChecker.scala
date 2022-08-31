@@ -53,6 +53,7 @@ class UpdateChecker(
               }
             case Some(na: TorrentParseResult.Failure) =>
               if (cachedDetailsOption.map(_.isUnavailable) getOrElse false) {
+                log.info(s"'$alias' ($url) is still unavailable!")
                 // NOOP
               } else {
                 cacheService.updateCachedDetails(
