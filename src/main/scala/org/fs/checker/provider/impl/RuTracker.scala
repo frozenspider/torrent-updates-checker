@@ -36,7 +36,9 @@ class RuTracker(httpClient: HttpClient, override val dumpService: PageContentDum
 
   override def parseDateLastUpdated(content: String): TorrentParseResult = {
     // Format (bottom section): 10-Июн-19 20:39
-    if (content contains "class=\"dl-unregistered") {
+    if (content.toLowerCase contains "тема не найдена") {
+      TorrentParseResult.Failure.NotFound
+    } else if (content contains "class=\"dl-unregistered") {
       TorrentParseResult.Failure.Absorbed
     } else {
       val body = parseElement(content) \ "body"

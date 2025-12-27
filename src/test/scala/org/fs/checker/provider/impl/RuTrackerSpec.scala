@@ -35,5 +35,12 @@ class RuTrackerSpec
     assert(parsed === TorrentParseResult.Failure.Absorbed)
   }
 
+  it should "parse topic not found" in {
+    val content = Source.fromFile(new File(pagesFolder, "not-found_2025-12-28.html"), "utf8").mkString
+    val parsed = instance.parseDateLastUpdated(content)
+    assert(parsed === TorrentParseResult.Failure.NotFound)
+  }
+
+
   val pagesFolder: java.io.File = new File(resourcesFolder, instance.providerKey)
 }
