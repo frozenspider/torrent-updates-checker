@@ -72,7 +72,9 @@ object Alltor extends AlltorBase with RawProvider {
         "login" -> "Вход"
       ))
     val response = httpClient.request(authReq)
-    if (response.code != 302) {
+    if (response.code == 503) {
+      throw new IllegalStateException(s"Alltor forum is down")
+    } else if (response.code != 302) {
       dumpService.dump(response.bodyString, providerKey)
       throw new IllegalArgumentException(s"Failed to auth, got code ${response.code}, content dumped to file")
     }
